@@ -1,0 +1,329 @@
+{
+  "meta": {
+    "title": "Marie Lou Coffee | Frisch geröstet, direkt bezogen",
+    "description": "Wir rösten erst nach deiner Bestellung, beziehen direkt von Bauern und liefern innerhalb weniger Tage nach dem Rösten."
+  },
+  "nav": {
+    "ourStory": "Unsere Geschichte",
+    "shop": "Kaffee kaufen",
+    "howItWorks": "So funktioniert's",
+    "contact": "Kontakt",
+    "cart": "Warenkorb"
+  },
+  "hero": {
+    "badge": "Geröstet mit Überzeugung, transparent im Preis",
+    "title": "Kaffee, wie meine Oma ihn gemacht hätte.",
+    "titleEmphasis": "Frisch, ehrlich, mit Liebe gemacht.",
+    "description": "Wir rösten erst nach deiner Bestellung, bezahlen Bauern fair und legen jeden Cent offen. Keine Zwischenhändler. Keine Geheimnisse. Nur außergewöhnlicher Kaffee, der wirklich etwas bewirkt.",
+    "shopCta": "Frischen Kaffee kaufen",
+    "storyCta": "Unsere Geschichte"
+  },
+  "freshness": {
+    "roastedTitle": "Frisch geröstet für dich",
+    "roastedDescription": "Wir rösten erst nach deiner Bestellung. Dein Kaffee steht nie im Regal — er kommt innerhalb weniger Tage nach dem Rösten bei dir an, auf dem Höhepunkt seiner Frische.",
+    "farmersTitle": "Bauern zuerst",
+    "farmersDescription": "Wir kaufen direkt von Produzenten, die wir persönlich besucht haben. Sie verdienen 3-4x mehr als der Weltmarktpreis. Wir zeigen dir genau, wohin dein Geld geht.",
+    "loveTitle": "Mit Liebe gemacht",
+    "loveDescription": "Jede Charge wird auf Maschinen geröstet, die ich selbst gebaut habe — kostengünstig, solarbetrieben und präzise gesteuert. Keine teuren Gemeinkosten bedeutet mehr Geld für die Menschen, die deinen Kaffee anbauen."
+  },
+  "story": {
+    "title": "Die Geschichte hinter",
+    "brand": "Marie Lou",
+    "paragraph1": "Marie Lou war meine Großmutter. Sie liebte nichts mehr als einen Nachmittagskaffee mit den Menschen, die ihr wichtig waren — sie sorgte dafür, dass sich jeder willkommen, wohl und geliebt fühlte.",
+    "paragraph2": "Als Kind war es meine Aufgabe, den Kaffee in ihrer alten French Press zu brühen. Damals wusste ich es noch nicht, aber diese Nachmittage haben alles geprägt.",
+    "paragraph3": "Als sie starb, während ich durch die Kaffeeanbaugebiete Afrikas und Asiens reiste, gab ich mir ein Versprechen: Sie zu ehren, indem ich mich um andere kümmere, so wie sie es getan hat.",
+    "paragraph4": "Marie Lou Coffee ist dieses Versprechen — außergewöhnlicher Kaffee, der Bauern an erste Stelle setzt, Transparenz über Profit stellt und Liebe in jede Tasse gibt.",
+    "signature": "— Marcel",
+    "readMore": "Die ganze Geschichte lesen"
+  },
+  "products": {
+    "badge": "Frisch geröstet",
+    "title": "Unsere frischen Röstungen",
+    "subtitle": "Jeder Kaffee wird speziell für deine Bestellung geröstet. Wähle deinen Favoriten und schmecke den Unterschied, den Frische macht.",
+    "description": "Jeder Kaffee wird speziell für deine Bestellung geröstet. Wähle deinen Favoriten und schmecke den Unterschied, den Frische macht.",
+    "addToCart": "In den Warenkorb",
+    "added": "Hinzugefügt ✓",
+    "viewAll": "Alle Produkte ansehen"
+  },
+  "process": {
+    "badge": "So funktioniert's",
+    "title": "Von der Bestellung bis in die Tasse",
+    "description": "Unser Prozess stellt sicher, dass du immer den frischesten Kaffee erhältst",
+    "step1": {
+      "title": "Du bestellst",
+      "description": "Wähle deine Lieblingsbohnen und gib deine Bestellung auf. Wir rösten erst, wenn wir von dir hören."
+    },
+    "step2": {
+      "title": "Wir rösten",
+      "description": "Innerhalb von 24 Stunden werden deine Bohnen auf unserer handgebauten Maschine mit Präzision und Sorgfalt geröstet."
+    },
+    "step3": {
+      "title": "Wir versenden",
+      "description": "Dein frisch gerösteter Kaffee wird am nächsten Tag verschickt, mit dem Röstdatum auf jeder Tüte."
+    },
+    "step4": {
+      "title": "Du genießt",
+      "description": "Erhalte Kaffee auf dem Höhepunkt seiner Frische — normalerweise innerhalb von 3-5 Tagen nach dem Rösten. Schmecke den Unterschied."
+    }
+  },
+  "testimonials": {
+    "badge": "Kundenstimmen",
+    "title": "Was Kaffeeliebhaber sagen",
+    "description": "Schließe dich hunderten zufriedener Kunden an, die den Marie Lou Unterschied entdeckt haben",
+    "testimonial1": {
+      "quote": "Der frischeste Kaffee, der je an meine Tür geliefert wurde. Man schmeckt wirklich den Unterschied, wenn er erst Tage vorher geröstet wurde.",
+      "name": "Sarah M.",
+      "location": "Berlin, Deutschland"
+    },
+    "testimonial2": {
+      "quote": "Ich liebe es zu wissen, wohin mein Geld genau geht. Die transparente Preisgestaltung und direkten Bauernbeziehungen machen jede Tasse bedeutsam.",
+      "name": "Thomas K.",
+      "location": "München, Deutschland"
+    },
+    "testimonial3": {
+      "quote": "Endlich Kaffee, der so gut schmeckt wie er riecht! Der Ethiopia Yirgacheffe ist absolut unglaublich.",
+      "name": "Emma L.",
+      "location": "Hamburg, Deutschland"
+    }
+  },
+  "newsletter": {
+    "badge": "Bleib informiert",
+    "title": "Werde Teil der Marie Lou Familie",
+    "description": "Erhalte frühen Zugang zu neuen Röstungen, Zubereitungstipps und exklusiven Angeboten. Wir versprechen, nur das Gute zu senden.",
+    "placeholder": "Deine E-Mail-Adresse",
+    "button": "Abonnieren",
+    "subscribe": "Abonnieren",
+    "success": "Danke fürs Abonnieren!",
+    "error": "Etwas ist schief gelaufen. Bitte versuche es erneut.",
+    "privacy": "Wir respektieren deine Privatsphäre. Jederzeit abmeldbar."
+  },
+  "footer": {
+    "tagline": "Kleinchargen-Röstungen, frisch geröstet und zu dir nach Hause geliefert. Weil das Leben zu kurz für abgestandenen Kaffee ist.",
+    "shop": "Shop",
+    "allCoffee": "Alle Kaffees",
+    "singleOrigins": "Single Origins",
+    "blends": "Blends",
+    "subscriptions": "Abonnements",
+    "learn": "Lernen",
+    "ourStory": "Unsere Geschichte",
+    "referralProgram": "Freunde einladen",
+    "brewingGuides": "Zubereitungsanleitungen",
+    "coffeeJournal": "Kaffee-Journal",
+    "faq": "FAQ",
+    "connect": "Verbinden",
+    "instagram": "Instagram",
+    "contactUs": "Kontakt",
+    "wholesale": "Großhandel",
+    "press": "Presse",
+    "copyright": "© 2026 Marie Lou Coffee. Mit Liebe geröstet.",
+    "forYouOma": "Für dich, Oma ♥"
+  },
+  "cart": {
+    "title": "Dein Warenkorb",
+    "close": "Warenkorb schließen",
+    "empty": "Dein Warenkorb ist leer",
+    "continueShopping": "Weiter einkaufen",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "calculatedAtCheckout": "Wird an der Kasse berechnet",
+    "total": "Gesamt",
+    "checkout": "Zur Kasse",
+    "remove": "Entfernen",
+    "decrease": "Menge verringern",
+    "increase": "Menge erhöhen",
+    "shippingNote": "Kostenloser Versand ab €49",
+    "clear": "Warenkorb leeren"
+  },
+  "common": {
+    "learnMore": "Mehr erfahren",
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "perUnit": "pro"
+  },
+  "storyPage": {
+    "title": "Für dich, Oma",
+    "subtitle": "Die Geschichte von Marie Lou Coffee — ein gegebenes Versprechen, eine geborene Mission.",
+    "imageAlt": "Marcel, Gründer von Marie Lou Coffee",
+    "intro": {
+      "title": "Ein Nachmittag mit Marie Lou",
+      "p1": "Meine Großmutter hieß Maria Louise, aber alle nannten sie Marie Lou.",
+      "p2": "Jeden Nachmittag, ohne Ausnahme, lud sie jemanden zum Kaffee ein. Eine Nachbarin. Eine Freundin. Manchmal jemand Fremdes, der einfach jemanden zum Reden brauchte. Ihr Küchentisch war der Ort, an dem Menschen sich willkommen fühlten, gehört wurden, geliebt wurden.",
+      "p3": "Als kleines Kind hatte ich eine wichtige Aufgabe: den Kaffee kochen. Ich maß sorgfältig das Kaffeepulver in ihre alte French Press, goss das heiße Wasser auf und wartete — beobachtete, wie die dunkle Flüssigkeit langsam zog. Diese Nachmittage lehrten mich etwas, das mein ganzes Leben prägen sollte."
+    },
+    "world": {
+      "title": "Die Welt da draußen",
+      "p1": "Jahre später reiste ich mit meiner Freundin um die Welt. Wir besuchten Kaffee- und Teeanbaugebiete in Afrika und Asien — Äthiopien, Kenia, Indonesien, Vietnam.",
+      "p2": "Wir trafen Bauern, die von Sonnenaufgang bis Sonnenuntergang arbeiteten, Kaffeekirschen in der Hitze von Hand pflückten. Familien, die unter Bedingungen lebten, die wir uns nicht hätten vorstellen können. Kinder, deren Zukunft größtenteils davon bestimmt wurde, wo sie zufällig geboren wurden.",
+      "p3": "Wir sahen die Diskrepanz: Der Kaffee, für den ich in München 15€ zahlte, kam von Menschen, die nur einen Bruchteil dieses Preises erhielten. Die Lieferkette war darauf ausgelegt, bei jedem Schritt Wert abzuschöpfen. Ich konnte nicht aufhören zu denken: Wie kann das in Ordnung sein?"
+    },
+    "promise": {
+      "title": "Ein Versprechen",
+      "p1": "Während unserer Reise erhielt ich den Anruf, der alles veränderte. Marie Lou war gestorben.",
+      "p2": "In einem kleinen Gästehaus, Tausende Kilometer von zu Hause entfernt, dachte ich an ihren Küchentisch. An all diese Nachmittage. Daran, wie sie ihr Leben damit verbracht hatte, dafür zu sorgen, dass sich die Menschen um sie herum umsorgt fühlten.",
+      "quote": "Ich gab mir ein Versprechen: Einen Weg zu finden, mich um Menschen zu kümmern, so wie sie es getan hat — nicht nur um die Menschen, die ich sehen konnte, sondern auch um die, die den Kaffee anbauen, den ich liebe."
+    },
+    "innovation": {
+      "title": "Eine andere Art von Kaffeeunternehmen",
+      "roasters": {
+        "title": "Eigene Röster gebaut",
+        "description": "Mit Sensoren, Mikrocontrollern und maschinellem Lernen habe ich kostengünstige Röster entwickelt, die konstant perfekte Ergebnisse liefern. Sie laufen mit erneuerbarer Energie und kosten einen Bruchteil kommerzieller Geräte."
+      },
+      "direct": {
+        "title": "Zwischenhändler eliminiert",
+        "description": "Ich kaufe direkt bei Bauern, die ich persönlich besucht habe. Keine Importeure. Keine Rohstoffmärkte. Direkte Beziehungen basierend auf Vertrauen und fairen Preisen."
+      },
+      "noMarketing": {
+        "title": "Keine Marketing-Verschwendung",
+        "description": "Keine teure Verpackung. Keine Promi-Werbung. Keine Social-Media-Kampagnen. Nur guter Kaffee und ehrliche Kommunikation."
+      },
+      "fairPay": {
+        "title": "Fair, nicht übertrieben",
+        "description": "Ich versuche nicht, ein Einhorn-Startup aufzubauen. Ich versuche, großartigen Kaffee zu machen, der echten Menschen hilft. All das bedeutet: Mehr Geld geht an die Bauern."
+      }
+    },
+    "closing": {
+      "title": "Das ist für dich, Oma",
+      "p1": "Meine Großmutter hat die Bauern, die Marie Lou Coffee anbauen, nie kennengelernt. Aber ich glaube, sie hätte sie geliebt. Ich glaube, sie hätte sie an ihren Küchentisch eingeladen, ihnen eine Tasse eingeschenkt und ihnen das Gefühl gegeben, die wichtigsten Menschen der Welt zu sein.",
+      "p2": "Wir alle brauchen mehr Glück in unserem Leben. Mehr Verbindung. Mehr Momente, in denen wir das Gefühl haben, dass sich jemand kümmert. Wenn du also morgen früh deinen Kaffee trinkst, hoffe ich, dass du an Marie Lou denkst.",
+      "signature": "— Marcel"
+    }
+  },
+  "shopPage": {
+    "title": "Frischen Kaffee kaufen",
+    "subtitle": "Jede Tüte wird nach Bestellung geröstet und innerhalb weniger Tage verschickt. Schmecke den Unterschied, den Frische macht."
+  },
+  "productPage": {
+    "selectVariant": "Mahlgrad wählen",
+    "quantity": "Menge",
+    "details": "Produktdetails",
+    "roastLevel": "Röstgrad",
+    "process": "Aufbereitung",
+    "altitude": "Anbauhöhe",
+    "variety": "Varietät",
+    "teaType": "Teesorte",
+    "caffeine": "Koffein",
+    "steepTime": "Ziehzeit",
+    "temperature": "Temperatur"
+  },
+  "cartPage": {
+    "emptyDescription": "Sieht so aus, als hättest du noch nichts hinzugefügt. Stöbere in unseren frischen Röstungen und finde deinen neuen Favoriten.",
+    "orderSummary": "Bestellübersicht"
+  },
+  "checkoutPage": {
+    "title": "Kasse",
+    "backToCart": "Zurück zum Warenkorb",
+    "orderSummary": "Bestellübersicht",
+    "secureCheckout": "Sichere Zahlung",
+    "checkoutDescription": "Du wirst zu unserem sicheren Zahlungspartner Stripe weitergeleitet. Wir akzeptieren alle gängigen Karten, SEPA-Lastschrift und Klarna.",
+    "acceptedPayments": "Wir akzeptieren:",
+    "proceedToPayment": "Zur Zahlung",
+    "processing": "Wird verarbeitet...",
+    "securityNote": "Deine Zahlungsdaten sind verschlüsselt und sicher",
+    "referralDiscount": "Empfehlungsrabatt (10%)",
+    "referralApplied": "Empfehlungsrabatt angewendet! Dein Freund erhält eine Gratistüte, sobald deine Bestellung bestätigt ist."
+  },
+  "checkoutSuccess": {
+    "title": "Vielen Dank!",
+    "message": "Deine Bestellung wurde erfolgreich aufgegeben.",
+    "emailConfirmation": "Du erhältst in Kürze eine Bestätigungs-E-Mail mit deinen Bestelldetails.",
+    "roastingInfo": "Wir beginnen innerhalb von 24 Stunden mit dem Rösten deiner Bohnen.",
+    "shippingInfo": "Mit der Lieferung kannst du innerhalb von 3-5 Werktagen rechnen.",
+    "continueShopping": "Weiter einkaufen",
+    "backToHome": "Zur Startseite",
+    "signature": "— Marcel & das Marie Lou Team"
+  },
+  "faqPage": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was du über Marie Lou Coffee wissen musst",
+    "contactTitle": "Noch Fragen?",
+    "contactDescription": "Wir helfen gerne. Schreib uns eine E-Mail und wir melden uns innerhalb von 24 Stunden.",
+    "contactButton": "Kontakt aufnehmen",
+    "categories": {
+      "ordering": {
+        "title": "Bestellung & Zahlung",
+        "q1": "Wie bestelle ich?",
+        "a1": "Stöbere einfach in unserem Shop, wähle deinen Lieblingskaffee und Mahlgrad, lege ihn in den Warenkorb und gehe zur Kasse. Wir akzeptieren alle gängigen Kreditkarten, SEPA-Lastschrift und Klarna.",
+        "q2": "Wann wird mein Kaffee geröstet?",
+        "a2": "Wir rösten deinen Kaffee innerhalb von 24 Stunden nach Bestelleingang. Wir rösten nie vor oder lagern Kaffee — jede Tüte wird frisch nur für dich gemacht.",
+        "q3": "Kann ich meine Bestellung ändern oder stornieren?",
+        "a3": "Wenn deine Bestellung noch nicht geröstet wurde, können wir normalerweise Änderungen vornehmen. Kontaktiere uns bitte so schnell wie möglich unter hello@marieloucoffee.com."
+      },
+      "shipping": {
+        "title": "Versand & Lieferung",
+        "q1": "Wie lange dauert der Versand?",
+        "a1": "Standardversand innerhalb Deutschlands dauert 2-4 Werktage. EU-Versand dauert typischerweise 3-7 Werktage. Dein Kaffee wird am Tag nach der Röstung versendet.",
+        "q2": "Was kostet der Versand?",
+        "a2": "Versand innerhalb Deutschlands kostet 4,95€, ab 49€ Bestellwert kostenlos. EU-Versand kostet 9,95€, ab 75€ kostenlos. Schweiz-Versand kostet 14,95€.",
+        "q3": "Liefert ihr international?",
+        "a3": "Wir liefern derzeit nach Deutschland, Österreich, Schweiz, Niederlande, Belgien, Frankreich, Italien, Spanien, Polen, Tschechien, Dänemark und Schweden."
+      },
+      "coffee": {
+        "title": "Über unseren Kaffee",
+        "q1": "Wie frisch ist euer Kaffee?",
+        "a1": "Sehr frisch! Wir rösten deinen Kaffee speziell für deine Bestellung und versenden ihn am nächsten Tag. Du erhältst ihn typischerweise 3-5 Tage nach der Röstung — auf dem Höhepunkt der Frische.",
+        "q2": "Welche Mahlgrade bietet ihr an?",
+        "a2": "Wir bieten ganze Bohne, Filtermahlung, Espressomahlung, French Press Mahlung und Mokka-Mahlung an. Wenn du unsicher bist, ist ganze Bohne immer die frischeste Option.",
+        "q3": "Wie sollte ich meinen Kaffee aufbewahren?",
+        "a3": "Bewahre deinen Kaffee in einem luftdichten Behälter bei Zimmertemperatur auf, fern von Licht und Feuchtigkeit. Nicht im Kühlschrank oder Gefrierfach lagern. Am besten innerhalb von 4-6 Wochen nach der Röstung verbrauchen."
+      },
+      "returns": {
+        "title": "Rückgabe & Erstattung",
+        "q1": "Was, wenn mir mein Kaffee nicht schmeckt?",
+        "a1": "Wir möchten, dass du deinen Kaffee liebst! Wenn du nicht zufrieden bist, kontaktiere uns innerhalb von 14 Tagen und wir finden eine Lösung — ob Ersatz, Gutschrift oder Erstattung.",
+        "q2": "Kann ich eine geöffnete Tüte zurückgeben?",
+        "a2": "Ja! Wenn der Geschmack nicht deinen Erwartungen entspricht, arbeiten wir trotzdem mit dir zusammen. Wir glauben an unseren Kaffee und möchten, dass jeder Kunde zufrieden ist."
+      }
+    }
+  },
+  "referralLanding": {
+    "eyebrow": "Dein Freund denkt, das wird dir gefallen",
+    "title": "Willkommen bei Marie Lou Coffee",
+    "subtitle": "Frisch gerösteter Kaffee, der Bauern fair bezahlt. Keine Zwischenhändler. Volle Transparenz.",
+    "bannerTitle": "Du bist an den Tisch eingeladen!",
+    "bannerText": "Als Freund der Familie bekommst du 10% Rabatt auf deine erste Bestellung.",
+    "shopNow": "Jetzt mit 10% Rabatt einkaufen",
+    "promiseTitle": "Warum Marie Lou?",
+    "promiseItem1Title": "Frisch geröstet",
+    "promiseItem1Text": "Wir rösten deinen Kaffee erst nach deiner Bestellung — niemals vorher. Immer auf dem Höhepunkt der Frische.",
+    "promiseItem2Title": "Direkter Handel",
+    "promiseItem2Text": "Wir beziehen direkt von Bauern und zahlen ihnen das 3-4-fache des Marktpreises.",
+    "promiseItem3Title": "Mit Liebe gemacht",
+    "promiseItem3Text": "Jede Tüte wird mit der gleichen Sorgfalt hergestellt, die meine Großmutter in ihren Nachmittagskaffee gesteckt hat.",
+    "quote": "Kaffee, wie er sein sollte. Frisch, ehrlich, mit Liebe gemacht.",
+    "readStory": "Unsere Geschichte lesen",
+    "finalCtaTitle": "Bereit, den Unterschied zu schmecken?",
+    "finalCtaText": "Dein 10% Rabatt ist bereits aktiviert. Einfach einkaufen und genießen!",
+    "startShopping": "Jetzt einkaufen"
+  },
+  "referralProgram": {
+    "title": "Marie Lous Tisch",
+    "subtitle": "Hol einen Freund an den Tisch",
+    "introText1": "Meine Großmutter Marie Lou trank ihren Kaffee nie allein. Ihr Küchentisch war immer für einen mehr gedeckt — eine Nachbarin, eine Freundin, manchmal jemand, den sie gerade erst kennengelernt hatte. Jeder war willkommen.",
+    "introText2": "Darum geht es bei diesem Empfehlungsprogramm. Wenn du jemanden einlädst, Marie Lou Coffee zu probieren, teilst du nicht nur ein Produkt — du lädst sie an einen Tisch ein, an dem Qualität zählt, Bauern fair behandelt werden und jede Tasse mit Liebe gemacht wird.",
+    "howItWorks": "So funktioniert's",
+    "step1Title": "Teile deinen Link",
+    "step1Text": "Jeder Marie Lou Kunde bekommt einen einzigartigen Empfehlungslink. Teile ihn mit Freunden, Familie, Kollegen — allen, die besseren Kaffee verdienen.",
+    "step2Title": "Sie bekommen 10% Rabatt",
+    "step2Text": "Wenn dein Freund deinen Link nutzt, bekommt er 10% Rabatt auf seine erste Bestellung. Ein herzliches Willkommen am Tisch.",
+    "step3Title": "Du bekommst eine Gratistüte",
+    "step3Text": "Sobald die Bestellung bestätigt ist, schicken wir dir eine kostenlose Tüte Kaffee — zufällig aus unserem aktuellen Sortiment ausgewählt. Ein Dankeschön von uns.",
+    "detailsTitle": "Die Details",
+    "forYouTitle": "Für dich (Empfehler)",
+    "referrerBenefit1": "1 Gratistüte (250g) für jeden Freund, der bestellt",
+    "referrerBenefit2": "Kein Limit — 10 Freunde empfehlen, 10 Tüten bekommen",
+    "referrerBenefit3": "Zu deiner nächsten Bestellung hinzufügen oder separat versenden (€4,95)",
+    "referrerBenefit4": "Deine Belohnung läuft nie ab",
+    "forFriendTitle": "Für deinen Freund",
+    "friendBenefit1": "10% Rabatt auf die erste Bestellung",
+    "friendBenefit2": "Mindestbestellwert: €25 (vor Versand)",
+    "friendBenefit3": "90 Tage gültig",
+    "whyRandomTitle": "Warum eine zufällige Tüte?",
+    "whyRandomText1": "Wir könnten dich wählen lassen, aber wo bleibt da der Spaß?",
+    "whyRandomText2": "Die zufällige Tüte ist ein kleines Geschenk, eine Überraschung, eine Chance, etwas zu probieren, das du vielleicht nicht selbst ausgesucht hättest. Vielleicht entdeckst du deinen neuen Lieblingskaffee. Vielleicht ist es ein alter Bekannter. So oder so ist es unsere Art, Danke zu sagen, dass du uns weiterempfiehlst.",
+    "ctaTitle": "Hol dir deinen Empfehlungslink",
+    "ctaText": "Melde dich in deinem Konto an, um deinen persönlichen Link zu bekommen.",
+    "ctaShopNow": "Jetzt einkaufen",
+    "ctaNote": "Noch kein Kunde? Jetzt einkaufen und du bekommst deinen Link nach deiner ersten Bestellung.",
+    "closingText": "Am Tisch von Marie Lou ist immer Platz."
+  }
+}

@@ -1,0 +1,110 @@
+.story {
+  padding: 8rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.imageContainer {
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: var(--shadow-xl);
+}
+
+.accent {
+  position: absolute;
+  bottom: -30px;
+  right: -30px;
+  width: 200px;
+  height: 200px;
+  background: var(--color-accent-light);
+  border-radius: 16px;
+  z-index: -1;
+}
+
+.content h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
+.content h2 em {
+  font-style: italic;
+  display: block;
+  color: var(--color-primary-medium);
+}
+
+.content p {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+}
+
+.signature {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-accent-light);
+  margin-bottom: 2rem;
+}
+
+.signatureText {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--color-primary-medium);
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .story {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 5rem 2rem;
+  }
+
+  .imageContainer {
+    order: -1;
+  }
+
+  .accent {
+    bottom: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+  }
+
+  .image {
+    height: 400px;
+  }
+}
+
+@media (max-width: 640px) {
+  .story {
+    padding: 3rem 1rem;
+  }
+
+  .image {
+    height: 300px;
+  }
+
+  .accent {
+    width: 100px;
+    height: 100px;
+    bottom: -15px;
+    right: -15px;
+  }
+}

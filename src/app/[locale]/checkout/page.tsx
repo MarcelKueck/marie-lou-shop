@@ -1,0 +1,214 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { Link } from '@/i18n/routing';
+import { useBrand } from '@/hooks/useBrand';
+import { useCart } from '@/hooks/useCart';
+import { REFERRAL_COOKIE_NAME, REFERRAL_DISCOUNT_PERCENT, REFERRAL_MINIMUM_ORDER } from '@/lib/referral';
+import Navigation from '@/components/layout/Navigation';
+import Footer from '@/components/layout/Footer';
+import styles from './checkout.module.css';
+
+// Helper to get cookie value
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+}
+
+export default function CheckoutPage() {
+  const { brand } = useBrand();
+  const locale = useLocale() as 'de' | 'en';
+  const t = useTranslations('checkoutPage');
+  const tCart = useTranslations('cart');
+  const router = useRouter();
+  const { items, itemsWithProducts, subtotal } = useCart();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  const formatPrice = (cents: number) => {
+    return new Intl.NumberFormat(locale === 'de' ? 'de-DE' : 'en-US', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(cents / 100);
+  };
+
+  // Check for referral code cookie
+  useEffect(() => {
+    const code = getCookie(REFERRAL_COOKIE_NAME);
+    if (code) {
+      setReferralCode(code);
+    }
+  }, []);
+
+  // Redirect to cart if empty
+  useEffect(() => {
+    if (items.length === 0) {
+      router.push(`/${locale}/cart`);
+    }
+  }, [items.length, locale, router]);
+
+  // Calculate referral discount
+  const hasReferralDiscount = referralCode && subtotal >= REFERRAL_MINIMUM_ORDER;
+  const referralDiscount = hasReferralDiscount 
+    ? Math.round(subtotal * (REFERRAL_DISCOUNT_PERCENT / 100)) 
+    : 0;
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items,
+          locale,
+          referralCode: referralCode || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Checkout failed');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setIsLoading(false);
+    }
+  };
+
+  if (items.length === 0) {
+    return null; // Will redirect
+  }
+
+  return (
+    <div className={`theme-${brand.id}`}>
+      <Navigation />
+
+      <main className={styles.main}>
+        <div className={styles.container}>
+          <div className={styles.header}>
+            <Link href="/cart" className={styles.backLink}>
+              ← {t('backToCart')}
+            </Link>
+            <h1 className={styles.title}>{t('title')}</h1>
+          </div>
+
+          <div className={styles.checkoutGrid}>
+            {/* Order Summary */}
+            <div className={styles.summarySection}>
+              <h2 className={styles.sectionTitle}>{t('orderSummary')}</h2>
+              
+              <div className={styles.itemsList}>
+                {itemsWithProducts.map((item) => (
+                  <div key={`${item.productId}-${item.variantId}`} className={styles.summaryItem}>
+                    <div className={styles.itemImage}>
+                      {item.product.image ? (
+                        <Image
+                          src={item.product.image}
+                          alt={item.product.name[locale]}
+                          fill
+                          className={styles.image}
+                        />
+                      ) : (
+                        <div className={styles.imagePlaceholder} />
+                      )}
+                    </div>
+                    <div className={styles.itemInfo}>
+                      <h3>{item.product.name[locale]}</h3>
+                      <p>{item.variant.name[locale]}</p>
+                      <p className={styles.itemQuantity}>× {item.quantity}</p>
+                    </div>
+                    <p className={styles.itemTotal}>{formatPrice(item.totalPrice)}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.totalsSection}>
+                <div className={styles.totalRow}>
+                  <span>{tCart('subtotal')}</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                {hasReferralDiscount && (
+                  <div className={`${styles.totalRow} ${styles.discountRow}`}>
+                    <span>🎁 {t('referralDiscount')}</span>
+                    <span>-{formatPrice(referralDiscount)}</span>
+                  </div>
+                )}
+                <div className={styles.totalRow}>
+                  <span>{tCart('shipping')}</span>
+                  <span className={styles.shippingNote}>{tCart('calculatedAtCheckout')}</span>
+                </div>
+                <div className={styles.grandTotal}>
+                  <span>{tCart('total')}</span>
+                  <span>{formatPrice(subtotal - referralDiscount)}</span>
+                </div>
+                {hasReferralDiscount && (
+                  <div className={styles.referralBanner}>
+                    🎉 {t('referralApplied')}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Checkout Action */}
+            <div className={styles.actionSection}>
+              <div className={styles.actionCard}>
+                <h2 className={styles.sectionTitle}>{t('secureCheckout')}</h2>
+                
+                <p className={styles.checkoutDescription}>
+                  {t('checkoutDescription')}
+                </p>
+
+                <div className={styles.paymentMethods}>
+                  <span className={styles.paymentLabel}>{t('acceptedPayments')}</span>
+                  <div className={styles.paymentIcons}>
+                    <span>💳 Card</span>
+                    <span>🏦 SEPA</span>
+                    <span>Klarna</span>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className={styles.errorMessage}>
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  className={styles.checkoutButton}
+                  onClick={handleCheckout}
+                  disabled={isLoading}
+                >
+                  {isLoading ? t('processing') : t('proceedToPayment')}
+                </button>
+
+                <p className={styles.securityNote}>
+                  🔒 {t('securityNote')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

@@ -1,0 +1,49 @@
+.switcher {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(61, 43, 31, 0.06);
+  border-radius: 100px;
+  padding: 0.25rem;
+}
+
+[data-brand="tea"] .switcher {
+  background: rgba(58, 90, 64, 0.06);
+}
+
+.button {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.button.active {
+  background: var(--color-warm-white);
+  color: var(--color-primary);
+  cursor: default;
+}
+
+.button:disabled {
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .switcher {
+    padding: 0.2rem;
+  }
+  
+  .button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}

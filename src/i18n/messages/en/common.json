@@ -1,0 +1,329 @@
+{
+  "meta": {
+    "title": "Marie Lou Coffee | Freshly Roasted, Directly Sourced",
+    "description": "We roast to order, source directly from farmers, and deliver within days of roasting."
+  },
+  "nav": {
+    "ourStory": "Our Story",
+    "shop": "Shop Coffee",
+    "howItWorks": "How It Works",
+    "contact": "Contact",
+    "cart": "Cart"
+  },
+  "hero": {
+    "badge": "Roasted with purpose, priced with transparency",
+    "title": "Coffee the way my grandmother made it.",
+    "titleEmphasis": "Fresh, honest, made with love.",
+    "description": "We roast to order, pay farmers fairly, and put every cent on the table. No middlemen. No secrets. Just exceptional coffee that makes a real difference.",
+    "shopCta": "Shop Fresh Coffee",
+    "storyCta": "Our Story"
+  },
+  "freshness": {
+    "roastedTitle": "Roasted to Order",
+    "roastedDescription": "We only roast after you order. Your coffee is never sitting on a shelf — it goes from roaster to your door within days, at peak freshness.",
+    "farmersTitle": "Farmers First",
+    "farmersDescription": "We buy directly from producers we've personally visited. They earn 3-4x more than the commodity market pays. We show you exactly where your money goes.",
+    "loveTitle": "Crafted with Love",
+    "loveDescription": "Every batch is roasted on machines I built myself — low-cost, solar-powered, and precision-controlled. No expensive overhead means more money for the people who grow your coffee."
+  },
+  "story": {
+    "title": "The Story Behind",
+    "brand": "Marie Lou",
+    "paragraph1": "Marie Lou was my grandmother. She loved nothing more than an afternoon coffee with the people she cared about — making sure everyone felt welcome, comfortable, and loved.",
+    "paragraph2": "As a child, my job was to brew the coffee in her old French press. I didn't know it then, but those afternoons shaped everything.",
+    "paragraph3": "When she passed away while I was traveling through coffee-growing regions of Africa and Asia, I made a promise: to honor her by caring for others the way she did.",
+    "paragraph4": "Marie Lou Coffee is that promise — exceptional coffee that puts farmers first, transparency above profit, and love into every cup.",
+    "signature": "— Marcel",
+    "readMore": "Read the Full Story"
+  },
+  "products": {
+    "badge": "Freshly Roasted",
+    "title": "Our Fresh Roasts",
+    "subtitle": "Each coffee is roasted specifically for your order. Select your favorite and taste the difference freshness makes.",
+    "description": "Each coffee is roasted specifically for your order. Select your favorite and taste the difference freshness makes.",
+    "addToCart": "Add to Cart",
+    "added": "Added ✓",
+    "viewAll": "View All Products"
+  },
+  "process": {
+    "badge": "How It Works",
+    "title": "From Order to Cup",
+    "description": "Our process ensures you always receive the freshest coffee possible",
+    "step1": {
+      "title": "You Order",
+      "description": "Choose your favorite beans and place your order. We don't roast until we hear from you."
+    },
+    "step2": {
+      "title": "We Roast",
+      "description": "Within 24 hours, your beans are roasted on our handbuilt machine with precision and care."
+    },
+    "step3": {
+      "title": "We Ship",
+      "description": "Your freshly roasted coffee ships the next day, with the roast date printed on every bag."
+    },
+    "step4": {
+      "title": "You Enjoy",
+      "description": "Receive coffee at peak freshness — usually within 3-5 days of roasting. Taste the difference."
+    }
+  },
+  "testimonials": {
+    "badge": "Customer Love",
+    "title": "What Coffee Lovers Say",
+    "description": "Join hundreds of happy customers who've discovered the Marie Lou difference",
+    "testimonial1": {
+      "quote": "The freshest coffee I've ever had delivered to my door. You can really taste the difference when it's roasted just days before.",
+      "name": "Sarah M.",
+      "location": "Berlin, Germany"
+    },
+    "testimonial2": {
+      "quote": "I love knowing exactly where my money goes. The transparent pricing and direct farmer relationships make every cup meaningful.",
+      "name": "Thomas K.",
+      "location": "Munich, Germany"
+    },
+    "testimonial3": {
+      "quote": "Finally, coffee that tastes as good as it smells! The Ethiopia Yirgacheffe is absolutely incredible.",
+      "name": "Emma L.",
+      "location": "Hamburg, Germany"
+    }
+  },
+  "newsletter": {
+    "badge": "Stay Updated",
+    "title": "Join the Marie Lou Family",
+    "description": "Get early access to new roasts, brewing tips, and exclusive offers. We promise to only send the good stuff.",
+    "placeholder": "Enter your email",
+    "button": "Subscribe",
+    "subscribe": "Subscribe",
+    "success": "Thanks for subscribing!",
+    "error": "Something went wrong. Please try again.",
+    "privacy": "We respect your privacy. Unsubscribe anytime."
+  },
+  "footer": {
+    "tagline": "Small-batch, freshly roasted coffee delivered to your door. Because life's too short for stale coffee.",
+    "shop": "Shop",
+    "allCoffee": "All Coffee",
+    "singleOrigins": "Single Origins",
+    "blends": "Blends",
+    "subscriptions": "Subscriptions",
+    "learn": "Learn",
+    "ourStory": "Our Story",
+    "referralProgram": "Refer a Friend",
+    "brewingGuides": "Brewing Guides",
+    "coffeeJournal": "Coffee Journal",
+    "faq": "FAQ",
+    "connect": "Connect",
+    "instagram": "Instagram",
+    "contactUs": "Contact Us",
+    "wholesale": "Wholesale",
+    "press": "Press",
+    "copyright": "© 2026 Marie Lou Coffee. Roasted with love.",
+    "forYouOma": "For you, Grandma ♥"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "close": "Close cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "calculatedAtCheckout": "Calculated at checkout",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "remove": "Remove",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "shippingNote": "Free shipping on orders over €49",
+    "clear": "Clear cart"
+  },
+  "common": {
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "perUnit": "per"
+  },
+  "storyPage": {
+    "title": "For You, Grandma",
+    "subtitle": "The story of Marie Lou Coffee — a promise made, a mission born.",
+    "imageAlt": "Marcel, founder of Marie Lou Coffee",
+    "intro": {
+      "title": "An Afternoon with Marie Lou",
+      "p1": "My grandmother's name was Maria Louise, but everyone called her Marie Lou.",
+      "p2": "Every afternoon, without exception, she invited someone over for coffee. A neighbor. A friend. Sometimes a stranger who just needed someone to talk to. Her kitchen table was where people came to feel welcome, to feel heard, to feel loved.",
+      "p3": "As a small child, I was given an important job: brewing the coffee. I'd carefully measure the grounds into her old French press, pour the hot water, and wait — watching the dark liquid slowly steep. Those afternoons taught me something that would shape my entire life."
+    },
+    "world": {
+      "title": "The World Beyond",
+      "p1": "Years later, I traveled the world with my girlfriend. We visited coffee and tea growing regions in Africa and Asia — Ethiopia, Kenya, Indonesia, Vietnam.",
+      "p2": "We met farmers who worked from sunrise to sunset, picking coffee cherries by hand in the heat. Families living in conditions we couldn't have imagined. Children whose futures were largely determined by where they happened to be born.",
+      "p3": "We saw the disconnect: the coffee I was paying €15 for in Munich came from people earning a fraction of that price. The supply chain was designed to extract value at every step. I couldn't stop thinking: how is this okay?"
+    },
+    "promise": {
+      "title": "A Promise Made",
+      "p1": "While we were traveling, I received the call that changed everything. Marie Lou had passed away.",
+      "p2": "Sitting in a small guesthouse thousands of miles from home, I thought about her kitchen table. About all those afternoons. About how she spent her life making sure the people around her felt cared for.",
+      "quote": "I made a promise: to find a way to care for people the way she did — not just the people I could see, but the ones growing the coffee I love."
+    },
+    "innovation": {
+      "title": "A Different Kind of Coffee Company",
+      "roasters": {
+        "title": "Built My Own Roasters",
+        "description": "Using sensors, microcontrollers, and machine learning, I designed low-cost roasters that produce consistently perfect results. They run on renewable electricity and cost a fraction of commercial equipment."
+      },
+      "direct": {
+        "title": "Eliminated the Middlemen",
+        "description": "I buy directly from farmers I've personally visited. No importers. No commodity markets. Direct relationships based on trust and fair prices."
+      },
+      "noMarketing": {
+        "title": "No Marketing Waste",
+        "description": "No expensive packaging. No celebrity endorsements. No social media ad campaigns. Just good coffee and honest communication."
+      },
+      "fairPay": {
+        "title": "Fair, Not Excessive",
+        "description": "I'm not trying to build a unicorn startup. I'm trying to make great coffee that helps real people. All of this means more money goes to the farmers."
+      }
+    },
+    "closing": {
+      "title": "This One's For You, Oma",
+      "p1": "My grandmother never met the farmers who grow Marie Lou Coffee. But I think she would have loved them. I think she would have invited them to her kitchen table, poured them a cup, and made them feel like the most important people in the world.",
+      "p2": "We all need more happiness in our lives. More connection. More moments where we feel like someone cares. So when you're drinking your coffee tomorrow morning, I hope you think about Marie Lou.",
+      "signature": "— Marcel"
+    }
+  },
+  "shopPage": {
+    "title": "Shop Fresh Coffee",
+    "subtitle": "Every bag is roasted to order and shipped within days. Taste the difference freshness makes."
+  },
+  "productPage": {
+    "selectVariant": "Select grind type",
+    "quantity": "Quantity",
+    "details": "Product Details",
+    "roastLevel": "Roast Level",
+    "process": "Process",
+    "altitude": "Altitude",
+    "variety": "Variety",
+    "teaType": "Tea Type",
+    "caffeine": "Caffeine",
+    "steepTime": "Steep Time",
+    "temperature": "Temperature"
+  },
+  "cartPage": {
+    "emptyDescription": "Looks like you haven't added anything yet. Browse our fresh roasts and find your new favorite.",
+    "orderSummary": "Order Summary"
+  },
+  "checkoutPage": {
+    "title": "Checkout",
+    "backToCart": "Back to Cart",
+    "orderSummary": "Order Summary",
+    "secureCheckout": "Secure Checkout",
+    "checkoutDescription": "You'll be redirected to our secure payment partner Stripe to complete your purchase. We accept all major cards, SEPA direct debit, and Klarna.",
+    "acceptedPayments": "We accept:",
+    "proceedToPayment": "Proceed to Payment",
+    "processing": "Processing...",
+    "securityNote": "Your payment information is encrypted and secure",
+    "referralDiscount": "Referral Discount (10%)",
+    "referralApplied": "Referral discount applied! Your friend will receive a free bag when your order is confirmed."
+  },
+  "checkoutSuccess": {
+    "title": "Thank You!",
+    "message": "Your order has been placed successfully.",
+    "emailConfirmation": "You'll receive a confirmation email with your order details shortly.",
+    "roastingInfo": "We'll start roasting your beans fresh within 24 hours.",
+    "shippingInfo": "Expect delivery within 3-5 business days.",
+    "continueShopping": "Continue Shopping",
+    "backToHome": "Back to Home",
+    "signature": "— Marcel & the Marie Lou team"
+  },
+  "faqPage": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about Marie Lou Coffee",
+    "contactTitle": "Still have questions?",
+    "contactDescription": "We're here to help. Drop us an email and we'll get back to you within 24 hours.",
+    "contactButton": "Contact Us",
+    "categories": {
+      "ordering": {
+        "title": "Ordering & Payment",
+        "q1": "How do I place an order?",
+        "a1": "Simply browse our shop, select your favorite coffee and grind type, add it to your cart, and proceed to checkout. We accept all major credit cards, SEPA direct debit, and Klarna.",
+        "q2": "When will my coffee be roasted?",
+        "a2": "We roast your coffee within 24 hours of receiving your order. We never pre-roast or stock coffee — every bag is made fresh just for you.",
+        "q3": "Can I modify or cancel my order?",
+        "a3": "If your order hasn't been roasted yet, we can usually make changes. Please contact us as soon as possible at hello@marieloucoffee.com."
+      },
+      "shipping": {
+        "title": "Shipping & Delivery",
+        "q1": "How long does shipping take?",
+        "a1": "Standard shipping within Germany takes 2-4 business days. EU shipping typically takes 3-7 business days. Your coffee is shipped the day after roasting.",
+        "q2": "How much does shipping cost?",
+        "a2": "Shipping within Germany is €4.95, free on orders over €49. EU shipping is €9.95, free on orders over €75. Switzerland shipping is €14.95.",
+        "q3": "Do you ship internationally?",
+        "a3": "We currently ship to Germany, Austria, Switzerland, Netherlands, Belgium, France, Italy, Spain, Poland, Czech Republic, Denmark, and Sweden."
+      },
+      "coffee": {
+        "title": "About Our Coffee",
+        "q1": "How fresh is your coffee?",
+        "a1": "Very fresh! We roast your coffee specifically for your order and ship it the next day. You'll typically receive it within 3-5 days of roasting — at peak freshness.",
+        "q2": "What grind options do you offer?",
+        "a2": "We offer whole bean, filter grind, espresso grind, French press grind, and moka pot grind. If you're unsure, whole bean is always the freshest option.",
+        "q3": "How should I store my coffee?",
+        "a3": "Keep your coffee in an airtight container at room temperature, away from light and moisture. Don't refrigerate or freeze it. Best consumed within 4-6 weeks of roasting."
+      },
+      "returns": {
+        "title": "Returns & Refunds",
+        "q1": "What if I don't like my coffee?",
+        "a1": "We want you to love your coffee! If you're not satisfied, contact us within 14 days and we'll make it right — whether that's a replacement, store credit, or refund.",
+        "q2": "Can I return an opened bag?",
+        "a2": "Yes! If the taste isn't what you expected, we'll still work with you. We believe in our coffee and want every customer to be happy."
+      }
+    }
+  },
+  "referralLanding": {
+    "eyebrow": "Your friend thinks you'll love this",
+    "title": "Welcome to Marie Lou Coffee",
+    "subtitle": "Fresh-roasted coffee that pays farmers fairly. No middlemen. Full transparency.",
+    "bannerTitle": "You've been invited to the table!",
+    "bannerText": "As a friend of the family, get 10% off your first order.",
+    "shopNow": "Shop Now with 10% Off",
+    "promiseTitle": "Why Marie Lou?",
+    "promiseItem1Title": "Fresh Roasted",
+    "promiseItem1Text": "We roast your coffee after you order — never before. Peak freshness, every time.",
+    "promiseItem2Title": "Direct Trade",
+    "promiseItem2Text": "We source directly from farmers, paying them 3-4x market prices.",
+    "promiseItem3Title": "Made with Love",
+    "promiseItem3Text": "Every bag is crafted with the same care my grandmother put into her afternoon coffee.",
+    "quote": "Coffee the way it should be. Fresh, honest, made with love.",
+    "readStory": "Read Our Story",
+    "finalCtaTitle": "Ready to taste the difference?",
+    "finalCtaText": "Your 10% discount is already applied. Just shop and enjoy!",
+    "startShopping": "Start Shopping"
+  },
+  "referralProgram": {
+    "title": "Marie Lou's Table",
+    "subtitle": "Pull up a chair for a friend",
+    "introText1": "My grandmother Marie Lou never drank her coffee alone. Her kitchen table was always set for one more — a neighbor, a friend, sometimes someone she'd just met. Everyone was welcome.",
+    "introText2": "That's what this referral program is about. When you invite someone to try Marie Lou Coffee, you're not just sharing a product — you're inviting them to a table where quality matters, farmers are treated fairly, and every cup is made with love.",
+    "howItWorks": "How It Works",
+    "step1Title": "Share Your Link",
+    "step1Text": "Every Marie Lou customer gets a unique referral link. Share it with friends, family, colleagues — anyone who deserves better coffee.",
+    "step2Title": "They Get 10% Off",
+    "step2Text": "When your friend uses your link, they'll get 10% off their first order. A warm welcome to the table.",
+    "step3Title": "You Get a Free Bag",
+    "step3Text": "Once their order is confirmed, we'll send you a free bag of coffee — picked randomly from our current selection. A thank-you from us.",
+    "detailsTitle": "The Details",
+    "forYouTitle": "For You (the referrer)",
+    "referrerBenefit1": "Get 1 free bag (250g) for each friend who orders",
+    "referrerBenefit2": "No limit — refer 10 friends, get 10 bags",
+    "referrerBenefit3": "Choose to add it to your next order or ship separately (€4.95)",
+    "referrerBenefit4": "Your reward never expires",
+    "forFriendTitle": "For Your Friend",
+    "friendBenefit1": "10% off their first order",
+    "friendBenefit2": "Minimum order: €25 (before shipping)",
+    "friendBenefit3": "Valid for 90 days",
+    "whyRandomTitle": "Why a Random Bag?",
+    "whyRandomText1": "We could let you choose, but where's the fun in that?",
+    "whyRandomText2": "The random bag is a little gift, a surprise, a chance to try something you might not have picked yourself. Maybe you'll discover your new favorite. Maybe it'll be an old friend. Either way, it's our way of saying thank you for spreading the word.",
+    "ctaTitle": "Get Your Referral Link",
+    "ctaText": "Log in to your account to get your unique referral link.",
+    "ctaShopNow": "Shop Now",
+    "ctaNote": "Not a customer yet? Shop now and you'll get your link after your first order.",
+    "closingText": "There's always room at Marie Lou's table."
+  }
+}

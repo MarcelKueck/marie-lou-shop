@@ -1,0 +1,280 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: white;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-accent-light);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: var(--transition-base);
+  border-radius: 8px;
+}
+
+.closeButton:hover {
+  background: var(--color-bg-warm);
+  color: var(--color-primary);
+}
+
+/* Empty state */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: var(--color-accent);
+  margin-bottom: 1.5rem;
+}
+
+.empty p {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+/* Items list */
+.items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+.item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-accent-light);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-bg-warm);
+  flex-shrink: 0;
+}
+
+.itemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-accent-light), var(--color-primary-light));
+}
+
+.itemDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemDetails h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemVariant {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.itemPrice {
+  font-weight: 600;
+  color: var(--color-primary-medium);
+  font-size: 0.95rem;
+}
+
+.itemActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-warm);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.quantity button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-primary);
+  transition: var(--transition-base);
+}
+
+.quantity button:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+}
+
+.quantity button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity span {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-light);
+  transition: var(--transition-base);
+  padding: 0.35rem;
+  border-radius: 6px;
+}
+
+.removeButton:hover {
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.1);
+}
+
+/* Footer */
+.footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-accent-light);
+  background: var(--color-bg-warm);
+}
+
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.subtotal span:first-child {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+.subtotalValue {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.shipping {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 1.5rem;
+}
+
+.checkoutButton {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.clearButton {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.clearButton:hover {
+  color: #e53e3e;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .drawer {
+    max-width: 100%;
+  }
+}
