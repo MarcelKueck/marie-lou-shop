@@ -8,7 +8,8 @@
     "shop": "Kaffee kaufen",
     "howItWorks": "So funktioniert's",
     "contact": "Kontakt",
-    "cart": "Warenkorb"
+    "cart": "Warenkorb",
+    "account": "Konto"
   },
   "hero": {
     "badge": "Geröstet mit Überzeugung, transparent im Preis",
@@ -325,5 +326,110 @@
     "ctaShopNow": "Jetzt einkaufen",
     "ctaNote": "Noch kein Kunde? Jetzt einkaufen und du bekommst deinen Link nach deiner ersten Bestellung.",
     "closingText": "Am Tisch von Marie Lou ist immer Platz."
+  },
+  "account": {
+    "title": "Mein Konto",
+    "loading": "Wird geladen...",
+    "welcome": "Willkommen, {name}",
+    "logout": "Abmelden",
+    "tabs": {
+      "orders": "Bestellungen",
+      "profile": "Profil",
+      "referrals": "Empfehlungen"
+    },
+    "orders": {
+      "empty": "Noch keine Bestellungen",
+      "emptyDescription": "Wenn du deine erste Bestellung aufgibst, erscheint sie hier.",
+      "shopNow": "Jetzt einkaufen",
+      "orderNumber": "Bestellung",
+      "total": "Gesamt",
+      "tracking": "Sendungsverfolgung",
+      "viewDetails": "Details anzeigen",
+      "placedOn": "Bestellt am",
+      "items": "Artikel",
+      "summary": "Zusammenfassung",
+      "subtotal": "Zwischensumme",
+      "shipping": "Versand",
+      "freeShipping": "Kostenlos",
+      "shippingAddress": "Lieferadresse",
+      "shippedOn": "Versendet am",
+      "deliveredOn": "Geliefert am",
+      "trackingNumber": "Sendungsnummer",
+      "downloadInvoice": "Rechnung herunterladen",
+      "downloadingInvoice": "Wird heruntergeladen...",
+      "invoiceError": "Fehler beim Herunterladen der Rechnung. Bitte versuche es erneut.",
+      "status": {
+        "pending": "Ausstehend",
+        "paid": "Bezahlt",
+        "processing": "In Bearbeitung",
+        "shipped": "Versendet",
+        "delivered": "Geliefert",
+        "cancelled": "Storniert"
+      }
+    },
+    "backToAccount": "Zurück zum Konto",
+    "profile": {
+      "title": "Profil",
+      "email": "E-Mail",
+      "name": "Name",
+      "phone": "Telefon",
+      "memberSince": "Mitglied seit",
+      "noPhone": "Nicht angegeben"
+    },
+    "referral": {
+      "quickStats": "Empfehlungsstatistik",
+      "successfulReferrals": "Erfolgreiche Empfehlungen",
+      "totalEarned": "Insgesamt verdient",
+      "yourCode": "Dein Empfehlungscode",
+      "shareCode": "Teile diesen Code mit Freunden",
+      "friendsGet": "Freunde erhalten {percent}% Rabatt auf ihre erste Bestellung",
+      "shareLink": "Dein Teilen-Link",
+      "copy": "Kopieren",
+      "copied": "Kopiert!",
+      "stats": "Deine Empfehlungsstatistik",
+      "totalClicks": "Link-Klicks",
+      "pendingRewards": "Ausstehende Belohnungen",
+      "howItWorks": "So funktioniert's",
+      "step1": "Teile deinen einzigartigen Code oder Link mit Freunden",
+      "step2": "Sie erhalten 10% Rabatt auf ihre erste Bestellung",
+      "step3": "Du bekommst eine Gratistüte wenn sie kaufen!",
+      "noCode": "Du hast noch keinen Empfehlungscode. Er wird nach deinem ersten Kauf erstellt."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melde dich bei deinem Marie Lou Konto an",
+      "submit": "Anmelden",
+      "noAccount": "Noch kein Konto?",
+      "createAccount": "Erstelle eins"
+    },
+    "register": {
+      "title": "Konto erstellen",
+      "subtitle": "Werde Teil der Marie Lou Familie",
+      "submit": "Konto erstellen",
+      "hasAccount": "Bereits ein Konto?",
+      "loginInstead": "Anmelden"
+    },
+    "fields": {
+      "email": "E-Mail",
+      "password": "Passwort",
+      "firstName": "Vorname",
+      "lastName": "Nachname"
+    },
+    "placeholders": {
+      "email": "deine@email.de",
+      "password": "••••••••",
+      "firstName": "Marie",
+      "lastName": "Lou"
+    },
+    "hints": {
+      "password": "Mindestens 8 Zeichen"
+    },
+    "loading": "Bitte warten...",
+    "error": {
+      "generic": "Etwas ist schief gelaufen. Bitte versuche es erneut."
+    },
+    "backToShop": "← Zurück zum Shop"
   }
 }

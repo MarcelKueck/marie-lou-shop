@@ -23,6 +23,10 @@
 .logo {
   filter: brightness(0) invert(1);
   opacity: 0.95;
+  width: 240px;
+  height: auto;
+  max-height: 160px;
+  object-fit: contain;
 }
 
 .column h4 {

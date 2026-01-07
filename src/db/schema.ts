@@ -7,6 +7,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 export const customers = sqliteTable('customers', {
   id: text('id').primaryKey(),
   email: text('email').notNull().unique(),
+  passwordHash: text('password_hash'), // Optional - only set when customer creates account
   firstName: text('first_name'),
   lastName: text('last_name'),
   phone: text('phone'),
@@ -56,7 +57,7 @@ export const orders = sqliteTable('orders', {
   currency: text('currency').notNull().default('EUR'),
   // Payment
   stripePaymentIntentId: text('stripe_payment_intent_id'),
-  stripeSessionId: text('stripe_session_id'),
+  stripeSessionId: text('stripe_session_id').unique(),
   paymentStatus: text('payment_status').notNull().default('pending'),
   paidAt: integer('paid_at', { mode: 'timestamp' }),
   // Fulfillment
@@ -65,6 +66,10 @@ export const orders = sqliteTable('orders', {
   deliveredAt: integer('delivered_at', { mode: 'timestamp' }),
   trackingNumber: text('tracking_number'),
   trackingUrl: text('tracking_url'),
+  // Invoice
+  invoiceNumber: text('invoice_number'),
+  invoiceId: text('invoice_id'), // External invoice ID from rechnungs-api
+  invoiceGeneratedAt: integer('invoice_generated_at', { mode: 'timestamp' }),
   // Notes
   customerNotes: text('customer_notes'),
   internalNotes: text('internal_notes'),
@@ -126,6 +131,14 @@ export const contactSubmissions = sqliteTable('contact_submissions', {
   subject: text('subject'),
   message: text('message').notNull(),
   status: text('status').notNull().default('new'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+// Sessions table for persistent authentication
+export const sessions = sqliteTable('sessions', {
+  id: text('id').primaryKey(), // The session token
+  customerId: text('customer_id').notNull().references(() => customers.id),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
@@ -211,6 +224,9 @@ export type NewNewsletter = typeof newsletters.$inferInsert;
 
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type NewContactSubmission = typeof contactSubmissions.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
 
 export type ReferralCode = typeof referralCodes.$inferSelect;
 export type NewReferralCode = typeof referralCodes.$inferInsert;

@@ -18,10 +18,9 @@ export default function Footer() {
           <Image
             src={brand.logo}
             alt={`${brand.name} Logo`}
-            width={60}
-            height={60}
+            width={240}
+            height={240}
             className={styles.logo}
-            style={{ width: 'auto', height: 'auto' }}
           />
           <p>{t('tagline')}</p>
         </div>

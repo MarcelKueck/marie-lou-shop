@@ -8,7 +8,8 @@
     "shop": "Shop Coffee",
     "howItWorks": "How It Works",
     "contact": "Contact",
-    "cart": "Cart"
+    "cart": "Cart",
+    "account": "Account"
   },
   "hero": {
     "badge": "Roasted with purpose, priced with transparency",
@@ -325,5 +326,111 @@
     "ctaShopNow": "Shop Now",
     "ctaNote": "Not a customer yet? Shop now and you'll get your link after your first order.",
     "closingText": "There's always room at Marie Lou's table."
+  },
+  "account": {
+    "title": "My Account",
+    "loading": "Loading...",
+    "welcome": "Welcome, {name}",
+    "logout": "Log out",
+    "tabs": {
+      "orders": "Orders",
+      "profile": "Profile",
+      "referrals": "Referrals"
+    },
+    "profile": {
+      "title": "Profile",
+      "email": "Email",
+      "name": "Name",
+      "phone": "Phone",
+      "memberSince": "Member since"
+    },
+    "orders": {
+      "empty": "No orders yet",
+      "emptyDescription": "When you place your first order, it will appear here.",
+      "shopNow": "Shop Now",
+      "orderNumber": "Order",
+      "total": "Total",
+      "tracking": "Tracking",
+      "viewDetails": "View Details",
+      "placedOn": "Placed on",
+      "items": "Items",
+      "summary": "Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "freeShipping": "Free",
+      "shippingAddress": "Shipping Address",
+      "shippedOn": "Shipped on",
+      "deliveredOn": "Delivered on",
+      "trackingNumber": "Tracking number",
+      "downloadInvoice": "Download Invoice",
+      "downloadingInvoice": "Downloading...",
+      "invoiceError": "Failed to download invoice. Please try again.",
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
+    },
+    "backToAccount": "Back to Account",
+    "referral": {
+      "quickStats": "Referral Stats",
+      "successfulReferrals": "Successful Referrals",
+      "totalEarned": "Total Earned",
+      "freeBagsEarned": "Free Bags Earned",
+      "yourCode": "Your Referral Code",
+      "shareCode": "Share this code with friends",
+      "friendsGet": "Friends get {percent}% off their first order",
+      "shareLink": "Your Share Link",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "stats": "Your Referral Statistics",
+      "totalClicks": "Link Clicks",
+      "pendingRewards": "Pending Rewards",
+      "howItWorks": "How It Works",
+      "step1": "Share your unique code or link with friends",
+      "step2": "They get 10% off their first order",
+      "step3": "You get a free bag when they buy!",
+      "noCodeTitle": "No Referral Code Yet",
+      "noCode": "Your referral code will be created after your first purchase."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Log in to your Marie Lou account",
+      "submit": "Log In",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create one"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the Marie Lou family",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "loginInstead": "Log in"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "firstName": "First Name",
+      "lastName": "Last Name"
+    },
+    "placeholders": {
+      "email": "your@email.com",
+      "password": "••••••••",
+      "firstName": "Marie",
+      "lastName": "Lou"
+    },
+    "hints": {
+      "password": "At least 8 characters"
+    },
+    "loading": "Please wait...",
+    "error": {
+      "generic": "Something went wrong. Please try again."
+    },
+    "backToShop": "← Back to shop"
   }
 }

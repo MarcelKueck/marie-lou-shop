@@ -15,12 +15,44 @@ interface NavigationProps {
 
 export default function Navigation({ onCartClick }: NavigationProps) {
   const t = useTranslations('nav');
+  const tAccount = useTranslations('account');
   const { brand } = useBrand();
   const { itemCount } = useCart();
   const pathname = usePathname();
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Authentication state for header
+  const [user, setUser] = useState<{ name?: string } | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchMe() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && data?.customer) {
+          setUser({ name: data.customer.name ?? data.customer.email });
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    fetchMe();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } finally {
+      setUser(null);
+      // reload to clear any server-side session state
+      window.location.href = '/';
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,10 +92,9 @@ export default function Navigation({ onCartClick }: NavigationProps) {
         <Image
           src={brand.logo}
           alt={`${brand.name} Logo`}
-          width={96}
-          height={96}
+          width={112}
+          height={112}
           priority
-          style={{ width: 'auto', height: 'auto' }}
         />
       </Link>
 
@@ -97,6 +128,24 @@ export default function Navigation({ onCartClick }: NavigationProps) {
 
       <div className={styles.navActions}>
         <LanguageSwitcher />
+
+        {/* Account / Login link - visible in header so users can register/login */}
+        {user ? (
+          <div className={styles.accountStatus}>
+            <Link href="/account" className={styles.accountName}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              {user.name}
+            </Link>
+            <button className={styles.logoutButton} onClick={handleLogout}>{tAccount('logout')}</button>
+          </div>
+        ) : (
+          <Link href="/account/login" className={styles.accountLink}>
+            {t('account') || 'Account'}
+          </Link>
+        )}
         
         <button className={styles.cartButton} onClick={handleCartClick}>
           <svg
@@ -132,6 +181,10 @@ export default function Navigation({ onCartClick }: NavigationProps) {
               <Link href={link.href} onClick={handleLinkClick}>{link.label}</Link>
             </li>
           ))}
+          {/* Add account link to mobile menu as well */}
+          <li>
+            <Link href="/account/login" onClick={handleLinkClick}>{t('account') || 'Account'}</Link>
+          </li>
         </ul>
       </div>
     </nav>

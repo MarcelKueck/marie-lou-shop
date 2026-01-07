@@ -5,10 +5,11 @@ import { getProductsByBrand } from '@/config/products';
 // ============================================================================
 
 /**
- * Generate a unique, memorable referral code
+ * Generate a unique, memorable referral code (simple version without DB check)
  * Format: MARIE-XXXXX (5 alphanumeric characters, no ambiguous ones)
+ * For DB-unique code generation, use generateUniqueReferralCode from referral-server.ts
  */
-export function generateReferralCode(): string {
+export function generateReferralCodeSimple(): string {
   // Avoid ambiguous characters: 0/O, 1/I/L
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   let code = '';
@@ -16,6 +17,14 @@ export function generateReferralCode(): string {
     code += chars[Math.floor(Math.random() * chars.length)];
   }
   return `MARIE-${code}`;
+}
+
+/**
+ * Generate share link
+ */
+export function generateShareLink(code: string): string {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://marieloucoffee.com';
+  return `${baseUrl}/ref/${code}`;
 }
 
 /**
