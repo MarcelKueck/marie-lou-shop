@@ -278,3 +278,50 @@
     max-width: 100%;
   }
 }
+
+/* Free reward items */
+.freeItem {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.1));
+  border-radius: 12px;
+  margin: 0 -0.5rem;
+  padding: 1rem 0.5rem !important;
+}
+
+.itemImage {
+  position: relative;
+}
+
+.freeBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #4CAF50;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.freePrice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.free {
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.rewardQty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

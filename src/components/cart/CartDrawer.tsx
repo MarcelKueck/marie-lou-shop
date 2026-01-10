@@ -58,6 +58,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   const calculateTotal = () => {
     return items.reduce((total, item) => {
+      // Free rewards don't count towards total
+      if (item.isFreeReward) return total;
       const details = getCartItemDetails(item.productId, item.variantId);
       if (!details) return total;
       return total + details.price * item.quantity;
@@ -107,36 +109,53 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 const { product, variant, price } = details;
 
                 return (
-                  <div key={`${item.productId}-${item.variantId}`} className={styles.item}>
+                  <div key={`${item.productId}-${item.variantId}`} className={`${styles.item} ${item.isFreeReward ? styles.freeItem : ''}`}>
                     <div className={styles.itemImage}>
                       {product.image ? (
                         <Image src={product.image} alt={product.name[locale]} width={80} height={80} />
                       ) : (
                         <div className={styles.itemPlaceholder} />
                       )}
+                      {item.isFreeReward && (
+                        <span className={styles.freeBadge}>FREE</span>
+                      )}
                     </div>
                     <div className={styles.itemDetails}>
                       <h3>{product.name[locale]}</h3>
                       <p className={styles.itemVariant}>{variant.name[locale]}</p>
-                      <p className={styles.itemPrice}>{formatPrice(price)}</p>
+                      <p className={styles.itemPrice}>
+                        {item.isFreeReward ? (
+                          <span className={styles.freePrice}>
+                            <span className={styles.strikethrough}>{formatPrice(price)}</span>
+                            <span className={styles.free}>{locale === 'de' ? 'Gratis' : 'Free'}</span>
+                          </span>
+                        ) : (
+                          formatPrice(price)
+                        )}
+                      </p>
                     </div>
                     <div className={styles.itemActions}>
-                      <div className={styles.quantity}>
-                        <button
-                          onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
-                          aria-label={t('decrease')}
-                          disabled={item.quantity <= 1}
-                        >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                          aria-label={t('increase')}
-                        >
-                          +
-                        </button>
-                      </div>
+                      {!item.isFreeReward && (
+                        <div className={styles.quantity}>
+                          <button
+                            onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
+                            aria-label={t('decrease')}
+                            disabled={item.quantity <= 1}
+                          >
+                            −
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
+                            aria-label={t('increase')}
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                      {item.isFreeReward && (
+                        <span className={styles.rewardQty}>×1</span>
+                      )}
                       <button
                         onClick={() => removeItem(item.productId, item.variantId)}
                         className={styles.removeButton}

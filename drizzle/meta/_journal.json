@@ -15,6 +15,20 @@
       "when": 1767803050636,
       "tag": "0001_known_hardball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1768036124950,
+      "tag": "0002_small_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1768040162639,
+      "tag": "0003_large_garia",
+      "breakpoints": true
     }
   ]
 }

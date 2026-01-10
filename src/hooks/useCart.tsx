@@ -209,7 +209,11 @@ export function CartProvider({ children }: CartProviderProps) {
 
   const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const subtotal = itemsWithProducts.reduce((sum, item) => sum + item.totalPrice, 0);
+  // Subtotal excludes free reward items
+  const subtotal = itemsWithProducts.reduce((sum, item) => {
+    if (item.isFreeReward) return sum;
+    return sum + item.totalPrice;
+  }, 0);
 
   return (
     <CartContext.Provider

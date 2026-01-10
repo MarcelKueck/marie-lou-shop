@@ -31,6 +31,8 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   const formatPrice = (cents: number) => {
     return new Intl.NumberFormat(locale === 'de' ? 'de-DE' : 'en-US', {
@@ -47,6 +49,24 @@ export default function CheckoutPage() {
     }
   }, []);
 
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setIsLoggedIn(!!data.customer);
+        }
+      } catch {
+        setIsLoggedIn(false);
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
   // Redirect to cart if empty
   useEffect(() => {
     if (items.length === 0) {
@@ -54,9 +74,10 @@ export default function CheckoutPage() {
     }
   }, [items.length, locale, router]);
 
-  // Calculate referral discount
-  const hasReferralDiscount = referralCode && subtotal >= REFERRAL_MINIMUM_ORDER;
-  const referralDiscount = hasReferralDiscount 
+  // Calculate referral discount - only if logged in AND has referral code
+  const hasReferralCode = !!referralCode && subtotal >= REFERRAL_MINIMUM_ORDER;
+  const canApplyReferralDiscount = hasReferralCode && isLoggedIn;
+  const referralDiscount = canApplyReferralDiscount 
     ? Math.round(subtotal * (REFERRAL_DISCOUNT_PERCENT / 100)) 
     : 0;
 
@@ -117,7 +138,7 @@ export default function CheckoutPage() {
               
               <div className={styles.itemsList}>
                 {itemsWithProducts.map((item) => (
-                  <div key={`${item.productId}-${item.variantId}`} className={styles.summaryItem}>
+                  <div key={`${item.productId}-${item.variantId}`} className={`${styles.summaryItem} ${item.isFreeReward ? styles.freeItem : ''}`}>
                     <div className={styles.itemImage}>
                       {item.product.image ? (
                         <Image
@@ -129,13 +150,22 @@ export default function CheckoutPage() {
                       ) : (
                         <div className={styles.imagePlaceholder} />
                       )}
+                      {item.isFreeReward && (
+                        <span className={styles.freeBadge}>🎁</span>
+                      )}
                     </div>
                     <div className={styles.itemInfo}>
                       <h3>{item.product.name[locale]}</h3>
                       <p>{item.variant.name[locale]}</p>
                       <p className={styles.itemQuantity}>× {item.quantity}</p>
                     </div>
-                    <p className={styles.itemTotal}>{formatPrice(item.totalPrice)}</p>
+                    <p className={styles.itemTotal}>
+                      {item.isFreeReward ? (
+                        <span className={styles.freePrice}>{locale === 'de' ? 'Gratis' : 'Free'}</span>
+                      ) : (
+                        formatPrice(item.totalPrice)
+                      )}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -145,7 +175,7 @@ export default function CheckoutPage() {
                   <span>{tCart('subtotal')}</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
-                {hasReferralDiscount && (
+                {canApplyReferralDiscount && (
                   <div className={`${styles.totalRow} ${styles.discountRow}`}>
                     <span>🎁 {t('referralDiscount')}</span>
                     <span>-{formatPrice(referralDiscount)}</span>
@@ -159,9 +189,17 @@ export default function CheckoutPage() {
                   <span>{tCart('total')}</span>
                   <span>{formatPrice(subtotal - referralDiscount)}</span>
                 </div>
-                {hasReferralDiscount && (
+                {canApplyReferralDiscount && (
                   <div className={styles.referralBanner}>
                     🎉 {t('referralApplied')}
+                  </div>
+                )}
+                {hasReferralCode && !isLoggedIn && !checkingAuth && (
+                  <div className={styles.referralLoginBanner}>
+                    🎁 {t('referralLoginRequired')}
+                    <Link href="/account/login" className={styles.referralLoginLink}>
+                      {t('loginOrRegister')}
+                    </Link>
                   </div>
                 )}
               </div>

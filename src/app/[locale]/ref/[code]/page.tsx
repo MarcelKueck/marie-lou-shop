@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { useBrand } from '@/hooks/useBrand';
-import { REFERRAL_COOKIE_NAME, REFERRAL_COOKIE_MAX_AGE } from '@/lib/referral';
+import { REFERRAL_COOKIE_NAME, REFERRAL_COOKIE_MAX_AGE, isValidReferralCodeFormat } from '@/lib/referral';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import styles from './referral-landing.module.css';
@@ -16,17 +16,87 @@ interface ReferralLandingPageProps {
 
 export default function ReferralLandingPage({ params }: ReferralLandingPageProps) {
   const { brand } = useBrand();
-  useLocale(); // Needed for locale detection
+  const locale = useLocale();
   const t = useTranslations('referralLanding');
+  const [isValidCode, setIsValidCode] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Store the referral code in a cookie for later use at checkout
+  // Validate and store the referral code
   useEffect(() => {
-    const storeReferralCode = async () => {
+    const validateAndStoreCode = async () => {
       const { code } = await params;
-      document.cookie = `${REFERRAL_COOKIE_NAME}=${code}; max-age=${REFERRAL_COOKIE_MAX_AGE}; path=/; samesite=lax`;
+      
+      // First check format
+      if (!isValidReferralCodeFormat(code)) {
+        setIsValidCode(false);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Validate against database
+      try {
+        const response = await fetch(`/api/referral/validate?code=${encodeURIComponent(code)}`);
+        const data = await response.json();
+        
+        if (data.valid) {
+          // Store valid code in cookie
+          document.cookie = `${REFERRAL_COOKIE_NAME}=${code.toUpperCase()}; max-age=${REFERRAL_COOKIE_MAX_AGE}; path=/; samesite=lax`;
+          setIsValidCode(true);
+        } else {
+          setIsValidCode(false);
+        }
+      } catch {
+        // On error, still store the code - backend will validate at checkout
+        document.cookie = `${REFERRAL_COOKIE_NAME}=${code.toUpperCase()}; max-age=${REFERRAL_COOKIE_MAX_AGE}; path=/; samesite=lax`;
+        setIsValidCode(true);
+      }
+      
+      setIsLoading(false);
     };
-    storeReferralCode();
+    validateAndStoreCode();
   }, [params]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className={`theme-${brand.id}`}>
+        <Navigation />
+        <main className={styles.main}>
+          <div className={styles.loading}>
+            {locale === 'de' ? 'Code wird überprüft...' : 'Validating code...'}
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show invalid code message
+  if (isValidCode === false) {
+    return (
+      <div className={`theme-${brand.id}`}>
+        <Navigation />
+        <main className={styles.main}>
+          <section className={styles.hero}>
+            <div className={styles.heroContent}>
+              <h1 className={styles.title}>
+                {locale === 'de' ? 'Ungültiger Empfehlungscode' : 'Invalid Referral Code'}
+              </h1>
+              <p className={styles.subtitle}>
+                {locale === 'de' 
+                  ? 'Dieser Empfehlungscode ist leider nicht gültig oder abgelaufen.' 
+                  : 'This referral code is not valid or has expired.'}
+              </p>
+              <Link href="/shop" className={styles.ctaButton}>
+                {locale === 'de' ? 'Zum Shop' : 'Go to Shop'}
+              </Link>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className={`theme-${brand.id}`}>

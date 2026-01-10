@@ -148,6 +148,29 @@
   text-align: center;
 }
 
+.referralLoginBanner {
+  background: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #92400e);
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.referralLoginLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.referralLoginLink:hover {
+  color: var(--color-primary-dark);
+}
+
 .grandTotal {
   display: flex;
   justify-content: space-between;
@@ -248,4 +271,25 @@
   .actionSection {
     position: static;
   }
+}
+
+/* Free reward items */
+.freeItem {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.1));
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin: -0.5rem;
+}
+
+.freeBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.875rem;
+  z-index: 1;
+}
+
+.freePrice {
+  color: #4CAF50;
+  font-weight: 700;
 }

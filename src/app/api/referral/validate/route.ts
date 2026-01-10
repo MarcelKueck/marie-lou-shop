@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isValidReferralCodeFormat } from '@/lib/referral';
+import { isValidReferralCodeFormat, REFERRAL_DISCOUNT_PERCENT } from '@/lib/referral';
+import { db } from '@/db';
+import { referralCodes } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * GET /api/referral/validate?code=MARIE-XXXXX
@@ -25,28 +28,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // TODO: Check if code exists in database
-    // For now, we'll accept any valid format code
-    // In production, this would query the referralCodes table
+    // Check if code exists in database and is active
+    const referralCode = await db.query.referralCodes.findFirst({
+      where: and(
+        eq(referralCodes.code, code.toUpperCase()),
+        eq(referralCodes.active, true)
+      ),
+    });
     
-    // const referralCode = await db.query.referralCodes.findFirst({
-    //   where: and(
-    //     eq(referralCodes.code, code.toUpperCase()),
-    //     eq(referralCodes.active, true)
-    //   ),
-    // });
-    
-    // if (!referralCode) {
-    //   return NextResponse.json(
-    //     { valid: false, error: 'Code not found or inactive' },
-    //     { status: 404 }
-    //   );
-    // }
+    if (!referralCode) {
+      return NextResponse.json(
+        { valid: false, error: 'Code not found or inactive' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       valid: true,
       code: code.toUpperCase(),
-      discount: 10, // 10% discount
+      discount: REFERRAL_DISCOUNT_PERCENT,
       message: 'Referral code validated successfully',
     });
   } catch (error) {

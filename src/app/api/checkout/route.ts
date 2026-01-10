@@ -9,11 +9,17 @@ import {
   REFERRAL_DISCOUNT_PERCENT,
   REFERRAL_MINIMUM_ORDER 
 } from '@/lib/referral';
+import { db } from '@/db';
+import { referralCodes } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { getCurrentCustomer } from '@/lib/auth';
 
 interface CartItem {
   productId: string;
   variantId: string;
   quantity: number;
+  isFreeReward?: boolean;
+  rewardId?: string;
 }
 
 interface CheckoutRequest {
@@ -38,6 +44,7 @@ export async function POST(request: NextRequest) {
     // Build line items for Stripe
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
     let subtotal = 0;
+    const rewardIds: string[] = [];
 
     for (const item of items) {
       const product = getProductById(item.productId);
@@ -57,24 +64,53 @@ export async function POST(request: NextRequest) {
       }
 
       const unitPrice = product.basePrice + variant.priceModifier;
-      subtotal += unitPrice * item.quantity;
-
-      lineItems.push({
-        price_data: {
-          currency: 'eur',
-          product_data: {
-            name: `${product.name[locale]} - ${variant.name[locale]}`,
-            description: product.notes[locale],
-            images: product.image ? [`${process.env.NEXT_PUBLIC_BASE_URL}${product.image}`] : undefined,
-            metadata: {
-              productId: product.id,
-              variantId: variant.id,
+      
+      // Free rewards don't count towards subtotal but are still included as line items
+      if (item.isFreeReward) {
+        if (item.rewardId) {
+          rewardIds.push(item.rewardId);
+        }
+        
+        lineItems.push({
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `🎁 FREE: ${product.name[locale]} - ${variant.name[locale]}`,
+              description: locale === 'de' 
+                ? 'Referral-Belohnung - Gratistüte Kaffee'
+                : 'Referral Reward - Free bag of coffee',
+              images: product.image ? [`${process.env.NEXT_PUBLIC_BASE_URL}${product.image}`] : undefined,
+              metadata: {
+                productId: product.id,
+                variantId: variant.id,
+                isFreeReward: 'true',
+                rewardId: item.rewardId || '',
+              },
             },
+            unit_amount: 0, // Free!
           },
-          unit_amount: unitPrice,
-        },
-        quantity: item.quantity,
-      });
+          quantity: item.quantity,
+        });
+      } else {
+        subtotal += unitPrice * item.quantity;
+
+        lineItems.push({
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `${product.name[locale]} - ${variant.name[locale]}`,
+              description: product.notes[locale],
+              images: product.image ? [`${process.env.NEXT_PUBLIC_BASE_URL}${product.image}`] : undefined,
+              metadata: {
+                productId: product.id,
+                variantId: variant.id,
+              },
+            },
+            unit_amount: unitPrice,
+          },
+          quantity: item.quantity,
+        });
+      }
     }
 
     // Check and apply referral discount
@@ -82,15 +118,27 @@ export async function POST(request: NextRequest) {
     let validReferralCode: string | undefined;
     
     if (referralCode && isValidReferralCodeFormat(referralCode)) {
-      // TODO: In production, verify code exists in database
-      // const codeRecord = await db.query.referralCodes.findFirst({
-      //   where: and(eq(referralCodes.code, referralCode.toUpperCase()), eq(referralCodes.active, true))
-      // });
+      // Verify code exists in database and is active
+      const codeRecord = await db.query.referralCodes.findFirst({
+        where: and(
+          eq(referralCodes.code, referralCode.toUpperCase()),
+          eq(referralCodes.active, true)
+        )
+      });
       
-      // For now, accept any valid format code
-      if (subtotal >= REFERRAL_MINIMUM_ORDER) {
-        discountAmount = calculateReferralDiscount(subtotal);
-        validReferralCode = referralCode.toUpperCase();
+      if (codeRecord && subtotal >= REFERRAL_MINIMUM_ORDER) {
+        // Check if user is logged in (has an account)
+        const customer = await getCurrentCustomer();
+        
+        if (customer) {
+          // User has an account - apply the discount
+          // Make sure they're not using their own referral code
+          if (codeRecord.customerId !== customer.id) {
+            discountAmount = calculateReferralDiscount(subtotal);
+            validReferralCode = referralCode.toUpperCase();
+          }
+        }
+        // If not logged in, discount won't apply - they need to create an account
       }
     }
 
@@ -111,31 +159,45 @@ export async function POST(request: NextRequest) {
       discounts.push({ coupon: coupon.id });
     }
 
-    // Get shipping options
+    // Get shipping options - account for free shipping thresholds
     const zone = countryCode
       ? getShippingZoneByCountry(countryCode) || getDefaultShippingZone()
       : getDefaultShippingZone();
 
-    const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = zone.methods.map(method => ({
-      shipping_rate_data: {
-        type: 'fixed_amount',
-        fixed_amount: {
-          amount: method.price,
-          currency: 'eur',
-        },
-        display_name: method.name[locale],
-        delivery_estimate: {
-          minimum: {
-            unit: 'business_day',
-            value: method.estimatedDays.min,
+    const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = zone.methods.map(method => {
+      // Check if order qualifies for free shipping
+      const qualifiesForFreeShipping = method.freeAbove && subtotal >= method.freeAbove;
+      const shippingAmount = qualifiesForFreeShipping ? 0 : method.price;
+      
+      // Build display name with free shipping indication
+      let displayName = method.name[locale];
+      if (qualifiesForFreeShipping) {
+        displayName = locale === 'de' 
+          ? `${displayName} (Kostenlos ab €${(method.freeAbove! / 100).toFixed(0)})`
+          : `${displayName} (Free over €${(method.freeAbove! / 100).toFixed(0)})`;
+      }
+      
+      return {
+        shipping_rate_data: {
+          type: 'fixed_amount' as const,
+          fixed_amount: {
+            amount: shippingAmount,
+            currency: 'eur',
           },
-          maximum: {
-            unit: 'business_day',
-            value: method.estimatedDays.max,
+          display_name: displayName,
+          delivery_estimate: {
+            minimum: {
+              unit: 'business_day' as const,
+              value: method.estimatedDays.min,
+            },
+            maximum: {
+              unit: 'business_day' as const,
+              value: method.estimatedDays.max,
+            },
           },
         },
-      },
-    }));
+      };
+    });
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -154,6 +216,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         locale,
         referralCode: validReferralCode || '',
+        rewardIds: rewardIds.length > 0 ? rewardIds.join(',') : '',
       },
     });
 

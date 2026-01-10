@@ -48,6 +48,15 @@ export async function POST(request: NextRequest) {
       case 'payment_intent.payment_failed':
         await handlePaymentFailed(event.data.object as Stripe.PaymentIntent);
         break;
+      case 'charge.refunded':
+        await handleChargeRefunded(event.data.object as Stripe.Charge);
+        break;
+      // These events are related to refunds but we handle everything in charge.refunded
+      case 'refund.created':
+      case 'refund.updated':
+      case 'charge.refund.updated':
+        // Silently acknowledge - we handle refund logic in charge.refunded
+        break;
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -73,7 +82,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   // Retrieve the full session to get customer and shipping details
-  const fullSession = await stripe.checkout.sessions.retrieve(session.id);
+  const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+    expand: ['customer_details', 'line_items', 'shipping_cost'],
+  }) as Stripe.Checkout.Session;
 
   // Expand line items
   const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
@@ -143,8 +154,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Generate order number
   const orderNumber = generateOrderNumber();
 
-  // Get shipping info - shipping_details has the shipping address, fallback to customer_details
-  const shipping = fullSession.shipping_details;
+  // Get shipping info - collected_information.shipping_details has the shipping address in newer Stripe API
+  // Also check for shipping_details at root level for backwards compatibility
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sessionAny = fullSession as any;
+  const shipping = sessionAny.collected_information?.shipping_details || sessionAny.shipping_details;
   const customerAddress = fullSession.customer_details?.address;
   const shippingCost = fullSession.shipping_cost?.amount_total ?? 0;
   
@@ -239,6 +253,29 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     });
   }
 
+  // Mark any claimed rewards as used
+  const rewardIds = session.metadata?.rewardIds;
+  if (rewardIds) {
+    const ids = rewardIds.split(',').filter(Boolean);
+    for (const rewardId of ids) {
+      try {
+        await db.update(referralRewards)
+          .set({
+            status: REWARD_STATUS.CLAIMED,
+            claimedOrderId: orderId,
+            claimedAt: now,
+          })
+          .where(and(
+            eq(referralRewards.id, rewardId),
+            eq(referralRewards.status, REWARD_STATUS.PENDING)
+          ));
+        console.log(`Reward ${rewardId} marked as claimed with order ${orderId}`);
+      } catch (error) {
+        console.error(`Failed to mark reward ${rewardId} as claimed:`, error);
+      }
+    }
+  }
+
   // Process referral if code was used
   if (referralCodeUsed) {
     await processReferralReward(referralCodeUsed, customer.id, orderId, email, subtotal, now);
@@ -292,6 +329,37 @@ async function processReferralReward(
   if (existingReferral) {
     console.log(`Customer ${referredEmail} was already referred`);
     return;
+  }
+
+  // === ABUSE PREVENTION ===
+  // Check referrer's refund rate before granting reward
+  // If too many of their referrals resulted in refunds, suspend rewards
+  const abuseCheck = await checkReferrerAbusePattern(referralCode.customerId);
+  
+  if (abuseCheck.isSuspicious) {
+    console.log(`Referrer ${referralCode.customerId} flagged for abuse: ${abuseCheck.reason}`);
+    console.log(`Referral recorded but reward withheld pending review`);
+    
+    // Still create the referral record (for tracking) but don't give reward
+    const referralId = crypto.randomUUID();
+    await db.insert(referrals).values({
+      id: referralId,
+      referrerCodeId: referralCode.id,
+      referrerId: referralCode.customerId,
+      referredId: referredCustomerId,
+      referredEmail: referredEmail.toLowerCase(),
+      status: REFERRAL_STATUS.QUALIFIED, // Qualified but no reward
+      qualifyingOrderId: orderId,
+      createdAt: now,
+      qualifiedAt: now,
+    });
+    
+    // Update usage count
+    await db.update(referralCodes)
+      .set({ timesUsed: referralCode.timesUsed + 1 })
+      .where(eq(referralCodes.id, referralCode.id));
+    
+    return; // Exit without creating reward
   }
 
   // Create referral record
@@ -349,6 +417,93 @@ async function processReferralReward(
   }
 }
 
+/**
+ * Check if a referrer shows abuse patterns (high refund rate among their referrals)
+ * 
+ * Rules:
+ * - Admin can mark customer as "trusted" to bypass all checks
+ * - Admin can mark customer as "suspended" to permanently block rewards
+ * - If referrer has 3+ referrals AND 50%+ resulted in refunds → suspicious
+ * - If referrer has 2+ refunded referrals in the last 30 days → suspicious
+ * - First-time referrers always get benefit of the doubt
+ */
+async function checkReferrerAbusePattern(referrerId: string): Promise<{ isSuspicious: boolean; reason: string }> {
+  // First check admin overrides on the customer record
+  const customer = await db.query.customers.findFirst({
+    where: eq(customers.id, referrerId),
+  });
+
+  if (!customer) {
+    return { isSuspicious: true, reason: 'Referrer customer not found' };
+  }
+
+  // Admin override: trusted customers bypass all abuse checks
+  if (customer.referralTrusted) {
+    console.log(`Referrer ${referrerId} is marked as trusted by admin - bypassing abuse checks`);
+    return { isSuspicious: false, reason: '' };
+  }
+
+  // Admin override: suspended customers never get rewards
+  if (customer.referralSuspended) {
+    return { 
+      isSuspicious: true, 
+      reason: `Referrer suspended by admin${customer.referralNotes ? `: ${customer.referralNotes}` : ''}` 
+    };
+  }
+
+  // Get all referrals made by this referrer
+  const referrerReferrals = await db.query.referrals.findMany({
+    where: eq(referrals.referrerId, referrerId),
+  });
+
+  if (referrerReferrals.length < 3) {
+    // Not enough data to determine abuse - give benefit of the doubt
+    return { isSuspicious: false, reason: '' };
+  }
+
+  // Check how many of their referred orders got refunded
+  let refundedCount = 0;
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  let recentRefundCount = 0;
+
+  for (const referral of referrerReferrals) {
+    if (referral.qualifyingOrderId) {
+      const order = await db.query.orders.findFirst({
+        where: eq(orders.id, referral.qualifyingOrderId),
+      });
+      
+      if (order?.status === 'refunded') {
+        refundedCount++;
+        
+        // Check if refund was recent
+        if (order.updatedAt && order.updatedAt > thirtyDaysAgo) {
+          recentRefundCount++;
+        }
+      }
+    }
+  }
+
+  const refundRate = refundedCount / referrerReferrals.length;
+
+  // Rule 1: High overall refund rate (50%+ with at least 3 referrals)
+  if (refundRate >= 0.5) {
+    return {
+      isSuspicious: true,
+      reason: `High refund rate: ${refundedCount}/${referrerReferrals.length} (${Math.round(refundRate * 100)}%) referrals refunded`,
+    };
+  }
+
+  // Rule 2: Multiple recent refunds (2+ in last 30 days)
+  if (recentRefundCount >= 2) {
+    return {
+      isSuspicious: true,
+      reason: `Multiple recent refunds: ${recentRefundCount} referrals refunded in last 30 days`,
+    };
+  }
+
+  return { isSuspicious: false, reason: '' };
+}
+
 function selectRandomProduct() {
   const coffeeProducts = allProducts.filter(p => p.brand === 'coffee');
   
@@ -387,4 +542,51 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
       })
       .where(eq(orders.id, order.id));
   }
+}
+
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  console.log('Processing charge.refunded:', charge.id);
+  
+  const paymentIntentId = charge.payment_intent as string;
+  if (!paymentIntentId) {
+    console.log('No payment intent on charge, skipping');
+    return;
+  }
+
+  // Find the order associated with this payment
+  const order = await db.query.orders.findFirst({
+    where: eq(orders.stripePaymentIntentId, paymentIntentId),
+  });
+
+  if (!order) {
+    console.log(`No order found for payment intent ${paymentIntentId}`);
+    return;
+  }
+
+  // Update order status
+  const now = new Date();
+  await db.update(orders)
+    .set({
+      paymentStatus: 'refunded',
+      status: 'refunded',
+      updatedAt: now,
+    })
+    .where(eq(orders.id, order.id));
+
+  console.log(`Order ${order.orderNumber} marked as refunded`);
+
+  // Generate refund invoice (Gutschrift/Credit Note)
+  try {
+    const { generateRefundInvoiceForOrder } = await import('@/lib/invoice');
+    const { invoiceId, invoiceNumber } = await generateRefundInvoiceForOrder(order.id);
+    console.log(`Refund invoice ${invoiceNumber} (${invoiceId}) generated for order ${order.orderNumber}`);
+  } catch (error) {
+    console.error(`Failed to generate refund invoice for order ${order.orderNumber}:`, error);
+  }
+
+  // NOTE: We intentionally do NOT revoke the referrer's reward when a refund happens.
+  // The referrer still gets their free bag because we acquired a new registered user,
+  // which has value even if that user later refunds their first order.
+  // The referred customer's discount has already been used and is not recoverable.
+  console.log(`Referrer reward (if any) preserved despite refund - new user registration has value`);
 }

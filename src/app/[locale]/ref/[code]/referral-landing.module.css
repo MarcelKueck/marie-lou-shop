@@ -2,6 +2,16 @@
   min-height: 100vh;
 }
 
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+}
+
 /* Hero Section */
 .hero {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark, var(--color-primary)) 100%);

@@ -45,7 +45,7 @@ export function getReferralLink(code: string, baseUrl: string): string {
 // Referral Discount Constants
 // ============================================================================
 
-export const REFERRAL_DISCOUNT_PERCENT = 10; // 10% off for referred friends
+export const REFERRAL_DISCOUNT_PERCENT = 20; // 20% off for referred friends
 export const REFERRAL_MINIMUM_ORDER = 2500; // €25.00 minimum order (in cents)
 export const REFERRAL_LINK_EXPIRY_DAYS = 90; // Links expire after 90 days
 export const REFERRAL_SEPARATE_SHIPPING_COST = 495; // €4.95 to ship reward separately
@@ -147,11 +147,11 @@ export function generateShareLinks(
 ): ShareLinks {
   const messages = {
     en: {
-      text: "I've been enjoying fresh-roasted coffee from Marie Lou Coffee. Use my link for 10% off your first order!",
+      text: "I've been enjoying fresh-roasted coffee from Marie Lou Coffee. Use my link for 20% off your first order!",
       subject: "Coffee recommendation for you",
     },
     de: {
-      text: "Ich genieße frisch gerösteten Kaffee von Marie Lou Coffee. Nutze meinen Link für 10% Rabatt auf deine erste Bestellung!",
+      text: "Ich genieße frisch gerösteten Kaffee von Marie Lou Coffee. Nutze meinen Link für 20% Rabatt auf deine erste Bestellung!",
       subject: "Kaffeeempfehlung für dich",
     },
   };

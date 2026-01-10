@@ -1,9 +1,62 @@
 import { db } from '@/db';
-import { referralCodes, referrals, referralRewards, customers } from '@/db/schema';
+import { referralCodes, referrals, referralRewards, customers, orders } from '@/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import styles from './referrals.module.css';
+import ReferrerActions from './ReferrerActions';
 
 export const dynamic = 'force-dynamic';
+
+// Helper function to get referrer abuse stats
+async function getReferrerAbuseStats() {
+  const allReferralCodes = await db.select().from(referralCodes);
+
+  const referrerStats = await Promise.all(
+    allReferralCodes.map(async (code) => {
+      const customer = await db.query.customers.findFirst({
+        where: eq(customers.id, code.customerId),
+      });
+      
+      if (!customer) return null;
+
+      const customerReferrals = await db.select().from(referrals)
+        .where(eq(referrals.referrerId, customer.id));
+
+      let refundedCount = 0;
+      const totalReferrals = customerReferrals.length;
+
+      for (const referral of customerReferrals) {
+        if (referral.qualifyingOrderId) {
+          const order = await db.query.orders.findFirst({
+            where: eq(orders.id, referral.qualifyingOrderId),
+          });
+          if (order?.status === 'refunded') {
+            refundedCount++;
+          }
+        }
+      }
+
+      const refundRate = totalReferrals > 0 ? refundedCount / totalReferrals : 0;
+      const isFlagged = totalReferrals >= 3 && refundRate >= 0.5;
+
+      return {
+        customerId: customer.id,
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        referralCode: code.code,
+        totalReferrals,
+        refundedCount,
+        refundRate: Math.round(refundRate * 100),
+        isFlagged,
+        isTrusted: customer.referralTrusted || false,
+        isSuspended: customer.referralSuspended || false,
+        notes: customer.referralNotes,
+      };
+    })
+  );
+
+  return referrerStats.filter((r): r is NonNullable<typeof r> => r !== null);
+}
 
 export default async function AdminReferralsPage() {
   // Get overall stats
@@ -56,6 +109,12 @@ export default async function AdminReferralsPage() {
     .limit(20);
 
   const stats = overallStats[0] || { totalCodes: 0, totalReferrals: 0, totalRewards: 0, pendingRewards: 0 };
+
+  // Get abuse stats for the management section
+  const abuseStats = await getReferrerAbuseStats();
+  const flaggedReferrers = abuseStats.filter(r => r.isFlagged && !r.isTrusted && !r.isSuspended);
+  const suspendedReferrers = abuseStats.filter(r => r.isSuspended);
+  const trustedReferrers = abuseStats.filter(r => r.isTrusted);
 
   return (
     <div className={styles.container}>
@@ -172,6 +231,157 @@ export default async function AdminReferralsPage() {
             )}
           </tbody>
         </table>
+      </section>
+
+      {/* Abuse Prevention Management */}
+      <section className={styles.section}>
+        <h2>🛡️ Abuse Prevention</h2>
+        <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.875rem' }}>
+          Manage referrers who may be exploiting the referral program. Flagged referrers have a high refund rate among their referrals.
+        </p>
+        
+        {/* Stats Summary */}
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ 
+            padding: '0.75rem 1rem', 
+            background: flaggedReferrers.length > 0 ? '#fffbeb' : '#f3f4f6', 
+            borderRadius: '8px',
+            border: flaggedReferrers.length > 0 ? '1px solid #f59e0b' : '1px solid #e5e5e5'
+          }}>
+            <strong style={{ color: flaggedReferrers.length > 0 ? '#92400e' : '#374151' }}>
+              {flaggedReferrers.length}
+            </strong>
+            <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#666' }}>Flagged</span>
+          </div>
+          <div style={{ padding: '0.75rem 1rem', background: '#ecfdf5', borderRadius: '8px', border: '1px solid #10b981' }}>
+            <strong style={{ color: '#065f46' }}>{trustedReferrers.length}</strong>
+            <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#666' }}>Trusted</span>
+          </div>
+          <div style={{ padding: '0.75rem 1rem', background: '#fef2f2', borderRadius: '8px', border: '1px solid #ef4444' }}>
+            <strong style={{ color: '#b91c1c' }}>{suspendedReferrers.length}</strong>
+            <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: '#666' }}>Suspended</span>
+          </div>
+        </div>
+
+        {flaggedReferrers.length > 0 && (
+          <>
+            <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', color: '#92400e' }}>⚠️ Needs Review</h3>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Referrer</th>
+                  <th>Code</th>
+                  <th>Referrals</th>
+                  <th>Refunded</th>
+                  <th>Rate</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {flaggedReferrers.map((referrer) => (
+                  <tr key={referrer.customerId}>
+                    <td>
+                      <div>
+                        <strong>{referrer.firstName} {referrer.lastName}</strong>
+                        <br />
+                        <span style={{ fontSize: '0.75rem', color: '#666' }}>{referrer.email}</span>
+                      </div>
+                    </td>
+                    <td className={styles.code}>{referrer.referralCode}</td>
+                    <td>{referrer.totalReferrals}</td>
+                    <td>{referrer.refundedCount}</td>
+                    <td style={{ color: '#ef4444', fontWeight: 600 }}>{referrer.refundRate}%</td>
+                    <td>
+                      <ReferrerActions 
+                        customerId={referrer.customerId} 
+                        isTrusted={referrer.isTrusted}
+                        isSuspended={referrer.isSuspended}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {suspendedReferrers.length > 0 && (
+          <>
+            <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', color: '#b91c1c' }}>🚫 Suspended</h3>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Referrer</th>
+                  <th>Code</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {suspendedReferrers.map((referrer) => (
+                  <tr key={referrer.customerId}>
+                    <td>
+                      <strong>{referrer.firstName} {referrer.lastName}</strong>
+                      <br />
+                      <span style={{ fontSize: '0.75rem', color: '#666' }}>{referrer.email}</span>
+                    </td>
+                    <td className={styles.code}>{referrer.referralCode}</td>
+                    <td style={{ fontSize: '0.875rem', color: '#666' }}>{referrer.notes || '-'}</td>
+                    <td>
+                      <ReferrerActions 
+                        customerId={referrer.customerId} 
+                        isTrusted={referrer.isTrusted}
+                        isSuspended={referrer.isSuspended}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {trustedReferrers.length > 0 && (
+          <>
+            <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', color: '#065f46' }}>✅ Trusted</h3>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Referrer</th>
+                  <th>Code</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {trustedReferrers.map((referrer) => (
+                  <tr key={referrer.customerId}>
+                    <td>
+                      <strong>{referrer.firstName} {referrer.lastName}</strong>
+                      <br />
+                      <span style={{ fontSize: '0.75rem', color: '#666' }}>{referrer.email}</span>
+                    </td>
+                    <td className={styles.code}>{referrer.referralCode}</td>
+                    <td style={{ fontSize: '0.875rem', color: '#666' }}>{referrer.notes || '-'}</td>
+                    <td>
+                      <ReferrerActions 
+                        customerId={referrer.customerId} 
+                        isTrusted={referrer.isTrusted}
+                        isSuspended={referrer.isSuspended}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {flaggedReferrers.length === 0 && suspendedReferrers.length === 0 && trustedReferrers.length === 0 && (
+          <p style={{ color: '#666', textAlign: 'center', padding: '2rem' }}>
+            No referrers require attention at this time.
+          </p>
+        )}
       </section>
     </div>
   );

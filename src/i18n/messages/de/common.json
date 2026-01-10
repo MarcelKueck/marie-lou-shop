@@ -220,8 +220,10 @@
     "proceedToPayment": "Zur Zahlung",
     "processing": "Wird verarbeitet...",
     "securityNote": "Deine Zahlungsdaten sind verschlüsselt und sicher",
-    "referralDiscount": "Empfehlungsrabatt (10%)",
-    "referralApplied": "Empfehlungsrabatt angewendet! Dein Freund erhält eine Gratistüte, sobald deine Bestellung bestätigt ist."
+    "referralDiscount": "Empfehlungsrabatt (20%)",
+    "referralApplied": "Empfehlungsrabatt angewendet! Dein Freund erhält eine Gratistüte, sobald deine Bestellung bestätigt ist.",
+    "referralLoginRequired": "Melde dich an oder erstelle ein Konto, um deinen 20% Empfehlungsrabatt zu erhalten!",
+    "loginOrRegister": "Anmelden / Konto erstellen"
   },
   "checkoutSuccess": {
     "title": "Vielen Dank!",
@@ -281,8 +283,8 @@
     "title": "Willkommen bei Marie Lou Coffee",
     "subtitle": "Frisch gerösteter Kaffee, der Bauern fair bezahlt. Keine Zwischenhändler. Volle Transparenz.",
     "bannerTitle": "Du bist an den Tisch eingeladen!",
-    "bannerText": "Als Freund der Familie bekommst du 10% Rabatt auf deine erste Bestellung.",
-    "shopNow": "Jetzt mit 10% Rabatt einkaufen",
+    "bannerText": "Als Freund der Familie bekommst du 20% Rabatt auf deine erste Bestellung.",
+    "shopNow": "Jetzt mit 20% Rabatt einkaufen",
     "promiseTitle": "Warum Marie Lou?",
     "promiseItem1Title": "Frisch geröstet",
     "promiseItem1Text": "Wir rösten deinen Kaffee erst nach deiner Bestellung — niemals vorher. Immer auf dem Höhepunkt der Frische.",
@@ -293,7 +295,7 @@
     "quote": "Kaffee, wie er sein sollte. Frisch, ehrlich, mit Liebe gemacht.",
     "readStory": "Unsere Geschichte lesen",
     "finalCtaTitle": "Bereit, den Unterschied zu schmecken?",
-    "finalCtaText": "Dein 10% Rabatt ist bereits aktiviert. Einfach einkaufen und genießen!",
+    "finalCtaText": "Dein 20% Rabatt ist bereits aktiviert. Einfach einkaufen und genießen!",
     "startShopping": "Jetzt einkaufen"
   },
   "referralProgram": {
@@ -304,8 +306,8 @@
     "howItWorks": "So funktioniert's",
     "step1Title": "Teile deinen Link",
     "step1Text": "Jeder Marie Lou Kunde bekommt einen einzigartigen Empfehlungslink. Teile ihn mit Freunden, Familie, Kollegen — allen, die besseren Kaffee verdienen.",
-    "step2Title": "Sie bekommen 10% Rabatt",
-    "step2Text": "Wenn dein Freund deinen Link nutzt, bekommt er 10% Rabatt auf seine erste Bestellung. Ein herzliches Willkommen am Tisch.",
+    "step2Title": "Sie bekommen 20% Rabatt",
+    "step2Text": "Wenn dein Freund deinen Link nutzt, bekommt er 20% Rabatt auf seine erste Bestellung. Ein herzliches Willkommen am Tisch.",
     "step3Title": "Du bekommst eine Gratistüte",
     "step3Text": "Sobald die Bestellung bestätigt ist, schicken wir dir eine kostenlose Tüte Kaffee — zufällig aus unserem aktuellen Sortiment ausgewählt. Ein Dankeschön von uns.",
     "detailsTitle": "Die Details",
@@ -315,7 +317,7 @@
     "referrerBenefit3": "Zu deiner nächsten Bestellung hinzufügen oder separat versenden (€4,95)",
     "referrerBenefit4": "Deine Belohnung läuft nie ab",
     "forFriendTitle": "Für deinen Freund",
-    "friendBenefit1": "10% Rabatt auf die erste Bestellung",
+    "friendBenefit1": "20% Rabatt auf die erste Bestellung",
     "friendBenefit2": "Mindestbestellwert: €25 (vor Versand)",
     "friendBenefit3": "90 Tage gültig",
     "whyRandomTitle": "Warum eine zufällige Tüte?",
@@ -364,7 +366,42 @@
         "processing": "In Bearbeitung",
         "shipped": "Versendet",
         "delivered": "Geliefert",
-        "cancelled": "Storniert"
+        "cancelled": "Storniert",
+        "refunded": "Erstattet"
+      },
+      "refund": {
+        "title": "Rückgabe & Erstattung",
+        "submitted": "Deine Erstattungsanfrage wurde eingereicht. Wir werden sie prüfen und uns innerhalb von 1-2 Werktagen bei dir melden.",
+        "requests": "Deine Erstattungsanfragen",
+        "reason": "Grund",
+        "response": "Antwort",
+        "refunded": "Erstattet",
+        "alreadyRefunded": "Diese Bestellung wurde bereits erstattet.",
+        "eligible": "Diese Bestellung ist für eine Erstattung berechtigt.",
+        "daysRemaining": "Noch {days} Tage im Rückgabefenster",
+        "requestButton": "Erstattung anfordern",
+        "pendingNote": "Du hast bereits eine ausstehende Erstattungsanfrage für diese Bestellung.",
+        "notEligible": "Diese Bestellung ist nicht mehr für eine Erstattung berechtigt (14-tägiges Rückgabefenster abgelaufen).",
+        "reasonLabel": "Grund für die Erstattung",
+        "selectReason": "Wähle einen Grund...",
+        "detailsLabel": "Zusätzliche Details (optional)",
+        "detailsPlaceholder": "Bitte gib zusätzliche Informationen an, die uns bei der Bearbeitung deiner Anfrage helfen können...",
+        "submitting": "Wird gesendet...",
+        "submit": "Anfrage senden",
+        "reasons": {
+          "not_satisfied": "Nicht zufrieden mit dem Produkt",
+          "damaged": "Produkt kam beschädigt an",
+          "wrong_item": "Falschen Artikel erhalten",
+          "never_arrived": "Bestellung nie angekommen",
+          "changed_mind": "Meine Meinung geändert",
+          "other": "Sonstiges"
+        },
+        "status": {
+          "pending": "In Prüfung",
+          "approved": "Genehmigt",
+          "processed": "Erstattet",
+          "denied": "Abgelehnt"
+        }
       }
     },
     "backToAccount": "Zurück zum Konto",
@@ -380,6 +417,7 @@
       "quickStats": "Empfehlungsstatistik",
       "successfulReferrals": "Erfolgreiche Empfehlungen",
       "totalEarned": "Insgesamt verdient",
+      "freeBagsEarned": "Gratistüten verdient",
       "yourCode": "Dein Empfehlungscode",
       "shareCode": "Teile diesen Code mit Freunden",
       "friendsGet": "Freunde erhalten {percent}% Rabatt auf ihre erste Bestellung",
@@ -391,9 +429,16 @@
       "pendingRewards": "Ausstehende Belohnungen",
       "howItWorks": "So funktioniert's",
       "step1": "Teile deinen einzigartigen Code oder Link mit Freunden",
-      "step2": "Sie erhalten 10% Rabatt auf ihre erste Bestellung",
+      "step2": "Sie erhalten 20% Rabatt auf ihre erste Bestellung",
       "step3": "Du bekommst eine Gratistüte wenn sie kaufen!",
-      "noCode": "Du hast noch keinen Empfehlungscode. Er wird nach deinem ersten Kauf erstellt."
+      "noCodeTitle": "Noch kein Empfehlungscode",
+      "noCode": "Dein Empfehlungscode wird nach deinem ersten Kauf erstellt.",
+      "yourRewards": "Deine ausstehenden Belohnungen",
+      "freeBag": "GRATIS",
+      "addToCart": "In den Warenkorb",
+      "claiming": "Wird hinzugefügt...",
+      "claimError": "Belohnung konnte nicht eingelöst werden. Bitte versuche es erneut.",
+      "rewardHint": "Füge deinen Gratiskaffee zum Warenkorb hinzu und er wird kostenlos bei deiner nächsten Bestellung mitgeschickt."
     }
   },
   "auth": {

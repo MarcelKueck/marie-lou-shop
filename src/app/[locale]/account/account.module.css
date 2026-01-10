@@ -480,3 +480,86 @@
     width: 100%;
   }
 }
+
+/* Rewards Section */
+.rewardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rewardCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-cream);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+}
+
+.rewardInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rewardIcon {
+  font-size: 2rem;
+}
+
+.rewardDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rewardName {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.rewardVariant {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.claimButton {
+  padding: 0.625rem 1.25rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.claimButton:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.claimButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rewardHint {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .rewardCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .claimButton {
+    width: 100%;
+  }
+}

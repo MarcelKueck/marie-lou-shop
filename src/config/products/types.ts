@@ -75,10 +75,16 @@ export interface CartItem {
   productId: string;
   variantId: string;
   quantity: number;
+  // For free referral rewards
+  isFreeReward?: boolean;
+  rewardId?: string;
 }
 
 export interface CartItemWithProduct extends CartItem {
   product: Product;
   variant: ProductVariant;
   totalPrice: number;
+  // Inherited from CartItem:
+  // isFreeReward?: boolean;
+  // rewardId?: string;
 }

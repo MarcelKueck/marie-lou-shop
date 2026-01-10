@@ -220,8 +220,10 @@
     "proceedToPayment": "Proceed to Payment",
     "processing": "Processing...",
     "securityNote": "Your payment information is encrypted and secure",
-    "referralDiscount": "Referral Discount (10%)",
-    "referralApplied": "Referral discount applied! Your friend will receive a free bag when your order is confirmed."
+    "referralDiscount": "Referral Discount (20%)",
+    "referralApplied": "Referral discount applied! Your friend will receive a free bag when your order is confirmed.",
+    "referralLoginRequired": "Log in or create an account to unlock your 20% referral discount!",
+    "loginOrRegister": "Log in / Create Account"
   },
   "checkoutSuccess": {
     "title": "Thank You!",
@@ -281,8 +283,8 @@
     "title": "Welcome to Marie Lou Coffee",
     "subtitle": "Fresh-roasted coffee that pays farmers fairly. No middlemen. Full transparency.",
     "bannerTitle": "You've been invited to the table!",
-    "bannerText": "As a friend of the family, get 10% off your first order.",
-    "shopNow": "Shop Now with 10% Off",
+    "bannerText": "As a friend of the family, get 20% off your first order.",
+    "shopNow": "Shop Now with 20% Off",
     "promiseTitle": "Why Marie Lou?",
     "promiseItem1Title": "Fresh Roasted",
     "promiseItem1Text": "We roast your coffee after you order — never before. Peak freshness, every time.",
@@ -293,7 +295,7 @@
     "quote": "Coffee the way it should be. Fresh, honest, made with love.",
     "readStory": "Read Our Story",
     "finalCtaTitle": "Ready to taste the difference?",
-    "finalCtaText": "Your 10% discount is already applied. Just shop and enjoy!",
+    "finalCtaText": "Your 20% discount is already applied. Just shop and enjoy!",
     "startShopping": "Start Shopping"
   },
   "referralProgram": {
@@ -304,8 +306,8 @@
     "howItWorks": "How It Works",
     "step1Title": "Share Your Link",
     "step1Text": "Every Marie Lou customer gets a unique referral link. Share it with friends, family, colleagues — anyone who deserves better coffee.",
-    "step2Title": "They Get 10% Off",
-    "step2Text": "When your friend uses your link, they'll get 10% off their first order. A warm welcome to the table.",
+    "step2Title": "They Get 20% Off",
+    "step2Text": "When your friend uses your link, they'll get 20% off their first order. A warm welcome to the table.",
     "step3Title": "You Get a Free Bag",
     "step3Text": "Once their order is confirmed, we'll send you a free bag of coffee — picked randomly from our current selection. A thank-you from us.",
     "detailsTitle": "The Details",
@@ -315,7 +317,7 @@
     "referrerBenefit3": "Choose to add it to your next order or ship separately (€4.95)",
     "referrerBenefit4": "Your reward never expires",
     "forFriendTitle": "For Your Friend",
-    "friendBenefit1": "10% off their first order",
+    "friendBenefit1": "20% off their first order",
     "friendBenefit2": "Minimum order: €25 (before shipping)",
     "friendBenefit3": "Valid for 90 days",
     "whyRandomTitle": "Why a Random Bag?",
@@ -371,7 +373,42 @@
         "processing": "Processing",
         "shipped": "Shipped",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
+      },
+      "refund": {
+        "title": "Returns & Refunds",
+        "submitted": "Your refund request has been submitted. We'll review it and get back to you within 1-2 business days.",
+        "requests": "Your Refund Requests",
+        "reason": "Reason",
+        "response": "Response",
+        "refunded": "Refunded",
+        "alreadyRefunded": "This order has been refunded.",
+        "eligible": "This order is eligible for a refund.",
+        "daysRemaining": "{days} days remaining in return window",
+        "requestButton": "Request Refund",
+        "pendingNote": "You have a pending refund request for this order.",
+        "notEligible": "This order is no longer eligible for a refund (14-day return window has passed).",
+        "reasonLabel": "Reason for refund",
+        "selectReason": "Select a reason...",
+        "detailsLabel": "Additional details (optional)",
+        "detailsPlaceholder": "Please provide any additional information that might help us process your request...",
+        "submitting": "Submitting...",
+        "submit": "Submit Request",
+        "reasons": {
+          "not_satisfied": "Not satisfied with the product",
+          "damaged": "Product arrived damaged",
+          "wrong_item": "Received wrong item",
+          "never_arrived": "Order never arrived",
+          "changed_mind": "Changed my mind",
+          "other": "Other"
+        },
+        "status": {
+          "pending": "Under Review",
+          "approved": "Approved",
+          "processed": "Refunded",
+          "denied": "Denied"
+        }
       }
     },
     "backToAccount": "Back to Account",
@@ -391,10 +428,16 @@
       "pendingRewards": "Pending Rewards",
       "howItWorks": "How It Works",
       "step1": "Share your unique code or link with friends",
-      "step2": "They get 10% off their first order",
+      "step2": "They get 20% off their first order",
       "step3": "You get a free bag when they buy!",
       "noCodeTitle": "No Referral Code Yet",
-      "noCode": "Your referral code will be created after your first purchase."
+      "noCode": "Your referral code will be created after your first purchase.",
+      "yourRewards": "Your Pending Rewards",
+      "freeBag": "FREE",
+      "addToCart": "Add to Cart",
+      "claiming": "Adding...",
+      "claimError": "Failed to claim reward. Please try again.",
+      "rewardHint": "Add your free coffee to your cart and it will be included with your next order at no extra cost."
     }
   },
   "auth": {

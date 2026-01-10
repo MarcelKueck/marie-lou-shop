@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { generateShareLink } from '@/lib/referral';
+import { useCart } from '@/hooks/useCart';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
@@ -22,6 +23,17 @@ interface OrderData {
   deliveredAt: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
+}
+
+interface PendingReward {
+  id: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  variantId: string;
+  variantName: string;
+  createdAt: string;
+  expiresAt: string | null;
 }
 
 interface UserData {
@@ -53,11 +65,14 @@ type TabType = 'orders' | 'profile' | 'referrals';
 export default function AccountPage() {
   const t = useTranslations('account');
   const router = useRouter();
+  const { addItem, openCart } = useCart();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [pendingRewards, setPendingRewards] = useState<PendingReward[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('orders');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [claimingRewardId, setClaimingRewardId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -69,6 +84,13 @@ export default function AccountPage() {
         }
         const data = await response.json();
         setUserData(data);
+        
+        // Fetch pending rewards
+        const rewardsResponse = await fetch('/api/referral/rewards');
+        if (rewardsResponse.ok) {
+          const rewardsData = await rewardsResponse.json();
+          setPendingRewards(rewardsData.pendingRewards || []);
+        }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
         router.push('/account/login');
@@ -96,6 +118,47 @@ export default function AccountPage() {
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleClaimReward = async (reward: PendingReward) => {
+    setClaimingRewardId(reward.id);
+    try {
+      // Verify the reward is still available
+      const response = await fetch('/api/referral/rewards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rewardId: reward.id,
+          action: 'add_to_cart',
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || t('referral.claimError'));
+        return;
+      }
+
+      // Add the free product to cart
+      addItem({
+        productId: reward.productId,
+        variantId: reward.variantId,
+        quantity: 1,
+        isFreeReward: true,
+        rewardId: reward.id,
+      });
+
+      // Remove from pending rewards in UI
+      setPendingRewards(prev => prev.filter(r => r.id !== reward.id));
+      
+      // Open cart to show the added item
+      openCart();
+    } catch (error) {
+      console.error('Failed to claim reward:', error);
+      alert(t('referral.claimError'));
+    } finally {
+      setClaimingRewardId(null);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -371,6 +434,40 @@ export default function AccountPage() {
                       </div>
                     </div>
                   </section>
+
+                  {/* Pending Rewards Section */}
+                  {pendingRewards.length > 0 && (
+                    <section className={styles.section}>
+                      <h2 className={styles.sectionTitle}>🎁 {t('referral.yourRewards')}</h2>
+                      <div className={styles.rewardsList}>
+                        {pendingRewards.map((reward) => (
+                          <div key={reward.id} className={styles.rewardCard}>
+                            <div className={styles.rewardInfo}>
+                              <span className={styles.rewardIcon}>☕</span>
+                              <div className={styles.rewardDetails}>
+                                <span className={styles.rewardName}>
+                                  {t('referral.freeBag')}: {reward.productName}
+                                </span>
+                                <span className={styles.rewardVariant}>{reward.variantName}</span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleClaimReward(reward)}
+                              disabled={claimingRewardId === reward.id}
+                              className={styles.claimButton}
+                            >
+                              {claimingRewardId === reward.id
+                                ? t('referral.claiming')
+                                : t('referral.addToCart')}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <p className={styles.rewardHint}>
+                        {t('referral.rewardHint')}
+                      </p>
+                    </section>
+                  )}
 
                   <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>{t('referral.howItWorks')}</h2>

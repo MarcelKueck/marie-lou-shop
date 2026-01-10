@@ -79,94 +79,94 @@ export default function LoginPage() {
 
             {error && <div className={styles.error}>{error}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {!isLogin && (
-            <div className={styles.nameFields}>
+            <form onSubmit={handleSubmit} className={styles.form}>
+              {!isLogin && (
+                <div className={styles.nameFields}>
+                  <div className={styles.field}>
+                    <label htmlFor="firstName">{t('fields.firstName')}</label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder={t('placeholders.firstName')}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label htmlFor="lastName">{t('fields.lastName')}</label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder={t('placeholders.lastName')}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className={styles.field}>
-                <label htmlFor="firstName">{t('fields.firstName')}</label>
+                <label htmlFor="email">{t('fields.email')}</label>
                 <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder={t('placeholders.firstName')}
+                  placeholder={t('placeholders.email')}
+                  required
                 />
               </div>
+
               <div className={styles.field}>
-                <label htmlFor="lastName">{t('fields.lastName')}</label>
+                <label htmlFor="password">{t('fields.password')}</label>
                 <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
                   onChange={handleChange}
-                  placeholder={t('placeholders.lastName')}
+                  placeholder={t('placeholders.password')}
+                  required
+                  minLength={8}
                 />
+                {!isLogin && (
+                  <span className={styles.hint}>{t('hints.password')}</span>
+                )}
               </div>
+
+              <button 
+                type="submit" 
+                className={styles.submitButton}
+                disabled={isLoading}
+              >
+                {isLoading 
+                  ? t('loading') 
+                  : isLogin 
+                    ? t('login.submit') 
+                    : t('register.submit')
+                }
+              </button>
+            </form>
+
+            <div className={styles.toggle}>
+              <p>
+                {isLogin ? t('login.noAccount') : t('register.hasAccount')}{' '}
+                <button 
+                  type="button" 
+                  onClick={() => setIsLogin(!isLogin)}
+                  className={styles.toggleButton}
+                >
+                  {isLogin ? t('login.createAccount') : t('register.loginInstead')}
+                </button>
+              </p>
             </div>
-          )}
 
-          <div className={styles.field}>
-            <label htmlFor="email">{t('fields.email')}</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder={t('placeholders.email')}
-              required
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="password">{t('fields.password')}</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder={t('placeholders.password')}
-              required
-              minLength={8}
-            />
-            {!isLogin && (
-              <span className={styles.hint}>{t('hints.password')}</span>
-            )}
-          </div>
-
-          <button 
-            type="submit" 
-            className={styles.submitButton}
-            disabled={isLoading}
-          >
-            {isLoading 
-              ? t('loading') 
-              : isLogin 
-                ? t('login.submit') 
-                : t('register.submit')
-            }
-          </button>
-        </form>
-
-        <div className={styles.toggle}>
-          <p>
-            {isLogin ? t('login.noAccount') : t('register.hasAccount')}{' '}
-            <button 
-              type="button" 
-              onClick={() => setIsLogin(!isLogin)}
-              className={styles.toggleButton}
-            >
-              {isLogin ? t('login.createAccount') : t('register.loginInstead')}
-            </button>
-          </p>
-        </div>
-
-        <div className={styles.backLink}>
-          <Link href="/">{t('backToShop')}</Link>
-        </div>
+            <div className={styles.backLink}>
+              <Link href="/">{t('backToShop')}</Link>
+            </div>
           </div>
         </div>
       </main>

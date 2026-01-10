@@ -13,6 +13,10 @@ export const customers = sqliteTable('customers', {
   phone: text('phone'),
   stripeCustomerId: text('stripe_customer_id'),
   marketingOptIn: integer('marketing_opt_in', { mode: 'boolean' }).default(false),
+  // Referral abuse prevention - admin can override automatic flagging
+  referralTrusted: integer('referral_trusted', { mode: 'boolean' }).default(false), // If true, bypass abuse checks
+  referralSuspended: integer('referral_suspended', { mode: 'boolean' }).default(false), // If true, never give rewards
+  referralNotes: text('referral_notes'), // Admin notes about this referrer
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
@@ -70,6 +74,10 @@ export const orders = sqliteTable('orders', {
   invoiceNumber: text('invoice_number'),
   invoiceId: text('invoice_id'), // External invoice ID from rechnungs-api
   invoiceGeneratedAt: integer('invoice_generated_at', { mode: 'timestamp' }),
+  // Refund Invoice (Credit Note / Gutschrift)
+  refundInvoiceNumber: text('refund_invoice_number'),
+  refundInvoiceId: text('refund_invoice_id'),
+  refundInvoiceGeneratedAt: integer('refund_invoice_generated_at', { mode: 'timestamp' }),
   // Notes
   customerNotes: text('customer_notes'),
   internalNotes: text('internal_notes'),
@@ -249,4 +257,43 @@ export const REWARD_STATUS = {
   PENDING: 'pending',
   CLAIMED: 'claimed',
   SHIPPED: 'shipped',
+  REVOKED: 'revoked',
 } as const;
+
+// Refund request status constants
+export const REFUND_REQUEST_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  DENIED: 'denied',
+  PROCESSED: 'processed',
+} as const;
+
+// ============================================================================
+// Refund Requests Table
+// ============================================================================
+
+export const refundRequests = sqliteTable('refund_requests', {
+  id: text('id').primaryKey(),
+  orderId: text('order_id').notNull().references(() => orders.id),
+  customerId: text('customer_id').notNull().references(() => customers.id),
+  // Request details
+  reason: text('reason').notNull(),
+  reasonDetails: text('reason_details'),
+  // Amount (in cents) - can be partial refund
+  requestedAmount: integer('requested_amount').notNull(),
+  approvedAmount: integer('approved_amount'),
+  // Status
+  status: text('status').notNull().default('pending'), // 'pending' | 'approved' | 'denied' | 'processed'
+  // Admin response
+  adminNotes: text('admin_notes'),
+  processedBy: text('processed_by'), // Admin who processed the request
+  // Stripe
+  stripeRefundId: text('stripe_refund_id'),
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  reviewedAt: integer('reviewed_at', { mode: 'timestamp' }),
+  processedAt: integer('processed_at', { mode: 'timestamp' }),
+});
+
+export type RefundRequest = typeof refundRequests.$inferSelect;
+export type NewRefundRequest = typeof refundRequests.$inferInsert;
