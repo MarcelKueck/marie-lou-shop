@@ -135,3 +135,10 @@ export async function cleanupExpiredSessions(): Promise<void> {
     lt(sessions.expiresAt, new Date())
   );
 }
+
+/**
+ * Logout current user (alias for destroySession)
+ */
+export async function logout(): Promise<void> {
+  await destroySession();
+}

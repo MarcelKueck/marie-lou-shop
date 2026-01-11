@@ -1,16 +1,39 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { useBrand } from '@/hooks/useBrand';
 import { useCart } from '@/hooks/useCart';
-import { getProductBySlug } from '@/config/products';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import styles from './product.module.css';
+
+interface ProductVariant {
+  id: string;
+  name: { en: string; de: string };
+  priceModifier: number;
+  weight: string | null;
+}
+
+interface Product {
+  id: string;
+  slug: string;
+  brand: 'coffee' | 'tea';
+  active: boolean;
+  name: { en: string; de: string };
+  origin?: { en: string | null; de: string | null };
+  notes?: { en: string | null; de: string | null };
+  description?: { en: string | null; de: string | null };
+  basePrice: number;
+  currency: string;
+  image: string | null;
+  badge: string | null;
+  attributes: Record<string, unknown> | null;
+  variants: ProductVariant[];
+}
 
 interface ProductPageProps {
   params: Promise<{ slug: string; locale: string }>;
@@ -28,15 +51,48 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = getProductBySlug(slug);
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const res = await fetch(`/api/products?slug=${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProduct(data.product);
+        }
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className={`theme-${brand.id}`}>
+        <Navigation onCartClick={() => setIsCartOpen(true)} />
+        <main className={styles.main}>
+          <div style={{ textAlign: 'center', padding: '100px 20px', color: '#666' }}>
+            Loading...
+          </div>
+        </main>
+        <Footer />
+        <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
   }
 
   const selectedVariant = product.variants.find(v => v.id === selectedVariantId) || product.variants[0];
-  const price = (product.basePrice + selectedVariant.priceModifier) / 100;
+  const price = (product.basePrice + (selectedVariant?.priceModifier || 0)) / 100;
   const totalPrice = price * quantity;
 
   const formatPrice = (price: number) => {
@@ -106,17 +162,17 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* Product Info */}
             <div className={styles.infoSection}>
               <div className={styles.header}>
-                <p className={styles.origin}>{product.origin[locale]}</p>
+                <p className={styles.origin}>{product.origin?.[locale] || ''}</p>
                 <h1 className={styles.name}>{product.name[locale]}</h1>
-                <p className={styles.notes}>{product.notes[locale]}</p>
+                <p className={styles.notes}>{product.notes?.[locale] || ''}</p>
               </div>
 
               <div className={styles.priceSection}>
                 <span className={styles.price}>{formatPrice(price)}</span>
-                <span className={styles.priceUnit}>/ {selectedVariant.weight}</span>
+                <span className={styles.priceUnit}>/ {selectedVariant?.weight || '250g'}</span>
               </div>
 
-              <p className={styles.description}>{product.description[locale]}</p>
+              <p className={styles.description}>{product.description?.[locale] || ''}</p>
 
               {/* Variant Selector */}
               <div className={styles.variantSection}>
@@ -170,54 +226,66 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
 
               {/* Product Attributes */}
-              {product.attributes.type === 'coffee' && (
+              {product.attributes && (product.attributes as Record<string, unknown>).type === 'coffee' && (
                 <div className={styles.attributes}>
                   <h3 className={styles.attributesTitle}>{t('details')}</h3>
                   <dl className={styles.attributesList}>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('roastLevel')}</dt>
-                      <dd>{roastLevelLabels[product.attributes.roastLevel][locale]}</dd>
-                    </div>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('process')}</dt>
-                      <dd>{processLabels[product.attributes.process][locale]}</dd>
-                    </div>
-                    {product.attributes.altitude && (
+                    {(product.attributes as Record<string, string>).roastLevel && (
                       <div className={styles.attributeItem}>
-                        <dt>{t('altitude')}</dt>
-                        <dd>{product.attributes.altitude}</dd>
+                        <dt>{t('roastLevel')}</dt>
+                        <dd>{roastLevelLabels[(product.attributes as Record<string, string>).roastLevel]?.[locale] || (product.attributes as Record<string, string>).roastLevel}</dd>
                       </div>
                     )}
-                    {product.attributes.variety && (
+                    {(product.attributes as Record<string, string>).process && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('process')}</dt>
+                        <dd>{processLabels[(product.attributes as Record<string, string>).process]?.[locale] || (product.attributes as Record<string, string>).process}</dd>
+                      </div>
+                    )}
+                    {(product.attributes as Record<string, string>).altitude && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('altitude')}</dt>
+                        <dd>{(product.attributes as Record<string, string>).altitude}</dd>
+                      </div>
+                    )}
+                    {(product.attributes as Record<string, string>).variety && (
                       <div className={styles.attributeItem}>
                         <dt>{t('variety')}</dt>
-                        <dd>{product.attributes.variety}</dd>
+                        <dd>{(product.attributes as Record<string, string>).variety}</dd>
                       </div>
                     )}
                   </dl>
                 </div>
               )}
 
-              {product.attributes.type === 'tea' && (
+              {product.attributes && (product.attributes as Record<string, unknown>).type === 'tea' && (
                 <div className={styles.attributes}>
                   <h3 className={styles.attributesTitle}>{t('details')}</h3>
                   <dl className={styles.attributesList}>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('teaType')}</dt>
-                      <dd>{product.attributes.teaType}</dd>
-                    </div>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('caffeine')}</dt>
-                      <dd>{product.attributes.caffeine}</dd>
-                    </div>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('steepTime')}</dt>
-                      <dd>{product.attributes.steepTime}</dd>
-                    </div>
-                    <div className={styles.attributeItem}>
-                      <dt>{t('temperature')}</dt>
-                      <dd>{product.attributes.temperature}</dd>
-                    </div>
+                    {(product.attributes as Record<string, string>).teaType && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('teaType')}</dt>
+                        <dd>{(product.attributes as Record<string, string>).teaType}</dd>
+                      </div>
+                    )}
+                    {(product.attributes as Record<string, string>).caffeine && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('caffeine')}</dt>
+                        <dd>{(product.attributes as Record<string, string>).caffeine}</dd>
+                      </div>
+                    )}
+                    {(product.attributes as Record<string, string>).steepTime && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('steepTime')}</dt>
+                        <dd>{(product.attributes as Record<string, string>).steepTime}</dd>
+                      </div>
+                    )}
+                    {(product.attributes as Record<string, string>).temperature && (
+                      <div className={styles.attributeItem}>
+                        <dt>{t('temperature')}</dt>
+                        <dd>{(product.attributes as Record<string, string>).temperature}</dd>
+                      </div>
+                    )}
                   </dl>
                 </div>
               )}

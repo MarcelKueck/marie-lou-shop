@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.4",
     "@rechnungs-api/client": "^0.1.6",
+    "@vercel/blob": "^2.0.0",
     "better-sqlite3": "^12.5.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.1",

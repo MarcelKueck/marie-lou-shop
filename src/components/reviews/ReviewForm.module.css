@@ -1,0 +1,141 @@
+.form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+}
+
+.formTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  color: var(--color-text-primary, #1a1a1a);
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a1a);
+  margin-bottom: 0.5rem;
+}
+
+.starRating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.starButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.starButton:hover {
+  transform: scale(1.1);
+}
+
+.starFilled {
+  color: #f59e0b;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 8px;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #6B4423);
+  box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--color-primary, #6B4423);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--color-primary-dark, #5a3a1d);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success Message */
+.successMessage {
+  background: #dcfce7;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.successIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #22c55e;
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.successMessage h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #166534;
+  margin: 0 0 0.5rem;
+}
+
+.successMessage p {
+  color: #166534;
+  margin: 0;
+}

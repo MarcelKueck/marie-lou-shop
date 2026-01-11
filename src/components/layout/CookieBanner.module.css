@@ -1,0 +1,182 @@
+.overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.banner {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  pointer-events: all;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a1a);
+  margin: 0 0 0.75rem;
+}
+
+.message {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+/* Details Section */
+.details {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--color-surface, #f9f9f9);
+  border-radius: 8px;
+}
+
+.cookieType {
+  margin-bottom: 1rem;
+}
+
+.cookieType:last-child {
+  margin-bottom: 0;
+}
+
+.cookieHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.cookieName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a1a);
+}
+
+.required {
+  font-size: 0.75rem;
+  color: var(--color-primary, #6B4423);
+  background: rgba(107, 68, 35, 0.1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+}
+
+.cookieDescription {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #666);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mainButtons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.detailsButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #666);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.detailsButton:hover {
+  color: var(--color-primary, #6B4423);
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primaryButton {
+  background: var(--color-primary, #6B4423);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover {
+  background: var(--color-primary-dark, #5a3a1d);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--color-text-primary, #1a1a1a);
+  border: 1px solid var(--color-border, #e5e5e5);
+}
+
+.secondaryButton:hover {
+  background: var(--color-surface, #f9f9f9);
+  border-color: var(--color-primary, #6B4423);
+}
+
+/* Privacy Link */
+.privacyLink {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.privacyLink a {
+  color: var(--color-text-secondary, #666);
+  text-decoration: underline;
+}
+
+.privacyLink a:hover {
+  color: var(--color-primary, #6B4423);
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .overlay {
+    padding: 0.75rem;
+  }
+  
+  .content {
+    padding: 1.25rem;
+  }
+  
+  .mainButtons {
+    flex-direction: column;
+  }
+}

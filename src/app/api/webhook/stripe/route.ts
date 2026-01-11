@@ -15,6 +15,7 @@ import {
 import { eq, and } from 'drizzle-orm';
 import { allProducts } from '@/config/products';
 import { generateReferralCode } from '@/lib/referral-server';
+import { processOrderStock, restoreStock } from '@/lib/inventory';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -70,6 +71,12 @@ export async function POST(request: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log('Processing checkout.session.completed:', session.id);
+
+  // Check if this is a gift card purchase
+  if (session.metadata?.type === 'gift_card') {
+    await handleGiftCardPurchase(session);
+    return;
+  }
 
   // Check if order already exists (idempotency check)
   const existingOrder = await db.query.orders.findFirst({
@@ -232,25 +239,45 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     throw insertError;
   }
 
-  // Create order items
+  // Create order items and collect for stock processing
+  const orderItemsForStock: Array<{ productId: string; variantId: string; quantity: number }> = [];
+  
   for (const item of lineItems.data) {
     const product = item.price?.product as Stripe.Product;
     const metadata = product?.metadata || {};
     
+    const productId = metadata.productId || 'unknown';
+    const variantId = metadata.variantId || 'unknown';
+    const quantity = item.quantity || 1;
+    
     await db.insert(orderItems).values({
       id: crypto.randomUUID(),
       orderId,
-      productId: metadata.productId || 'unknown',
-      variantId: metadata.variantId || 'unknown',
+      productId,
+      variantId,
       productName: item.description || 'Unknown Product',
       variantName: metadata.variantId || '',
       productSlug: metadata.productId || '',
-      quantity: item.quantity || 1,
+      quantity,
       unitPrice: item.price?.unit_amount || 0,
       totalPrice: item.amount_total || 0,
       weight: '250g', // Default weight
       createdAt: now,
     });
+    
+    // Collect for stock deduction
+    if (productId !== 'unknown') {
+      orderItemsForStock.push({ productId, variantId, quantity });
+    }
+  }
+
+  // Deduct stock for order items
+  if (orderItemsForStock.length > 0) {
+    const stockResult = processOrderStock(orderItemsForStock);
+    if (!stockResult.success) {
+      console.warn(`Stock deduction had issues for order ${orderNumber}:`, stockResult.failedItems);
+      // Don't fail the order - just log the issue
+    }
   }
 
   // Mark any claimed rewards as used
@@ -292,6 +319,36 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   console.log(`Order ${orderNumber} created successfully for ${email}`);
+
+  // Fetch the created order and items for email
+  const createdOrder = await db.query.orders.findFirst({
+    where: eq(orders.id, orderId),
+  });
+  const createdItems = await db.query.orderItems.findMany({
+    where: eq(orderItems.orderId, orderId),
+  });
+
+  // Send emails (don't fail webhook if email fails)
+  if (createdOrder && createdItems.length > 0) {
+    try {
+      const { sendOrderConfirmationEmail, sendAdminNewOrderEmail } = await import('@/lib/email');
+      
+      // Send order confirmation to customer
+      await sendOrderConfirmationEmail({
+        order: createdOrder,
+        items: createdItems,
+        locale: 'de', // Default to German, could detect from session
+      });
+      
+      // Send new order notification to admin
+      await sendAdminNewOrderEmail({
+        order: createdOrder,
+        items: createdItems,
+      });
+    } catch (emailError) {
+      console.error(`Failed to send emails for order ${orderNumber}:`, emailError);
+    }
+  }
 }
 
 async function processReferralReward(
@@ -556,11 +613,24 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   // Find the order associated with this payment
   const order = await db.query.orders.findFirst({
     where: eq(orders.stripePaymentIntentId, paymentIntentId),
+    with: {
+      items: true,
+    },
   });
 
   if (!order) {
     console.log(`No order found for payment intent ${paymentIntentId}`);
     return;
+  }
+
+  // Restore stock for refunded items
+  if (order.items && order.items.length > 0) {
+    for (const item of order.items) {
+      if (item.productId !== 'unknown') {
+        restoreStock(item.productId, item.variantId, item.quantity);
+        console.log(`Stock restored for ${item.productId}:${item.variantId} x${item.quantity}`);
+      }
+    }
   }
 
   // Update order status
@@ -589,4 +659,35 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   // which has value even if that user later refunds their first order.
   // The referred customer's discount has already been used and is not recoverable.
   console.log(`Referrer reward (if any) preserved despite refund - new user registration has value`);
+}
+
+async function handleGiftCardPurchase(session: Stripe.Checkout.Session) {
+  console.log('Processing gift card purchase:', session.id);
+  
+  const giftCardId = session.metadata?.giftCardId;
+  if (!giftCardId) {
+    console.error('No gift card ID in session metadata');
+    return;
+  }
+  
+  try {
+    // Dynamically import to avoid circular dependencies
+    const { activateGiftCard, sendGiftCardEmail } = await import('@/lib/gift-cards');
+    
+    // Activate the gift card
+    await activateGiftCard(giftCardId);
+    console.log(`Gift card ${giftCardId} activated`);
+    
+    // Send email to recipient if email delivery was selected
+    const deliveryMethod = session.metadata?.deliveryMethod;
+    const recipientEmail = session.metadata?.recipientEmail;
+    
+    if (deliveryMethod === 'email' && recipientEmail) {
+      await sendGiftCardEmail(giftCardId);
+      console.log(`Gift card email sent for ${giftCardId}`);
+    }
+  } catch (error) {
+    console.error('Error processing gift card purchase:', error);
+    throw error;
+  }
 }

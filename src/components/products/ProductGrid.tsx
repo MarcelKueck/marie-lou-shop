@@ -1,9 +1,37 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Product } from '@/config/products/types';
 import { ProductCard } from './ProductCard';
 import styles from './ProductGrid.module.css';
+
+// Flexible product interface that works with both config and DB products
+interface ProductVariant {
+  id: string;
+  name: { en: string; de: string };
+  priceModifier: number;
+  weight?: string | null;
+}
+
+interface Product {
+  id: string;
+  slug: string;
+  brand: 'coffee' | 'tea';
+  active?: boolean;
+  name: { en: string; de: string };
+  origin?: { en: string | null; de: string | null };
+  notes?: { en: string | null; de: string | null };
+  description?: { en: string | null; de: string | null };
+  basePrice: number;
+  currency?: string;
+  image?: string | null;
+  badge?: string | null;
+  averageRating?: number | null;
+  reviewCount?: number | null;
+  stockQuantity?: number | null;
+  lowStockThreshold?: number | null;
+  attributes?: Record<string, unknown> | null;
+  variants: ProductVariant[];
+}
 
 interface ProductGridProps {
   products: Product[];

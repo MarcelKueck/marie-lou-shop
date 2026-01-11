@@ -1,6 +1,10 @@
 import { Product, CoffeeAttributes, TeaAttributes } from './types';
 import { coffeeGrindVariants, teaFormatVariants } from './variants';
 
+// Re-export types
+export type { Product, CoffeeAttributes, TeaAttributes } from './types';
+export type { ProductVariant, TeaAttributes as TeaProductAttributes, CoffeeAttributes as CoffeeProductAttributes, CartItem, CartItemWithProduct, LocalizedString, ProductAttributes } from './types';
+
 // Coffee Products
 export const coffeeProducts: Product[] = [
   {

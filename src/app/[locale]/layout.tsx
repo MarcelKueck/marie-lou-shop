@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { CartProvider } from '@/hooks/useCart';
 import { BrandProvider } from '@/hooks/useBrand';
+import { CookieBanner } from '@/components/layout';
 
 type Locale = 'de' | 'en';
 
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
       <BrandProvider>
         <CartProvider>
           {children}
+          <CookieBanner />
         </CartProvider>
       </BrandProvider>
     </NextIntlClientProvider>

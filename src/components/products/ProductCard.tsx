@@ -3,9 +3,29 @@
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
-import { Product } from '@/config/products/types';
 import { useCart } from '@/hooks/useCart';
 import styles from './ProductCard.module.css';
+
+// Flexible product interface that works with both config and DB products
+interface ProductVariant {
+  id: string;
+  name: { en: string; de: string };
+  priceModifier: number;
+  weight?: string | null;
+}
+
+interface Product {
+  id: string;
+  slug: string;
+  brand: 'coffee' | 'tea';
+  name: { en: string; de: string };
+  origin?: { en: string | null; de: string | null };
+  notes?: { en: string | null; de: string | null };
+  basePrice: number;
+  image?: string | null;
+  badge?: string | null;
+  variants: ProductVariant[];
+}
 
 interface ProductCardProps {
   product: Product;
@@ -17,9 +37,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
 
   const name = product.name[locale];
-  const origin = product.origin[locale];
+  const origin = product.origin?.[locale] || '';
   const defaultVariant = product.variants[0];
-  const variantPrice = (product.basePrice + defaultVariant.priceModifier) / 100;
+  const variantPrice = (product.basePrice + (defaultVariant?.priceModifier || 0)) / 100;
 
   const handleAddToCart = () => {
     addItem({
