@@ -31,6 +31,7 @@ export default function Footer() {
             <li><Link href="/shop">{t('allCoffee')}</Link></li>
             <li><Link href="/shop?category=single-origin">{t('singleOrigins')}</Link></li>
             <li><Link href="/shop?category=blend">{t('blends')}</Link></li>
+            <li><Link href="/shop/gift-card">{t('giftCards')}</Link></li>
             <li><Link href="/subscribe">{t('subscriptions')}</Link></li>
           </ul>
         </div>

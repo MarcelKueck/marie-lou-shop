@@ -74,12 +74,10 @@ export default function AdminProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  
-  // Image upload
-  const [uploading, setUploading] = useState(false);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -100,6 +98,34 @@ export default function AdminProductsPage() {
   }, [fetchProducts]);
 
   const formatPrice = (cents: number) => `€${(cents / 100).toFixed(2)}`;
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      const data = await res.json();
+      setEditingProduct({ ...editingProduct, image: data.url });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const filteredProducts = products.filter(p => {
     if (brandFilter !== 'all' && p.brand !== brandFilter) return false;
@@ -259,37 +285,6 @@ export default function AdminProductsPage() {
     }
     
     setEditingProduct({ ...editingProduct, variants });
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !editingProduct) return;
-
-    setUploading(true);
-    setError(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', editingProduct.brand || 'products');
-
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Upload failed');
-      }
-
-      const data = await res.json();
-      setEditingProduct({ ...editingProduct, image: data.url });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error uploading image');
-    } finally {
-      setUploading(false);
-    }
   };
 
   if (loading) {
@@ -745,87 +740,73 @@ export default function AdminProductsPage() {
               {/* Image */}
               <div className={styles.formGroup}>
                 <label className={styles.label}>Produktbild</label>
-                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                  {/* Image Preview */}
-                  <div style={{
-                    width: 120,
-                    height: 120,
-                    border: '2px dashed #d1d5db',
-                    borderRadius: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    background: '#f9fafb',
-                    flexShrink: 0,
-                  }}>
-                    {editingProduct.image ? (
-                      <img 
-                        src={editingProduct.image} 
-                        alt="Preview" 
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
-                          objectFit: 'cover' 
-                        }} 
-                      />
-                    ) : (
-                      <span style={{ color: '#9ca3af', fontSize: '0.875rem', textAlign: 'center', padding: 8 }}>
-                        Kein Bild
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Upload Controls */}
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <label 
-                        className={`${styles.button} ${styles.buttonSecondary}`}
-                        style={{ 
-                          cursor: uploading ? 'not-allowed' : 'pointer',
-                          opacity: uploading ? 0.6 : 1,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                        }}
-                      >
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp,image/gif"
-                          onChange={handleImageUpload}
-                          disabled={uploading}
-                          style={{ display: 'none' }}
-                        />
-                        {uploading ? '⏳ Hochladen...' : '📁 Bild hochladen'}
-                      </label>
-                      {editingProduct.image && (
-                        <button
-                          type="button"
-                          onClick={() => setEditingProduct({ ...editingProduct, image: null })}
-                          className={styles.button}
-                          style={{ 
-                            background: '#fee2e2', 
-                            color: '#991b1b',
-                            border: '1px solid #fecaca',
-                          }}
-                        >
-                          Entfernen
-                        </button>
-                      )}
-                    </div>
-                    <input
-                      type="text"
-                      value={editingProduct.image || ''}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value || null })}
-                      className={styles.input}
-                      placeholder="Oder URL manuell eingeben..."
-                      style={{ fontSize: '0.875rem' }}
+                
+                {/* Image Preview */}
+                {editingProduct.image && (
+                  <div style={{ marginBottom: 12, position: 'relative', width: 'fit-content' }}>
+                    <img 
+                      src={editingProduct.image} 
+                      alt="Preview" 
+                      style={{ 
+                        maxWidth: 200, 
+                        maxHeight: 200, 
+                        borderRadius: 8,
+                        border: '1px solid #e5e7eb'
+                      }} 
                     />
-                    <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
-                      Erlaubte Formate: JPEG, PNG, WebP, GIF. Max. 5MB.
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setEditingProduct({ ...editingProduct, image: null })}
+                      style={{
+                        position: 'absolute',
+                        top: -8,
+                        right: -8,
+                        background: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: 24,
+                        height: 24,
+                        cursor: 'pointer',
+                        fontSize: 14,
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
+                )}
+
+                {/* Upload Button */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                  <label 
+                    className={`${styles.button} ${styles.buttonSecondary}`}
+                    style={{ 
+                      cursor: uploading ? 'not-allowed' : 'pointer',
+                      opacity: uploading ? 0.6 : 1,
+                    }}
+                  >
+                    {uploading ? 'Uploading...' : 'Bild hochladen'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    oder URL eingeben:
+                  </span>
                 </div>
+
+                {/* Manual URL Input */}
+                <input
+                  type="text"
+                  value={editingProduct.image || ''}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value || null })}
+                  className={styles.input}
+                  placeholder="/images/coffee/products/filename.png"
+                />
               </div>
 
               {/* Variants */}

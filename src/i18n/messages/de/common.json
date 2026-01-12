@@ -44,7 +44,8 @@
     "description": "Jeder Kaffee wird speziell für deine Bestellung geröstet. Wähle deinen Favoriten und schmecke den Unterschied, den Frische macht.",
     "addToCart": "In den Warenkorb",
     "added": "Hinzugefügt ✓",
-    "viewAll": "Alle Produkte ansehen"
+    "viewAll": "Alle Produkte ansehen",
+    "swipeToSeeMore": "Wischen um mehr zu sehen"
   },
   "process": {
     "badge": "So funktioniert's",
@@ -105,6 +106,7 @@
     "singleOrigins": "Single Origins",
     "blends": "Blends",
     "subscriptions": "Abonnements",
+    "giftCards": "Geschenkgutscheine",
     "learn": "Lernen",
     "ourStory": "Unsere Geschichte",
     "referralProgram": "Freunde einladen",
@@ -191,7 +193,9 @@
   },
   "shopPage": {
     "title": "Frischen Kaffee kaufen",
-    "subtitle": "Jede Tüte wird nach Bestellung geröstet und innerhalb weniger Tage verschickt. Schmecke den Unterschied, den Frische macht."
+    "subtitle": "Jede Tüte wird nach Bestellung geröstet und innerhalb weniger Tage verschickt. Schmecke den Unterschied, den Frische macht.",
+    "giftCardBanner": "Auf der Suche nach dem perfekten Geschenk?",
+    "giftCardCta": "Geschenkgutscheine kaufen"
   },
   "productPage": {
     "selectVariant": "Mahlgrad wählen",
@@ -336,6 +340,7 @@
     "logout": "Abmelden",
     "tabs": {
       "orders": "Bestellungen",
+      "giftCards": "Geschenkgutscheine",
       "profile": "Profil",
       "referrals": "Empfehlungen"
     },
@@ -440,6 +445,28 @@
       "claimError": "Belohnung konnte nicht eingelöst werden. Bitte versuche es erneut.",
       "rewardHint": "Füge deinen Gratiskaffee zum Warenkorb hinzu und er wird kostenlos bei deiner nächsten Bestellung mitgeschickt."
     },
+    "purchasedGiftCards": {
+      "title": "Gekaufte Geschenkgutscheine",
+      "empty": "Noch keine Geschenkgutscheine gekauft",
+      "emptyDescription": "Geschenkgutscheine, die du kaufst, erscheinen hier.",
+      "buyGiftCard": "Geschenkgutschein kaufen",
+      "code": "Code",
+      "amount": "Betrag",
+      "balance": "Guthaben",
+      "status": "Status",
+      "purchasedOn": "Gekauft am",
+      "recipient": "Empfänger",
+      "sentTo": "Gesendet an",
+      "downloadedPdf": "Als PDF heruntergeladen",
+      "resendEmail": "E-Mail erneut senden",
+      "resending": "Wird gesendet...",
+      "resent": "E-Mail gesendet!",
+      "copyCode": "Code kopieren",
+      "copied": "Kopiert!",
+      "statusActive": "Aktiv",
+      "statusUsed": "Aufgebraucht",
+      "statusDisabled": "Deaktiviert"
+    },
     "addresses": {
       "title": "Meine Adressen",
       "description": "Verwalte deine Liefer- und Rechnungsadressen",
@@ -503,7 +530,8 @@
       "subtitle": "Melde dich bei deinem Marie Lou Konto an",
       "submit": "Anmelden",
       "noAccount": "Noch kein Konto?",
-      "createAccount": "Erstelle eins"
+      "createAccount": "Erstelle eins",
+      "forgotPassword": "Passwort vergessen?"
     },
     "register": {
       "title": "Konto erstellen",

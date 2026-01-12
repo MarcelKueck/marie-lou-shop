@@ -38,10 +38,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const name = product.name[locale];
   const origin = product.origin?.[locale] || '';
-  const defaultVariant = product.variants[0];
+  const defaultVariant = product.variants?.[0];
   const variantPrice = (product.basePrice + (defaultVariant?.priceModifier || 0)) / 100;
 
   const handleAddToCart = () => {
+    if (!defaultVariant) return;
     addItem({
       productId: product.id,
       variantId: defaultVariant.id,
@@ -90,7 +91,9 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className={styles.footer}>
           <div className={styles.price}>
             <span className={styles.priceValue}>{formatPrice(variantPrice)}</span>
-            <span className={styles.priceUnit}>/ {defaultVariant.weight}</span>
+            {defaultVariant?.weight && (
+              <span className={styles.priceUnit}>/ {defaultVariant.weight}</span>
+            )}
           </div>
           
           <button 

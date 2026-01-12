@@ -2,7 +2,7 @@ import { db } from '@/db';
 import { subscriptions, subscriptionOrders, customers } from '@/db/schema';
 import { eq, and, lt } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
-import { getProductById } from '@/config/products';
+import { getProductById } from '@/lib/products';
 
 // Subscription intervals
 export const SUBSCRIPTION_INTERVALS = [
@@ -37,7 +37,7 @@ export async function createSubscription(data: {
     country: string;
   };
 }) {
-  const product = getProductById(data.productId);
+  const product = await getProductById(data.productId);
   if (!product) {
     throw new Error('Product not found');
   }
@@ -166,7 +166,7 @@ export async function updateSubscriptionProduct(
   variantId: string,
   quantity?: number
 ) {
-  const product = getProductById(productId);
+  const product = await getProductById(productId);
   if (!product) {
     throw new Error('Product not found');
   }

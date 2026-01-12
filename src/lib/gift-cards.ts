@@ -294,7 +294,7 @@ export async function sendGiftCardEmail(giftCardId: string) {
   // Import email function dynamically to avoid circular dependencies
   const { sendGiftCardEmail: sendEmail } = await import('./email');
   
-  await sendEmail({
+  const result = await sendEmail({
     recipientEmail,
     recipientName: card.recipientName || undefined,
     senderEmail: card.purchasedByEmail,
@@ -303,6 +303,12 @@ export async function sendGiftCardEmail(giftCardId: string) {
     personalMessage: card.personalMessage || undefined,
     expiresAt: card.expiresAt || undefined,
   });
+  
+  if (!result.success) {
+    console.error(`Failed to send gift card email for ${giftCardId}:`, result.error);
+    // Don't throw - gift card is already activated, just log the email failure
+    return false;
+  }
   
   // Mark as sent
   await db.update(giftCards)

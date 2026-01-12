@@ -103,6 +103,18 @@
   color: var(--color-text-muted);
 }
 
+.forgotPassword {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  align-self: flex-end;
+  margin-top: -0.25rem;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}
+
 .submitButton {
   width: 100%;
   padding: 0.875rem;

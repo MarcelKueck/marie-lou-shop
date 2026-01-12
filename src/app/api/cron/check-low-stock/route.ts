@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Check stock levels using the inventory system
-    const lowStockProducts = getLowStockProducts();
+    const lowStockProducts = await getLowStockProducts();
 
     if (lowStockProducts.length === 0) {
       logCronComplete(JOB_NAME, { lowStockCount: 0, emailSent: false });
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     // Format for email
     const formattedProducts = lowStockProducts.map(p => ({
-      name: p.name.de || p.name.en,
+      name: p.name,
       currentStock: p.currentStock,
       threshold: p.lowStockThreshold,
     }));

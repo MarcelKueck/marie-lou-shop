@@ -1,13 +1,13 @@
-import { allProducts } from '@/config/products';
-import { getProductTotalStock, getStockSummary, getLowStockProducts } from '@/lib/inventory';
+import { getAllProducts } from '@/lib/products';
+import { getStockSummary, getLowStockProducts } from '@/lib/inventory';
 import styles from '../../admin.module.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminInventoryPage() {
-  const products = allProducts;
-  const summary = getStockSummary();
-  const lowStockProducts = getLowStockProducts();
+  const products = await getAllProducts();
+  const summary = await getStockSummary();
+  const lowStockProducts = await getLowStockProducts();
   
   const formatPrice = (cents: number) => `€${(cents / 100).toFixed(2)}`;
 
@@ -66,21 +66,7 @@ export default async function AdminInventoryPage() {
                 {lowStockProducts.map((product) => (
                   <tr key={product.id}>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        {product.image && (
-                          <img 
-                            src={product.image} 
-                            alt={product.name.de}
-                            style={{ 
-                              width: 40, 
-                              height: 40, 
-                              objectFit: 'cover',
-                              borderRadius: 6 
-                            }}
-                          />
-                        )}
-                        <strong>{product.name.de}</strong>
-                      </div>
+                      <strong>{product.name}</strong>
                     </td>
                     <td>
                       <span style={{
@@ -130,8 +116,9 @@ export default async function AdminInventoryPage() {
           </thead>
           <tbody>
             {products.map((product) => {
-              const currentStock = getProductTotalStock(product.id);
-              const isLow = currentStock <= product.lowStockThreshold && currentStock > 0;
+              const currentStock = product.stockQuantity ?? 0;
+              const threshold = product.lowStockThreshold ?? 5;
+              const isLow = currentStock <= threshold && currentStock > 0;
               const isOut = currentStock === 0;
               
               return (
@@ -153,7 +140,7 @@ export default async function AdminInventoryPage() {
                       <div>
                         <strong>{product.name.de}</strong>
                         <div style={{ fontSize: '0.875rem', color: '#666' }}>
-                          {product.origin.de}
+                          {product.origin?.de ?? ''}
                         </div>
                       </div>
                     </div>
@@ -179,7 +166,7 @@ export default async function AdminInventoryPage() {
                       {currentStock}
                     </span>
                   </td>
-                  <td style={{ color: '#666' }}>{product.lowStockThreshold}</td>
+                  <td style={{ color: '#666' }}>{threshold}</td>
                   <td>
                     {isOut ? (
                       <span style={{
@@ -239,7 +226,7 @@ export default async function AdminInventoryPage() {
         </h3>
         <p style={{ margin: 0, color: '#0c4a6e' }}>
           Der Bestand wird automatisch bei jeder Bestellung reduziert und bei Erstattungen wiederhergestellt.
-          Für manuelle Bestandsanpassungen bearbeite die Produktkonfiguration in <code>src/config/products/</code>.
+          Für manuelle Bestandsanpassungen bearbeite die Produkte im Admin-Panel unter &quot;Produkte&quot;.
           Die tägliche E-Mail-Zusammenfassung enthält Warnungen bei niedrigem Bestand.
         </p>
       </div>

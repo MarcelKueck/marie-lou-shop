@@ -752,3 +752,139 @@
   margin-bottom: 20px;
 }
 
+/* Gift Cards List */
+.giftCardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.giftCardCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.giftCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.giftCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.giftCardCode {
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+.giftCardDate {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.giftCardStatus {
+  padding: 0.35rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.giftCardStatus.statusActive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.giftCardStatus.statusUsed {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.giftCardStatus.statusDisabled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.giftCardDetails {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.giftCardAmount,
+.giftCardBalance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.amountLabel,
+.balanceLabel,
+.recipientLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.amountValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.balanceValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.giftCardRecipient {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.recipientValue {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.giftCardActions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.copyCodeButton {
+  padding: 0.5rem 1rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyCodeButton:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+

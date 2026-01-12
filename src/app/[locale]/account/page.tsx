@@ -36,6 +36,21 @@ interface PendingReward {
   expiresAt: string | null;
 }
 
+interface PurchasedGiftCard {
+  id: string;
+  code: string;
+  amount: number;
+  balance: number;
+  currency: string;
+  status: string;
+  recipientEmail: string | null;
+  recipientName: string | null;
+  personalMessage: string | null;
+  deliveryMethod: string;
+  createdAt: string;
+  activatedAt: string | null;
+}
+
 interface UserData {
   customer: {
     id: string;
@@ -60,7 +75,7 @@ interface UserData {
   orders: OrderData[];
 }
 
-type TabType = 'orders' | 'profile' | 'referrals';
+type TabType = 'orders' | 'giftCards' | 'profile' | 'referrals';
 
 export default function AccountPage() {
   const t = useTranslations('account');
@@ -68,8 +83,10 @@ export default function AccountPage() {
   const { addItem, openCart } = useCart();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [pendingRewards, setPendingRewards] = useState<PendingReward[]>([]);
+  const [purchasedGiftCards, setPurchasedGiftCards] = useState<PurchasedGiftCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [copiedGiftCardId, setCopiedGiftCardId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('orders');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [claimingRewardId, setClaimingRewardId] = useState<string | null>(null);
@@ -90,6 +107,13 @@ export default function AccountPage() {
         if (rewardsResponse.ok) {
           const rewardsData = await rewardsResponse.json();
           setPendingRewards(rewardsData.pendingRewards || []);
+        }
+        
+        // Fetch purchased gift cards
+        const giftCardsResponse = await fetch('/api/gift-cards/my-purchases');
+        if (giftCardsResponse.ok) {
+          const giftCardsData = await giftCardsResponse.json();
+          setPurchasedGiftCards(giftCardsData.giftCards || []);
         }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -249,6 +273,12 @@ export default function AccountPage() {
               {t('tabs.orders')}
             </button>
             <button 
+              className={`${styles.tab} ${activeTab === 'giftCards' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('giftCards')}
+            >
+              {t('tabs.giftCards')}
+            </button>
+            <button 
               className={`${styles.tab} ${activeTab === 'profile' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('profile')}
             >
@@ -323,6 +353,91 @@ export default function AccountPage() {
                         >
                           {t('orders.viewDetails')}
                         </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Gift Cards Tab */}
+          {activeTab === 'giftCards' && (
+            <div className={styles.content}>
+              {purchasedGiftCards.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon}>🎁</div>
+                  <h3>{t('purchasedGiftCards.empty')}</h3>
+                  <p>{t('purchasedGiftCards.emptyDescription')}</p>
+                  <Link href="/shop/gift-card" className={styles.shopButton}>
+                    {t('purchasedGiftCards.buyGiftCard')}
+                  </Link>
+                </div>
+              ) : (
+                <div className={styles.giftCardsList}>
+                  {purchasedGiftCards.map((giftCard) => (
+                    <div key={giftCard.id} className={styles.giftCardCard}>
+                      <div className={styles.giftCardHeader}>
+                        <div className={styles.giftCardInfo}>
+                          <span className={styles.giftCardCode}>{giftCard.code}</span>
+                          <span className={styles.giftCardDate}>
+                            {t('purchasedGiftCards.purchasedOn')} {formatDate(giftCard.createdAt)}
+                          </span>
+                        </div>
+                        <span className={`${styles.giftCardStatus} ${
+                          giftCard.status === 'active' && giftCard.balance > 0 
+                            ? styles.statusActive 
+                            : giftCard.balance === 0 
+                              ? styles.statusUsed 
+                              : styles.statusDisabled
+                        }`}>
+                          {giftCard.status === 'active' && giftCard.balance > 0 
+                            ? t('purchasedGiftCards.statusActive')
+                            : giftCard.balance === 0
+                              ? t('purchasedGiftCards.statusUsed')
+                              : t('purchasedGiftCards.statusDisabled')}
+                        </span>
+                      </div>
+                      <div className={styles.giftCardDetails}>
+                        <div className={styles.giftCardAmount}>
+                          <span className={styles.amountLabel}>{t('purchasedGiftCards.amount')}</span>
+                          <span className={styles.amountValue}>
+                            {formatPrice(giftCard.amount, giftCard.currency)}
+                          </span>
+                        </div>
+                        <div className={styles.giftCardBalance}>
+                          <span className={styles.balanceLabel}>{t('purchasedGiftCards.balance')}</span>
+                          <span className={styles.balanceValue}>
+                            {formatPrice(giftCard.balance, giftCard.currency)}
+                          </span>
+                        </div>
+                      </div>
+                      {giftCard.recipientEmail && (
+                        <div className={styles.giftCardRecipient}>
+                          <span className={styles.recipientLabel}>{t('purchasedGiftCards.sentTo')}</span>
+                          <span className={styles.recipientValue}>
+                            {giftCard.recipientName ? `${giftCard.recipientName} (${giftCard.recipientEmail})` : giftCard.recipientEmail}
+                          </span>
+                        </div>
+                      )}
+                      {giftCard.deliveryMethod === 'download' && (
+                        <div className={styles.giftCardRecipient}>
+                          <span className={styles.recipientValue}>
+                            {t('purchasedGiftCards.downloadedPdf')}
+                          </span>
+                        </div>
+                      )}
+                      <div className={styles.giftCardActions}>
+                        <button
+                          onClick={async () => {
+                            await navigator.clipboard.writeText(giftCard.code);
+                            setCopiedGiftCardId(giftCard.id);
+                            setTimeout(() => setCopiedGiftCardId(null), 2000);
+                          }}
+                          className={styles.copyCodeButton}
+                        >
+                          {copiedGiftCardId === giftCard.id ? t('purchasedGiftCards.copied') : t('purchasedGiftCards.copyCode')}
+                        </button>
                       </div>
                     </div>
                   ))}

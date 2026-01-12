@@ -234,7 +234,7 @@ async function createInvoiceDocument(request: DocumentCreateRequest): Promise<Cr
 /**
  * Get invoice PDF from rechnungs-api.de
  */
-async function getInvoicePdf(documentId: string): Promise<ArrayBuffer> {
+export async function getInvoicePdf(documentId: string): Promise<ArrayBuffer> {
   const client = getApiClient();
   return client.readDocument(documentId, 'pdf');
 }

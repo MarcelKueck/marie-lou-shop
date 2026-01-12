@@ -56,8 +56,14 @@ export default function CartPage() {
               {/* Cart Items */}
               <div className={styles.itemsSection}>
                 <div className={styles.itemsList}>
-                  {itemsWithProducts.map((item) => (
-                    <div key={`${item.productId}-${item.variantId}`} className={styles.cartItem}>
+                  {itemsWithProducts.map((item) => {
+                    // Use rewardId for unique key if it's a free reward
+                    const itemKey = item.isFreeReward && item.rewardId 
+                      ? `reward-${item.rewardId}` 
+                      : `${item.productId}-${item.variantId}`;
+                    
+                    return (
+                    <div key={itemKey} className={`${styles.cartItem} ${item.isFreeReward ? styles.freeItem : ''}`}>
                       <div className={styles.itemImage}>
                         {item.product.image ? (
                           <Image
@@ -69,6 +75,9 @@ export default function CartPage() {
                         ) : (
                           <div className={styles.imagePlaceholder} />
                         )}
+                        {item.isFreeReward && (
+                          <span className={styles.freeBadge}>🎁 FREE</span>
+                        )}
                       </div>
 
                       <div className={styles.itemDetails}>
@@ -79,7 +88,7 @@ export default function CartPage() {
                           </div>
                           <button
                             className={styles.removeButton}
-                            onClick={() => removeItem(item.productId, item.variantId)}
+                            onClick={() => removeItem(item.productId, item.variantId, item.rewardId)}
                             aria-label={tCart('remove')}
                           >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -90,26 +99,37 @@ export default function CartPage() {
                         </div>
 
                         <div className={styles.itemFooter}>
+                          {item.isFreeReward ? (
+                            <span className={styles.rewardNote}>{locale === 'de' ? 'Referral-Belohnung' : 'Referral Reward'}</span>
+                          ) : (
                           <div className={styles.quantityControls}>
                             <button
                               className={styles.quantityButton}
-                              onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1, item.rewardId)}
                             >
                               −
                             </button>
                             <span className={styles.quantityValue}>{item.quantity}</span>
                             <button
                               className={styles.quantityButton}
-                              onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1, item.rewardId)}
                             >
                               +
                             </button>
                           </div>
-                          <p className={styles.itemPrice}>{formatPrice(item.totalPrice)}</p>
+                          )}
+                          <p className={styles.itemPrice}>
+                            {item.isFreeReward ? (
+                              <span className={styles.freePrice}>{locale === 'de' ? 'Gratis' : 'Free'}</span>
+                            ) : (
+                              formatPrice(item.totalPrice)
+                            )}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

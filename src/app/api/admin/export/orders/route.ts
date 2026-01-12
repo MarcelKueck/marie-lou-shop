@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { orders } from '@/db/schema';
 import { desc, gte, lte, and } from 'drizzle-orm';
-import { isAdminAuthenticated } from '@/lib/admin-auth';
+import { cookies } from 'next/headers';
+
+// Helper to verify admin session
+async function verifyAdminSession() {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('admin_session');
+  return sessionCookie?.value === 'authenticated';
+}
 
 export async function GET(request: NextRequest) {
   // Verify admin is authenticated
-  const isAdmin = await isAdminAuthenticated();
+  const isAdmin = await verifyAdminSession();
   if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

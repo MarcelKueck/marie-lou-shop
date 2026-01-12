@@ -42,6 +42,22 @@ export interface ProductVariant {
   weight: string | null;
 }
 
+// Cart types
+export interface CartItem {
+  productId: string;
+  variantId: string;
+  quantity: number;
+  // For free referral rewards
+  isFreeReward?: boolean;
+  rewardId?: string;
+}
+
+export interface CartItemWithProduct extends CartItem {
+  product: Product;
+  variant: ProductVariant;
+  totalPrice: number;
+}
+
 // Transform DB product to unified format
 function transformDbProduct(product: DbProduct & { variants: DbProductVariant[] }): Product {
   return {

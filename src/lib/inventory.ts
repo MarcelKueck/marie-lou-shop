@@ -1,60 +1,58 @@
-import { allProducts, type Product } from '@/config/products';
-
-// In-memory stock tracking (for config-based products)
-// In production with DB-based products, this would update the database
-const stockAdjustments: Map<string, number> = new Map();
+import { db } from '@/db';
+import { products, productVariants } from '@/db/schema';
+import { eq, and, lte, sql } from 'drizzle-orm';
 
 /**
- * Get current stock for a product variant
+ * Get current stock for a product variant from database
  */
-export function getProductStock(productId: string, variantId: string): number {
-  const product = allProducts.find(p => p.id === productId);
-  if (!product) return 0;
+export async function getProductStock(productId: string, variantId: string): Promise<number> {
+  const variant = await db.query.productVariants.findFirst({
+    where: and(
+      eq(productVariants.productId, productId),
+      eq(productVariants.id, variantId)
+    ),
+  });
   
-  const key = `${productId}:${variantId}`;
-  const adjustment = stockAdjustments.get(key) || 0;
-  
-  return Math.max(0, product.stockQuantity + adjustment);
+  return variant?.stockQuantity ?? 0;
 }
 
 /**
- * Get total stock for a product (all variants)
+ * Get total stock for a product (sum of all variants)
  */
-export function getProductTotalStock(productId: string): number {
-  const product = allProducts.find(p => p.id === productId);
-  if (!product) return 0;
+export async function getProductTotalStock(productId: string): Promise<number> {
+  const result = await db.select({
+    totalStock: sql<number>`coalesce(sum(${productVariants.stockQuantity}), 0)`,
+  })
+  .from(productVariants)
+  .where(eq(productVariants.productId, productId));
   
-  // Sum adjustments for all variants
-  let totalAdjustment = 0;
-  for (const variant of product.variants) {
-    const key = `${productId}:${variant.id}`;
-    totalAdjustment += stockAdjustments.get(key) || 0;
-  }
-  
-  return Math.max(0, product.stockQuantity + totalAdjustment);
+  return result[0]?.totalStock ?? 0;
 }
 
 /**
  * Check if a product variant is in stock
  */
-export function isInStock(productId: string, variantId: string, quantity: number = 1): boolean {
-  return getProductStock(productId, variantId) >= quantity;
+export async function isInStock(productId: string, variantId: string, quantity: number = 1): Promise<boolean> {
+  const stock = await getProductStock(productId, variantId);
+  return stock >= quantity;
 }
 
 /**
  * Deduct stock when an order is placed
  */
-export function deductStock(productId: string, variantId: string, quantity: number): boolean {
-  const currentStock = getProductStock(productId, variantId);
+export async function deductStock(productId: string, variantId: string, quantity: number): Promise<boolean> {
+  const currentStock = await getProductStock(productId, variantId);
   
   if (currentStock < quantity) {
     console.warn(`Insufficient stock for ${productId}:${variantId}. Have ${currentStock}, need ${quantity}`);
     return false;
   }
   
-  const key = `${productId}:${variantId}`;
-  const currentAdjustment = stockAdjustments.get(key) || 0;
-  stockAdjustments.set(key, currentAdjustment - quantity);
+  await db.update(productVariants)
+    .set({
+      stockQuantity: sql`${productVariants.stockQuantity} - ${quantity}`,
+    })
+    .where(eq(productVariants.id, variantId));
   
   console.log(`Stock deducted: ${productId}:${variantId} - ${quantity} (remaining: ${currentStock - quantity})`);
   return true;
@@ -63,10 +61,12 @@ export function deductStock(productId: string, variantId: string, quantity: numb
 /**
  * Add stock back (e.g., when order is cancelled/refunded)
  */
-export function restoreStock(productId: string, variantId: string, quantity: number): void {
-  const key = `${productId}:${variantId}`;
-  const currentAdjustment = stockAdjustments.get(key) || 0;
-  stockAdjustments.set(key, currentAdjustment + quantity);
+export async function restoreStock(productId: string, variantId: string, quantity: number): Promise<void> {
+  await db.update(productVariants)
+    .set({
+      stockQuantity: sql`${productVariants.stockQuantity} + ${quantity}`,
+    })
+    .where(eq(productVariants.id, variantId));
   
   console.log(`Stock restored: ${productId}:${variantId} + ${quantity}`);
 }
@@ -74,14 +74,14 @@ export function restoreStock(productId: string, variantId: string, quantity: num
 /**
  * Check stock availability for a cart
  */
-export function checkCartStock(items: Array<{ productId: string; variantId: string; quantity: number }>): {
+export async function checkCartStock(items: Array<{ productId: string; variantId: string; quantity: number }>): Promise<{
   available: boolean;
   unavailableItems: Array<{ productId: string; variantId: string; requested: number; available: number }>;
-} {
+}> {
   const unavailableItems: Array<{ productId: string; variantId: string; requested: number; available: number }> = [];
   
   for (const item of items) {
-    const available = getProductStock(item.productId, item.variantId);
+    const available = await getProductStock(item.productId, item.variantId);
     if (available < item.quantity) {
       unavailableItems.push({
         productId: item.productId,
@@ -101,41 +101,46 @@ export function checkCartStock(items: Array<{ productId: string; variantId: stri
 /**
  * Get all products with low stock
  */
-export function getLowStockProducts(): Array<Product & { currentStock: number }> {
-  const lowStock: Array<Product & { currentStock: number }> = [];
+export async function getLowStockProducts(): Promise<Array<{
+  id: string;
+  name: string;
+  currentStock: number;
+  lowStockThreshold: number;
+}>> {
+  const lowStockProducts = await db.query.products.findMany({
+    where: lte(products.stockQuantity, sql`${products.lowStockThreshold}`),
+  });
   
-  for (const product of allProducts) {
-    const currentStock = getProductTotalStock(product.id);
-    if (currentStock <= product.lowStockThreshold) {
-      lowStock.push({
-        ...product,
-        currentStock,
-      });
-    }
-  }
-  
-  return lowStock;
+  return lowStockProducts.map(product => ({
+    id: product.id,
+    name: product.nameEn,
+    currentStock: product.stockQuantity ?? 0,
+    lowStockThreshold: product.lowStockThreshold ?? 5,
+  }));
 }
 
 /**
  * Get stock status summary
  */
-export function getStockSummary(): {
+export async function getStockSummary(): Promise<{
   totalProducts: number;
   inStock: number;
   lowStock: number;
   outOfStock: number;
-} {
+}> {
+  const allProductsList = await db.query.products.findMany();
+  
   let inStock = 0;
   let lowStock = 0;
   let outOfStock = 0;
   
-  for (const product of allProducts) {
-    const currentStock = getProductTotalStock(product.id);
+  for (const product of allProductsList) {
+    const stock = product.stockQuantity ?? 0;
+    const threshold = product.lowStockThreshold ?? 5;
     
-    if (currentStock === 0) {
+    if (stock === 0) {
       outOfStock++;
-    } else if (currentStock <= product.lowStockThreshold) {
+    } else if (stock <= threshold) {
       lowStock++;
     } else {
       inStock++;
@@ -143,7 +148,7 @@ export function getStockSummary(): {
   }
   
   return {
-    totalProducts: allProducts.length,
+    totalProducts: allProductsList.length,
     inStock,
     lowStock,
     outOfStock,
@@ -153,14 +158,14 @@ export function getStockSummary(): {
 /**
  * Process order items and deduct stock
  */
-export function processOrderStock(items: Array<{ productId: string; variantId: string; quantity: number }>): {
+export async function processOrderStock(items: Array<{ productId: string; variantId: string; quantity: number }>): Promise<{
   success: boolean;
   failedItems: Array<{ productId: string; variantId: string }>;
-} {
+}> {
   const failedItems: Array<{ productId: string; variantId: string }> = [];
   
   // First pass: check all items
-  const stockCheck = checkCartStock(items);
+  const stockCheck = await checkCartStock(items);
   if (!stockCheck.available) {
     return {
       success: false,
@@ -170,7 +175,7 @@ export function processOrderStock(items: Array<{ productId: string; variantId: s
   
   // Second pass: deduct stock
   for (const item of items) {
-    const success = deductStock(item.productId, item.variantId, item.quantity);
+    const success = await deductStock(item.productId, item.variantId, item.quantity);
     if (!success) {
       failedItems.push({ productId: item.productId, variantId: item.variantId });
     }

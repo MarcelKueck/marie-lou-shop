@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentCustomer } from '@/lib/auth';
 import { SUBSCRIPTION_INTERVALS, calculateSubscriptionPrice } from '@/lib/subscriptions';
-import { getProductById } from '@/config/products';
+import { getProductById } from '@/lib/products';
 import { stripe } from '@/lib/stripe';
 
 // POST /api/subscriptions/create - Create a new subscription
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate product
-    const product = getProductById(productId);
+    const product = await getProductById(productId);
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 400 });
     }

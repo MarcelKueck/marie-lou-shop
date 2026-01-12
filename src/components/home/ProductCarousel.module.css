@@ -1,0 +1,286 @@
+.productCarousel {
+  padding: 8rem 4rem;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--color-accent-light);
+  color: var(--color-primary-medium);
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Carousel wrapper for navigation positioning */
+.carouselWrapper {
+  position: relative;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  overflow: hidden;
+}
+
+/* Carousel track */
+.carousel {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 1rem 0;
+  scroll-padding: 0;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual carousel item - calculate width for exactly 3 items visible */
+/* Width = (100% - 2 gaps) / 3, where gap is 2rem */
+.carouselItem {
+  flex: 0 0 calc((100% - 4rem) / 3);
+  min-width: 280px;
+  scroll-snap-align: start;
+}
+
+/* Center items when there are 3 or fewer */
+@media (min-width: 1200px) {
+  .carousel {
+    justify-content: center;
+  }
+  
+  /* When there are many products, don't center - allow scrolling */
+  .carousel:has(.carouselItem:nth-child(4)) {
+    justify-content: flex-start;
+  }
+}
+
+/* Navigation buttons */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navButton:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.navButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.navButton.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navButtonLeft {
+  left: 0;
+}
+
+.navButtonRight {
+  right: 0;
+}
+
+/* Scroll indicator for mobile */
+.scrollIndicator {
+  margin-top: 1.5rem;
+  display: none;
+}
+
+.scrollHint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.scrollHint::before,
+.scrollHint::after {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--color-border);
+}
+
+/* Loading state */
+.loadingGrid {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.loadingCard {
+  width: 340px;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border-radius: 16px;
+}
+
+.loadingImage {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.loadingText {
+  height: 1.5rem;
+  width: 80%;
+  margin: 0 auto 0.5rem;
+  background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.loadingTextShort {
+  height: 1rem;
+  width: 50%;
+  margin: 0 auto;
+  background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .productCarousel {
+    padding: 5rem 2rem;
+  }
+
+  /* Show 2 items on tablet */
+  .carouselItem {
+    flex: 0 0 calc((100% - 2rem) / 2);
+    min-width: 280px;
+  }
+
+  .navButton {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loadingCard {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .productCarousel {
+    padding: 4rem 1rem;
+  }
+
+  .carouselWrapper {
+    margin: 0 -1rem;
+    padding: 0;
+  }
+
+  .carousel {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  /* Show 1 item on mobile, with peek of next */
+  .carouselItem {
+    flex: 0 0 85%;
+    min-width: 260px;
+  }
+
+  /* Hide desktop navigation on mobile */
+  .navButton {
+    display: none;
+  }
+
+  /* Show scroll hint on mobile */
+  .scrollIndicator {
+    display: block;
+  }
+
+  .loadingGrid {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0 1rem;
+  }
+
+  .loadingCard {
+    width: 280px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .productCarousel {
+    padding: 3rem 0;
+  }
+
+  .badge,
+  .title,
+  .subtitle {
+    padding: 0 1rem;
+  }
+
+  .carouselItem {
+    flex: 0 0 90%;
+    min-width: 240px;
+  }
+}

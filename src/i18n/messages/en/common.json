@@ -44,7 +44,8 @@
     "description": "Each coffee is roasted specifically for your order. Select your favorite and taste the difference freshness makes.",
     "addToCart": "Add to Cart",
     "added": "Added ✓",
-    "viewAll": "View All Products"
+    "viewAll": "View All Products",
+    "swipeToSeeMore": "Swipe to see more"
   },
   "process": {
     "badge": "How It Works",
@@ -105,6 +106,7 @@
     "singleOrigins": "Single Origins",
     "blends": "Blends",
     "subscriptions": "Subscriptions",
+    "giftCards": "Gift Cards",
     "learn": "Learn",
     "ourStory": "Our Story",
     "referralProgram": "Refer a Friend",
@@ -191,7 +193,9 @@
   },
   "shopPage": {
     "title": "Shop Fresh Coffee",
-    "subtitle": "Every bag is roasted to order and shipped within days. Taste the difference freshness makes."
+    "subtitle": "Every bag is roasted to order and shipped within days. Taste the difference freshness makes.",
+    "giftCardBanner": "Looking for the perfect gift?",
+    "giftCardCta": "Shop Gift Cards"
   },
   "productPage": {
     "selectVariant": "Select grind type",
@@ -336,6 +340,7 @@
     "logout": "Log out",
     "tabs": {
       "orders": "Orders",
+      "giftCards": "Gift Cards",
       "profile": "Profile",
       "referrals": "Referrals"
     },
@@ -439,6 +444,28 @@
       "claimError": "Failed to claim reward. Please try again.",
       "rewardHint": "Add your free coffee to your cart and it will be included with your next order at no extra cost."
     },
+    "purchasedGiftCards": {
+      "title": "Purchased Gift Cards",
+      "empty": "No gift cards purchased yet",
+      "emptyDescription": "Gift cards you purchase will appear here.",
+      "buyGiftCard": "Buy a Gift Card",
+      "code": "Code",
+      "amount": "Amount",
+      "balance": "Balance",
+      "status": "Status",
+      "purchasedOn": "Purchased on",
+      "recipient": "Recipient",
+      "sentTo": "Sent to",
+      "downloadedPdf": "Downloaded as PDF",
+      "resendEmail": "Resend Email",
+      "resending": "Sending...",
+      "resent": "Email sent!",
+      "copyCode": "Copy Code",
+      "copied": "Copied!",
+      "statusActive": "Active",
+      "statusUsed": "Fully Used",
+      "statusDisabled": "Disabled"
+    },
     "addresses": {
       "title": "My Addresses",
       "description": "Manage your shipping and billing addresses",
@@ -502,7 +529,8 @@
       "subtitle": "Log in to your Marie Lou account",
       "submit": "Log In",
       "noAccount": "Don't have an account?",
-      "createAccount": "Create one"
+      "createAccount": "Create one",
+      "forgotPassword": "Forgot password?"
     },
     "register": {
       "title": "Create Account",

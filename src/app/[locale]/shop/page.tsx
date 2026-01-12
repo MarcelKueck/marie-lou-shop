@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { useBrand } from '@/hooks/useBrand';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
@@ -85,6 +86,17 @@ export default function ShopPage() {
           ) : (
             <ProductGrid products={products} showBadge={false} />
           )}
+        </section>
+
+        {/* Gift Card Banner */}
+        <section className={styles.giftCardBanner}>
+          <div className={styles.giftCardContent}>
+            <span className={styles.giftIcon}>🎁</span>
+            <p>{t('giftCardBanner')}</p>
+            <Link href="/shop/gift-card" className={styles.giftCardButton}>
+              {t('giftCardCta')}
+            </Link>
+          </div>
         </section>
       </main>
 

@@ -3,8 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { ProductCard } from './ProductCard';
 import styles from './ProductGrid.module.css';
+import type { Product } from '@/lib/products';
 
-// Flexible product interface that works with both config and DB products
+// For variants from DB which might have slightly different structure
 interface ProductVariant {
   id: string;
   name: { en: string; de: string };
@@ -12,7 +13,8 @@ interface ProductVariant {
   weight?: string | null;
 }
 
-interface Product {
+// Flexible product type that accepts config Product or DB products
+type FlexibleProduct = Product | {
   id: string;
   slug: string;
   brand: 'coffee' | 'tea';
@@ -29,12 +31,12 @@ interface Product {
   reviewCount?: number | null;
   stockQuantity?: number | null;
   lowStockThreshold?: number | null;
-  attributes?: Record<string, unknown> | null;
+  attributes?: unknown;
   variants: ProductVariant[];
-}
+};
 
 interface ProductGridProps {
-  products: Product[];
+  products: FlexibleProduct[];
   title?: string;
   showBadge?: boolean;
 }

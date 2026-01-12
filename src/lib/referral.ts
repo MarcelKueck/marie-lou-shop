@@ -1,5 +1,3 @@
-import { getProductsByBrand } from '@/config/products';
-
 // ============================================================================
 // Referral Code Generation
 // ============================================================================
@@ -49,42 +47,6 @@ export const REFERRAL_DISCOUNT_PERCENT = 20; // 20% off for referred friends
 export const REFERRAL_MINIMUM_ORDER = 2500; // €25.00 minimum order (in cents)
 export const REFERRAL_LINK_EXPIRY_DAYS = 90; // Links expire after 90 days
 export const REFERRAL_SEPARATE_SHIPPING_COST = 495; // €4.95 to ship reward separately
-
-// ============================================================================
-// Random Reward Bag Selection
-// ============================================================================
-
-/**
- * Select a random 250g bag as reward
- * Weighted slightly towards products we want to move
- */
-export function selectRandomRewardProduct(brand: 'coffee' | 'tea'): {
-  productId: string;
-  productName: { en: string; de: string };
-  productSlug: string;
-  variantId: string;
-  variantName: { en: string; de: string };
-} | null {
-  const brandProducts = getProductsByBrand(brand);
-  
-  if (brandProducts.length === 0) {
-    return null;
-  }
-  
-  // Random selection (could add weighting logic here later)
-  const randomProduct = brandProducts[Math.floor(Math.random() * brandProducts.length)];
-  
-  // Find the 250g variant (or first variant if not available)
-  const smallVariant = randomProduct.variants.find((v: { weight: string }) => v.weight === '250g') || randomProduct.variants[0];
-  
-  return {
-    productId: randomProduct.id,
-    productName: randomProduct.name,
-    productSlug: randomProduct.slug,
-    variantId: smallVariant.id,
-    variantName: smallVariant.name,
-  };
-}
 
 // ============================================================================
 // Cookie/Session Helpers

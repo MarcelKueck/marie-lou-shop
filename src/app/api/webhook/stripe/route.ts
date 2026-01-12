@@ -13,7 +13,7 @@ import {
   REWARD_STATUS,
 } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { allProducts } from '@/config/products';
+import { getAllProducts, getProductsByBrand } from '@/lib/products';
 import { generateReferralCode } from '@/lib/referral-server';
 import { processOrderStock, restoreStock } from '@/lib/inventory';
 
@@ -273,7 +273,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // Deduct stock for order items
   if (orderItemsForStock.length > 0) {
-    const stockResult = processOrderStock(orderItemsForStock);
+    const stockResult = await processOrderStock(orderItemsForStock);
     if (!stockResult.success) {
       console.warn(`Stock deduction had issues for order ${orderNumber}:`, stockResult.failedItems);
       // Don't fail the order - just log the issue
@@ -309,9 +309,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   // Generate invoice automatically
+  let invoiceId: string | null = null;
+  let invoiceNumber: string | null = null;
   try {
     const { generateInvoiceForOrder } = await import('@/lib/invoice');
-    const { invoiceId, invoiceNumber } = await generateInvoiceForOrder(orderId);
+    const result = await generateInvoiceForOrder(orderId);
+    invoiceId = result.invoiceId;
+    invoiceNumber = result.invoiceNumber;
     console.log(`Invoice ${invoiceNumber} (${invoiceId}) generated for order ${orderNumber}`);
   } catch (error) {
     // Log but don't fail the webhook - invoice can be generated on-demand later
@@ -333,11 +337,25 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     try {
       const { sendOrderConfirmationEmail, sendAdminNewOrderEmail } = await import('@/lib/email');
       
-      // Send order confirmation to customer
+      // Fetch invoice PDF if available
+      let invoicePdf: ArrayBuffer | undefined;
+      if (invoiceId) {
+        try {
+          const { getInvoicePdf } = await import('@/lib/invoice');
+          invoicePdf = await getInvoicePdf(invoiceId);
+          console.log(`Invoice PDF fetched for order ${orderNumber}`);
+        } catch (pdfError) {
+          console.error(`Failed to fetch invoice PDF for order ${orderNumber}:`, pdfError);
+        }
+      }
+      
+      // Send order confirmation to customer (with invoice attached if available)
       await sendOrderConfirmationEmail({
         order: createdOrder,
         items: createdItems,
         locale: 'de', // Default to German, could detect from session
+        invoicePdf,
+        invoiceNumber: invoiceNumber || undefined,
       });
       
       // Send new order notification to admin
@@ -441,7 +459,7 @@ async function processReferralReward(
     .where(eq(referralCodes.id, referralCode.id));
 
   // Create reward for the referrer (random product)
-  const rewardProduct = selectRandomProduct();
+  const rewardProduct = await selectRandomProduct();
   
   if (rewardProduct) {
     const rewardId = crypto.randomUUID();
@@ -561,11 +579,14 @@ async function checkReferrerAbusePattern(referrerId: string): Promise<{ isSuspic
   return { isSuspicious: false, reason: '' };
 }
 
-function selectRandomProduct() {
-  const coffeeProducts = allProducts.filter(p => p.brand === 'coffee');
+async function selectRandomProduct() {
+  // Fetch coffee products from database
+  const coffeeProducts = await getProductsByBrand('coffee');
   
   if (coffeeProducts.length === 0) {
-    return allProducts[0]; // Fallback to any product
+    // Fallback to any product
+    const allProducts = await getAllProducts();
+    return allProducts[0] || null;
   }
   
   const randomIndex = Math.floor(Math.random() * coffeeProducts.length);
@@ -683,8 +704,12 @@ async function handleGiftCardPurchase(session: Stripe.Checkout.Session) {
     const recipientEmail = session.metadata?.recipientEmail;
     
     if (deliveryMethod === 'email' && recipientEmail) {
-      await sendGiftCardEmail(giftCardId);
-      console.log(`Gift card email sent for ${giftCardId}`);
+      const emailSent = await sendGiftCardEmail(giftCardId);
+      if (emailSent) {
+        console.log(`Gift card email sent for ${giftCardId}`);
+      } else {
+        console.log(`Gift card email could not be sent for ${giftCardId} (domain may not be verified)`);
+      }
     }
   } catch (error) {
     console.error('Error processing gift card purchase:', error);

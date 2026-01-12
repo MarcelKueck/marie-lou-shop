@@ -4,3 +4,4 @@ export { default as Story } from './Story';
 export { default as Process } from './Process';
 export { default as Testimonials } from './Testimonials';
 export { default as Newsletter } from './Newsletter';
+export { default as ProductCarousel } from './ProductCarousel';

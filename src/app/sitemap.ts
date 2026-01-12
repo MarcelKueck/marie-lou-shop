@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
-import { allProducts } from '@/config/products';
+import { getAllProducts } from '@/lib/products';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://marieloucoffee.com';
   const locales = ['de', 'en'];
   
@@ -28,6 +28,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: page.priority,
     }))
   );
+  
+  // Fetch products from database
+  const allProducts = await getAllProducts();
   
   // Generate URLs for products in all locales
   const productUrls = allProducts.flatMap(product =>

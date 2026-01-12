@@ -44,6 +44,8 @@ export interface OrderEmailData {
   order: Order;
   items: OrderItem[];
   locale?: 'de' | 'en';
+  invoicePdf?: Buffer | ArrayBuffer;
+  invoiceNumber?: string;
 }
 
 export interface TrackingEmailData extends OrderEmailData {
@@ -59,7 +61,7 @@ export interface TrackingEmailData extends OrderEmailData {
  * Send order confirmation email to customer
  */
 export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<{ success: boolean; error?: string }> {
-  const { order, items, locale = 'de' } = data;
+  const { order, items, locale = 'de', invoicePdf, invoiceNumber } = data;
   const brand = getBrandConfig(order.brand);
   
   const subject = locale === 'de'
@@ -67,11 +69,20 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
     : `Order Confirmation #${order.orderNumber}`;
   
   try {
+    // Prepare attachments if invoice PDF is provided
+    const attachments = invoicePdf ? [
+      {
+        filename: `${invoiceNumber || order.invoiceNumber || order.orderNumber}-rechnung.pdf`,
+        content: invoicePdf instanceof Buffer ? invoicePdf : Buffer.from(new Uint8Array(invoicePdf)),
+      }
+    ] : undefined;
+
     const { error } = await resend.emails.send({
       from: brand.fromEmail,
       to: order.email,
       subject,
       html: generateOrderConfirmationHtml(order, items, brand, locale),
+      attachments,
     });
     
     if (error) {
@@ -79,7 +90,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
       return { success: false, error: error.message };
     }
     
-    console.log(`Order confirmation email sent to ${order.email} for order ${order.orderNumber}`);
+    console.log(`Order confirmation email sent to ${order.email} for order ${order.orderNumber}${invoicePdf ? ' (with invoice)' : ''}`);
     return { success: true };
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -288,6 +299,11 @@ export async function sendAdminNewOrderEmail(data: OrderEmailData): Promise<{ su
     });
     
     if (error) {
+      // In development with unverified domain, this is expected
+      if (error.message?.includes('testing emails') || error.message?.includes('verify a domain')) {
+        console.log(`Admin email skipped (domain not verified): order ${order.orderNumber}`);
+        return { success: true }; // Don't treat as error
+      }
       console.error('Failed to send admin new order email:', error);
       return { success: false, error: error.message };
     }
@@ -325,6 +341,11 @@ export async function sendAdminDailySummaryEmail(summary: {
     });
     
     if (error) {
+      // In development with unverified domain, this is expected
+      if (error.message?.includes('testing emails') || error.message?.includes('verify a domain')) {
+        console.log(`Admin daily summary email skipped (domain not verified)`);
+        return { success: true };
+      }
       console.error('Failed to send admin daily summary email:', error);
       return { success: false, error: error.message };
     }
@@ -359,6 +380,11 @@ export async function sendAdminLowStockAlertEmail(lowStockProducts: {
     });
     
     if (error) {
+      // In development with unverified domain, this is expected
+      if (error.message?.includes('testing emails') || error.message?.includes('verify a domain')) {
+        console.log(`Admin low stock alert email skipped (domain not verified)`);
+        return { success: true };
+      }
       console.error('Failed to send admin low stock alert email:', error);
       return { success: false, error: error.message };
     }
@@ -370,6 +396,139 @@ export async function sendAdminLowStockAlertEmail(lowStockProducts: {
     console.error('Error sending admin low stock alert email:', errorMessage);
     return { success: false, error: errorMessage };
   }
+}
+
+/**
+ * Send subscription reminder email (3 days before next billing)
+ */
+export async function sendSubscriptionReminderEmail(data: {
+  email: string;
+  firstName: string;
+  subscriptionId: string;
+  nextDeliveryDate: Date;
+  items: Array<{
+    productName: string;
+    variantName: string;
+    quantity: number;
+    unitPrice: number;
+  }>;
+  total: number;
+  brand: 'coffee' | 'tea';
+  locale: 'de' | 'en';
+}): Promise<{ success: boolean; error?: string }> {
+  const brandConfig = getBrandConfig();
+  
+  const isGerman = data.locale === 'de';
+  const formattedDate = data.nextDeliveryDate.toLocaleDateString(isGerman ? 'de-DE' : 'en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  
+  const subject = isGerman
+    ? `📦 Deine nächste ${brandConfig.name} Lieferung am ${formattedDate}`
+    : `📦 Your next ${brandConfig.name} delivery on ${formattedDate}`;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: brandConfig.fromEmail,
+      to: data.email,
+      subject,
+      html: generateSubscriptionReminderHtml(data, brandConfig, isGerman),
+    });
+    
+    if (error) {
+      console.error('Failed to send subscription reminder email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`Subscription reminder email sent to ${data.email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending subscription reminder email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+function generateSubscriptionReminderHtml(
+  data: {
+    email: string;
+    firstName: string;
+    subscriptionId: string;
+    nextDeliveryDate: Date;
+    items: Array<{
+      productName: string;
+      variantName: string;
+      quantity: number;
+      unitPrice: number;
+    }>;
+    total: number;
+    brand: 'coffee' | 'tea';
+    locale: 'de' | 'en';
+  },
+  brand: BrandConfig,
+  isGerman: boolean
+): string {
+  const formattedDate = data.nextDeliveryDate.toLocaleDateString(isGerman ? 'de-DE' : 'en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  
+  const itemsHtml = data.items.map(item => `
+    <div class="order-item">
+      <div>
+        <strong>${item.productName}</strong><br>
+        <span style="color: #666; font-size: 14px;">${item.variantName} × ${item.quantity}</span>
+      </div>
+      <div style="text-align: right;">
+        €${((item.unitPrice * item.quantity) / 100).toFixed(2)}
+      </div>
+    </div>
+  `).join('');
+  
+  const content = `
+    <h2>${isGerman ? 'Hallo' : 'Hello'} ${data.firstName}!</h2>
+    
+    <p>${isGerman 
+      ? `Deine nächste Abonnement-Lieferung ist für <strong>${formattedDate}</strong> geplant.`
+      : `Your next subscription delivery is scheduled for <strong>${formattedDate}</strong>.`
+    }</p>
+    
+    <div class="order-summary">
+      <h3 style="margin-top: 0;">${isGerman ? 'Deine Bestellung' : 'Your Order'}</h3>
+      ${itemsHtml}
+      <div class="total-row">
+        <div style="display: flex; justify-content: space-between;">
+          <span>${isGerman ? 'Gesamt' : 'Total'}</span>
+          <span>€${(data.total / 100).toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+    
+    <p>${isGerman
+      ? 'Wenn du Änderungen an deinem Abonnement vornehmen möchtest, kannst du das jederzeit in deinem Konto tun:'
+      : 'If you\'d like to make changes to your subscription, you can do so anytime in your account:'
+    }</p>
+    
+    <div style="text-align: center;">
+      <a href="${brand.baseUrl}/account/subscriptions" class="button">
+        ${isGerman ? 'Abonnement verwalten' : 'Manage Subscription'}
+      </a>
+    </div>
+    
+    <p style="color: #666; font-size: 14px; margin-top: 30px;">
+      ${isGerman
+        ? 'Du kannst dein Abonnement jederzeit pausieren, ändern oder kündigen.'
+        : 'You can pause, modify, or cancel your subscription at any time.'
+      }
+    </p>
+  `;
+  
+  return wrapInTemplate(content, brand);
 }
 
 // ============================================================================

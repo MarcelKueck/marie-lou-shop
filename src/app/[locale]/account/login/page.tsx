@@ -135,6 +135,11 @@ export default function LoginPage() {
                 {!isLogin && (
                   <span className={styles.hint}>{t('hints.password')}</span>
                 )}
+                {isLogin && (
+                  <Link href="/account/forgot-password" className={styles.forgotPassword}>
+                    {t('login.forgotPassword')}
+                  </Link>
+                )}
               </div>
 
               <button 

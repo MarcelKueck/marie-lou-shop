@@ -137,8 +137,14 @@ export default function CheckoutPage() {
               <h2 className={styles.sectionTitle}>{t('orderSummary')}</h2>
               
               <div className={styles.itemsList}>
-                {itemsWithProducts.map((item) => (
-                  <div key={`${item.productId}-${item.variantId}`} className={`${styles.summaryItem} ${item.isFreeReward ? styles.freeItem : ''}`}>
+                {itemsWithProducts.map((item) => {
+                  // Use rewardId for unique key if it's a free reward
+                  const itemKey = item.isFreeReward && item.rewardId 
+                    ? `reward-${item.rewardId}` 
+                    : `${item.productId}-${item.variantId}`;
+                  
+                  return (
+                  <div key={itemKey} className={`${styles.summaryItem} ${item.isFreeReward ? styles.freeItem : ''}`}>
                     <div className={styles.itemImage}>
                       {item.product.image ? (
                         <Image
@@ -167,7 +173,8 @@ export default function CheckoutPage() {
                       )}
                     </p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className={styles.totalsSection}>

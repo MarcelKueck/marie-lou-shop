@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
-import { getProductById } from '@/config/products';
+import { getProductById } from '@/lib/products';
 import { getShippingZoneByCountry, getDefaultShippingZone } from '@/config/shipping';
 import { 
   isValidReferralCodeFormat, 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const rewardIds: string[] = [];
 
     for (const item of items) {
-      const product = getProductById(item.productId);
+      const product = await getProductById(item.productId);
       if (!product) {
         return NextResponse.json(
           { error: `Product not found: ${item.productId}` },
@@ -65,6 +65,17 @@ export async function POST(request: NextRequest) {
 
       const unitPrice = product.basePrice + variant.priceModifier;
       
+      // Helper to get full image URL
+      const getImageUrl = (image: string | null | undefined): string[] | undefined => {
+        if (!image) return undefined;
+        // If already absolute URL (Vercel Blob), use as is
+        if (image.startsWith('http://') || image.startsWith('https://')) {
+          return [image];
+        }
+        // Otherwise, prepend base URL for local images
+        return [`${process.env.NEXT_PUBLIC_BASE_URL}${image}`];
+      };
+      
       // Free rewards don't count towards subtotal but are still included as line items
       if (item.isFreeReward) {
         if (item.rewardId) {
@@ -79,7 +90,7 @@ export async function POST(request: NextRequest) {
               description: locale === 'de' 
                 ? 'Referral-Belohnung - Gratistüte Kaffee'
                 : 'Referral Reward - Free bag of coffee',
-              images: product.image ? [`${process.env.NEXT_PUBLIC_BASE_URL}${product.image}`] : undefined,
+              images: getImageUrl(product.image),
               metadata: {
                 productId: product.id,
                 variantId: variant.id,
@@ -99,8 +110,8 @@ export async function POST(request: NextRequest) {
             currency: 'eur',
             product_data: {
               name: `${product.name[locale]} - ${variant.name[locale]}`,
-              description: product.notes[locale],
-              images: product.image ? [`${process.env.NEXT_PUBLIC_BASE_URL}${product.image}`] : undefined,
+              description: product.notes?.[locale] || '',
+              images: getImageUrl(product.image),
               metadata: {
                 productId: product.id,
                 variantId: variant.id,
