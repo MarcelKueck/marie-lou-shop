@@ -65,7 +65,7 @@ export function createAdminAuthMiddleware() {
     
     // If authenticated and on login page, redirect to admin dashboard
     if (isAuthenticated && isLoginPage) {
-      return NextResponse.redirect(new URL('/admin/refunds', request.url));
+      return NextResponse.redirect(new URL('/admin', request.url));
     }
     
     return null; // Continue to the page

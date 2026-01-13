@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!result.valid) {
       return NextResponse.json(
         { valid: false, error: result.error },
-        { status: 400 }
+        { status: 200 } // Return 200 so frontend can read the error message
       );
     }
     

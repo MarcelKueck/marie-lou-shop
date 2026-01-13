@@ -227,7 +227,16 @@
     "referralDiscount": "Empfehlungsrabatt (20%)",
     "referralApplied": "Empfehlungsrabatt angewendet! Dein Freund erhält eine Gratistüte, sobald deine Bestellung bestätigt ist.",
     "referralLoginRequired": "Melde dich an oder erstelle ein Konto, um deinen 20% Empfehlungsrabatt zu erhalten!",
-    "loginOrRegister": "Anmelden / Konto erstellen"
+    "loginOrRegister": "Anmelden / Konto erstellen",
+    "giftCard": {
+      "placeholder": "Gutscheincode eingeben (z.B. GIFT-XXXX-XXXX)",
+      "apply": "Einlösen",
+      "applied": "Gutschein eingelöst",
+      "balance": "Guthaben",
+      "enterCode": "Bitte gib einen Gutscheincode ein",
+      "invalid": "Dieser Gutscheincode ist ungültig",
+      "error": "Gutschein konnte nicht überprüft werden. Bitte versuche es erneut."
+    }
   },
   "checkoutSuccess": {
     "title": "Vielen Dank!",
@@ -340,9 +349,16 @@
     "logout": "Abmelden",
     "tabs": {
       "orders": "Bestellungen",
+      "subscriptions": "Abonnements",
+      "reviews": "Bewertungen",
       "giftCards": "Geschenkgutscheine",
       "profile": "Profil",
       "referrals": "Empfehlungen"
+    },
+    "subscriptions": {
+      "title": "Kaffee-Abonnement",
+      "description": "Richte ein Abonnement ein und erhalte deinen Lieblingskaffee regelmäßig geliefert. Spare 10% bei jeder Abo-Bestellung!",
+      "manageButton": "Abonnements verwalten"
     },
     "orders": {
       "empty": "Noch keine Bestellungen",
@@ -466,6 +482,20 @@
       "statusActive": "Aktiv",
       "statusUsed": "Aufgebraucht",
       "statusDisabled": "Deaktiviert"
+    },
+    "reviews": {
+      "empty": "Noch keine Bewertungsanfragen",
+      "emptyDescription": "Nach deinen Bestellungen wirst du hier Produkte bewerten können.",
+      "pendingTitle": "Ausstehende Bewertungen",
+      "pendingDescription": "Bewerte deine Einkäufe und erhalte einen Gutschein als Dankeschön!",
+      "completedTitle": "Abgeschlossene Bewertungen",
+      "order": "Bestellung",
+      "earnReward": "Verdiene {amount} Gutschein",
+      "writeReview": "Bewertung schreiben",
+      "reviewedOn": "Bewertet am",
+      "yourReward": "Dein Gutschein",
+      "copy": "Kopieren",
+      "discount": "Rabatt"
     },
     "addresses": {
       "title": "Meine Adressen",
@@ -691,6 +721,19 @@
     "everyNMonths": "Alle {n} Monate",
     "subscribeAndSave": "Abonnieren & 10% sparen",
     "subscriptionBenefits": "Regelmäßige Lieferung, jederzeit kündbar",
-    "selectFrequency": "Lieferintervall wählen"
+    "selectFrequency": "Lieferintervall wählen",
+    "oneTimePurchase": "Einmalkauf",
+    "createSubscription": "Abonnement erstellen",
+    "quantity": "Menge",
+    "perDelivery": "Pro Lieferung",
+    "shippingAddress": "Lieferadresse",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "addressLine1": "Straße und Hausnummer",
+    "addressLine2": "Adresszusatz",
+    "postalCode": "Postleitzahl",
+    "city": "Stadt",
+    "country": "Land",
+    "startSubscription": "Abonnement starten"
   }
 }

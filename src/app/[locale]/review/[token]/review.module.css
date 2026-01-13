@@ -1,0 +1,268 @@
+.main {
+  min-height: 100vh;
+  padding-top: 6rem;
+  background: var(--color-background-alt, #f9f7f4);
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-muted);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Product Card */
+.productCard {
+  display: flex;
+  gap: 1.5rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
+.productImage {
+  flex-shrink: 0;
+}
+
+.image {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border-radius: 8px;
+}
+
+.productInfo h2 {
+  font-size: 1.25rem;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.variant {
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.orderNumber {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Reward Banner */
+.rewardBanner {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.giftEmoji {
+  font-size: 2rem;
+}
+
+.rewardBanner strong {
+  display: block;
+  color: #92400e;
+  margin-bottom: 0.25rem;
+}
+
+.rewardBanner p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #78350f;
+}
+
+/* Form Wrapper */
+.formWrapper {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+/* Error State */
+.errorState,
+.alreadyReviewed {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.errorIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.errorState h1,
+.alreadyReviewed h1 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.errorState p,
+.alreadyReviewed p {
+  color: var(--color-text-muted);
+  margin: 0 0 1.5rem 0;
+}
+
+.successIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 50%;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Thank You */
+.thankYou {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.giftIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.thankYou h1 {
+  font-size: 2rem;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.thankYou > p {
+  color: var(--color-text-muted);
+  margin: 0 0 2rem 0;
+}
+
+/* Reward Section */
+.rewardSection {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.rewardSection h2 {
+  font-size: 1.1rem;
+  color: #92400e;
+  margin: 0 0 0.5rem 0;
+}
+
+.rewardSection p {
+  color: #78350f;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.codeBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.code {
+  font-family: monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #92400e;
+  letter-spacing: 0.1em;
+}
+
+.copyButton {
+  padding: 0.5rem 1rem;
+  background: #92400e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.copyButton:hover {
+  background: #78350f;
+}
+
+/* Button */
+.button {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .productCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+}

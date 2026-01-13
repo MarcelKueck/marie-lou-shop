@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { reviews, orders, orderItems, REVIEW_STATUS } from '@/db/schema';
+import { reviews, orders, orderItems, reviewRequests, REVIEW_STATUS } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getCurrentCustomer } from '@/lib/auth';
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productSlug, orderId, rating, title, content, customerName } = body;
+    const { productSlug, orderId, rating, title, content, customerName, reviewToken } = body;
     
     // Validate required fields
     if (!productSlug || !rating || !customerName) {
@@ -84,12 +84,45 @@ export async function POST(request: NextRequest) {
     // Check if user is logged in
     const customer = await getCurrentCustomer();
     
-    // Verify purchase if orderId provided
+    // Verify purchase - check if review token provided (from email link)
     let verifiedPurchase = false;
     let verifiedOrderId: string | null = null;
+    let reviewRequest = null;
+    let reviewCustomerId: string | null = customer?.id || null;
     
-    if (orderId && customer) {
-      // Check if this customer actually ordered this product
+    if (reviewToken) {
+      // Validate review token
+      reviewRequest = await db.query.reviewRequests.findFirst({
+        where: eq(reviewRequests.token, reviewToken),
+      });
+      
+      if (reviewRequest && !reviewRequest.reviewedAt && reviewRequest.expiresAt > new Date()) {
+        verifiedPurchase = true;
+        verifiedOrderId = reviewRequest.orderId;
+        reviewCustomerId = reviewRequest.customerId;
+        
+        // Check if this customer already reviewed this product
+        const existingReview = await db.query.reviews.findFirst({
+          where: and(
+            eq(reviews.productSlug, productSlug),
+            eq(reviews.customerId, reviewRequest.customerId)
+          ),
+        });
+        
+        if (existingReview) {
+          return NextResponse.json(
+            { error: 'You have already reviewed this product' },
+            { status: 400 }
+          );
+        }
+      } else if (reviewRequest?.reviewedAt) {
+        return NextResponse.json(
+          { error: 'This review link has already been used' },
+          { status: 400 }
+        );
+      }
+    } else if (orderId && customer) {
+      // Fallback: Check if this customer actually ordered this product
       const order = await db.query.orders.findFirst({
         where: and(
           eq(orders.id, orderId),
@@ -137,7 +170,7 @@ export async function POST(request: NextRequest) {
       id: reviewId,
       productSlug,
       orderId: verifiedOrderId,
-      customerId: customer?.id || null,
+      customerId: reviewCustomerId,
       rating,
       title: title?.trim() || null,
       content: content?.trim() || null,
@@ -146,6 +179,16 @@ export async function POST(request: NextRequest) {
       status: REVIEW_STATUS.PENDING,
       createdAt: now,
     });
+    
+    // Mark review request as completed if token was used
+    if (reviewRequest) {
+      await db.update(reviewRequests)
+        .set({
+          reviewedAt: now,
+          reviewId,
+        })
+        .where(eq(reviewRequests.id, reviewRequest.id));
+    }
     
     console.log(`New review submitted for ${productSlug} by ${customerName} (verified: ${verifiedPurchase})`);
     

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import styles from '../../admin.module.css';
+import styles from '../dashboard.module.css';
 import Link from 'next/link';
 
 interface ProductVariant {
@@ -290,7 +290,7 @@ export default function AdminProductsPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Produkte werden geladen...</div>
+        <div className={styles.loading}>Loading products...</div>
       </div>
     );
   }
@@ -300,16 +300,16 @@ export default function AdminProductsPage() {
       <div className={styles.pageHeader}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 className={styles.pageTitle}>Produkte</h1>
+            <h1 className={styles.pageTitle}>Products</h1>
             <p className={styles.pageSubtitle}>
-              Produktkatalog verwalten - Produkte hinzufügen, bearbeiten und löschen.
+              Manage product catalog - add, edit and delete products.
             </p>
           </div>
           <button 
             onClick={handleCreateNew}
             className={`${styles.button} ${styles.buttonPrimary}`}
           >
-            + Neues Produkt
+            + New Product
           </button>
         </div>
       </div>
@@ -336,19 +336,19 @@ export default function AdminProductsPage() {
       <div className={styles.statsGrid} style={{ marginBottom: 30 }}>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{products.length}</div>
-          <div className={styles.statLabel}>Gesamt Produkte</div>
+          <div className={styles.statLabel}>Total Products</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{coffeeCount}</div>
-          <div className={styles.statLabel}>Kaffee</div>
+          <div className={styles.statLabel}>Coffee</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{teaCount}</div>
-          <div className={styles.statLabel}>Tee</div>
+          <div className={styles.statLabel}>Tea</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{variantCount}</div>
-          <div className={styles.statLabel}>Varianten</div>
+          <div className={styles.statLabel}>Variants</div>
         </div>
       </div>
 
@@ -359,9 +359,9 @@ export default function AdminProductsPage() {
           onChange={(e) => setBrandFilter(e.target.value)}
           className={styles.filterSelect}
         >
-          <option value="all">Alle Marken</option>
-          <option value="coffee">Kaffee</option>
-          <option value="tea">Tee</option>
+          <option value="all">All Brands</option>
+          <option value="coffee">Coffee</option>
+          <option value="tea">Tea</option>
         </select>
         <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <input
@@ -369,25 +369,25 @@ export default function AdminProductsPage() {
             checked={showInactive}
             onChange={(e) => setShowInactive(e.target.checked)}
           />
-          Inaktive anzeigen
+          Show inactive
         </label>
       </div>
 
       {/* Products Table */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2>Produktkatalog ({filteredProducts.length})</h2>
+          <h2>Product Catalog ({filteredProducts.length})</h2>
         </div>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Produkt</th>
-              <th>Marke</th>
+              <th>Product</th>
+              <th>Brand</th>
               <th>Status</th>
-              <th>Basispreis</th>
-              <th>Lagerbestand</th>
-              <th>Varianten</th>
-              <th>Aktionen</th>
+              <th>Base Price</th>
+              <th>Stock</th>
+              <th>Variants</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -425,9 +425,9 @@ export default function AdminProductsPage() {
                     className={`${styles.badge} ${product.active ? styles.badgeSuccess : styles.badgeError}`}
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleToggleActive(product)}
-                    title="Klicken zum Umschalten"
+                    title="Click to toggle"
                   >
-                    {product.active ? 'Aktiv' : 'Inaktiv'}
+                    {product.active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
                 <td>{formatPrice(product.basePrice)}</td>
@@ -446,7 +446,7 @@ export default function AdminProductsPage() {
                       className={`${styles.button} ${styles.buttonSecondary}`}
                       style={{ padding: '6px 12px', fontSize: '0.75rem' }}
                     >
-                      Bearbeiten
+                      Edit
                     </button>
                     <Link 
                       href={`/de/shop/${product.slug}`}
@@ -454,7 +454,7 @@ export default function AdminProductsPage() {
                       className={`${styles.button} ${styles.buttonSecondary}`}
                       style={{ padding: '6px 12px', fontSize: '0.75rem', textDecoration: 'none' }}
                     >
-                      Ansehen
+                      View
                     </Link>
                     <button
                       onClick={() => setDeleteConfirm(product.id)}
@@ -467,7 +467,7 @@ export default function AdminProductsPage() {
                         border: '1px solid #fecaca',
                       }}
                     >
-                      Löschen
+                      Delete
                     </button>
                   </div>
                 </td>
@@ -495,23 +495,23 @@ export default function AdminProductsPage() {
             maxWidth: 400,
             width: '90%',
           }}>
-            <h3 style={{ margin: '0 0 12px 0' }}>Produkt löschen?</h3>
+            <h3 style={{ margin: '0 0 12px 0' }}>Delete Product?</h3>
             <p style={{ color: '#666', marginBottom: 20 }}>
-              Das Produkt und alle zugehörigen Varianten werden unwiderruflich gelöscht.
+              The product and all associated variants will be permanently deleted.
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setDeleteConfirm(null)}
                 className={`${styles.button} ${styles.buttonSecondary}`}
               >
-                Abbrechen
+                Cancel
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
                 className={styles.button}
                 style={{ background: '#dc2626', color: 'white' }}
               >
-                Löschen
+                Delete
               </button>
             </div>
           </div>
@@ -541,7 +541,7 @@ export default function AdminProductsPage() {
             overflow: 'auto',
           }}>
             <h2 style={{ margin: '0 0 20px 0' }}>
-              {editingProduct.id ? 'Produkt bearbeiten' : 'Neues Produkt'}
+              {editingProduct.id ? 'Edit Product' : 'New Product'}
             </h2>
 
             <div style={{ display: 'grid', gap: 16 }}>
@@ -554,19 +554,19 @@ export default function AdminProductsPage() {
                     value={editingProduct.slug || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, slug: e.target.value })}
                     className={styles.input}
-                    placeholder="z.b. ethiopia-yirgacheffe"
+                    placeholder="e.g. ethiopia-yirgacheffe"
                     disabled={!!editingProduct.id}
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Marke</label>
+                  <label className={styles.label}>Brand</label>
                   <select
                     value={editingProduct.brand || 'coffee'}
                     onChange={(e) => setEditingProduct({ ...editingProduct, brand: e.target.value as 'coffee' | 'tea' })}
                     className={styles.select}
                   >
-                    <option value="coffee">Kaffee</option>
-                    <option value="tea">Tee</option>
+                    <option value="coffee">Coffee</option>
+                    <option value="tea">Tea</option>
                   </select>
                 </div>
               </div>
@@ -574,7 +574,7 @@ export default function AdminProductsPage() {
               {/* Names */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Name (Deutsch) *</label>
+                  <label className={styles.label}>Name (German) *</label>
                   <input
                     type="text"
                     value={editingProduct.name?.de || ''}
@@ -602,7 +602,7 @@ export default function AdminProductsPage() {
               {/* Origin */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Herkunft (Deutsch)</label>
+                  <label className={styles.label}>Origin (German)</label>
                   <input
                     type="text"
                     value={editingProduct.origin?.de || ''}
@@ -630,7 +630,7 @@ export default function AdminProductsPage() {
               {/* Notes */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Geschmacksnoten (Deutsch)</label>
+                  <label className={styles.label}>Tasting Notes (German)</label>
                   <input
                     type="text"
                     value={editingProduct.notes?.de || ''}
@@ -657,7 +657,7 @@ export default function AdminProductsPage() {
 
               {/* Description */}
               <div className={styles.formGroup}>
-                <label className={styles.label}>Beschreibung (Deutsch)</label>
+                <label className={styles.label}>Description (German)</label>
                 <textarea
                   value={editingProduct.description?.de || ''}
                   onChange={(e) => setEditingProduct({ 
@@ -686,7 +686,7 @@ export default function AdminProductsPage() {
               {/* Price & Stock */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Basispreis (€)</label>
+                  <label className={styles.label}>Base Price (€)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -699,7 +699,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Lagerbestand</label>
+                  <label className={styles.label}>Stock Quantity</label>
                   <input
                     type="number"
                     value={editingProduct.stockQuantity ?? 100}
@@ -711,7 +711,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Niedriger Bestand</label>
+                  <label className={styles.label}>Low Stock Threshold</label>
                   <input
                     type="number"
                     value={editingProduct.lowStockThreshold ?? 10}
@@ -729,9 +729,9 @@ export default function AdminProductsPage() {
                     onChange={(e) => setEditingProduct({ ...editingProduct, badge: e.target.value || null })}
                     className={styles.select}
                   >
-                    <option value="">Kein Badge</option>
+                    <option value="">No Badge</option>
                     <option value="bestseller">Bestseller</option>
-                    <option value="new">Neu</option>
+                    <option value="new">New</option>
                     <option value="sale">Sale</option>
                   </select>
                 </div>
@@ -739,7 +739,7 @@ export default function AdminProductsPage() {
 
               {/* Image */}
               <div className={styles.formGroup}>
-                <label className={styles.label}>Produktbild</label>
+                <label className={styles.label}>Product Image</label>
                 
                 {/* Image Preview */}
                 {editingProduct.image && (
@@ -785,7 +785,7 @@ export default function AdminProductsPage() {
                       opacity: uploading ? 0.6 : 1,
                     }}
                   >
-                    {uploading ? 'Uploading...' : 'Bild hochladen'}
+                    {uploading ? 'Uploading...' : 'Upload Image'}
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif"
@@ -795,7 +795,7 @@ export default function AdminProductsPage() {
                     />
                   </label>
                   <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                    oder URL eingeben:
+                    or enter URL:
                   </span>
                 </div>
 
@@ -812,14 +812,14 @@ export default function AdminProductsPage() {
               {/* Variants */}
               <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <h3 style={{ margin: 0 }}>Varianten</h3>
+                  <h3 style={{ margin: 0 }}>Variants</h3>
                   <button
                     type="button"
                     onClick={addVariant}
                     className={`${styles.button} ${styles.buttonSecondary}`}
                     style={{ padding: '6px 12px', fontSize: '0.875rem' }}
                   >
-                    + Variante
+                    + Variant
                   </button>
                 </div>
 
@@ -858,7 +858,7 @@ export default function AdminProductsPage() {
                       />
                     </div>
                     <div>
-                      <label className={styles.label} style={{ fontSize: '0.75rem' }}>+/- Preis (€)</label>
+                      <label className={styles.label} style={{ fontSize: '0.75rem' }}>+/- Price (€)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -869,7 +869,7 @@ export default function AdminProductsPage() {
                       />
                     </div>
                     <div>
-                      <label className={styles.label} style={{ fontSize: '0.75rem' }}>Gewicht</label>
+                      <label className={styles.label} style={{ fontSize: '0.75rem' }}>Weight</label>
                       <input
                         type="text"
                         value={variant.weight || ''}
@@ -899,7 +899,7 @@ export default function AdminProductsPage() {
 
                 {(!editingProduct.variants || editingProduct.variants.length === 0) && (
                   <p style={{ color: '#666', fontSize: '0.875rem', textAlign: 'center', padding: 20 }}>
-                    Keine Varianten. Klicke &quot;+ Variante&quot; um eine hinzuzufügen.
+                    No variants. Click &quot;+ Variant&quot; to add one.
                   </p>
                 )}
               </div>
@@ -912,7 +912,7 @@ export default function AdminProductsPage() {
                     checked={editingProduct.active !== false}
                     onChange={(e) => setEditingProduct({ ...editingProduct, active: e.target.checked })}
                   />
-                  Produkt ist aktiv (im Shop sichtbar)
+                  Product is active (visible in shop)
                 </label>
               </div>
             </div>
@@ -924,14 +924,14 @@ export default function AdminProductsPage() {
                 className={`${styles.button} ${styles.buttonSecondary}`}
                 disabled={saving}
               >
-                Abbrechen
+                Cancel
               </button>
               <button
                 onClick={handleSave}
                 className={`${styles.button} ${styles.buttonPrimary}`}
                 disabled={saving}
               >
-                {saving ? 'Speichern...' : 'Speichern'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>

@@ -275,6 +275,110 @@
 }
 
 /* Responsive */
+/* Purchase Mode Toggle */
+.purchaseModeSection {
+  margin-bottom: 1.5rem;
+}
+
+.purchaseModeToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modeButton {
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--color-border, #e5e5e5);
+  border-radius: 8px;
+  background: transparent;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-secondary, #666);
+  position: relative;
+}
+
+.modeButton:hover {
+  border-color: var(--color-primary);
+}
+
+.modeButton.modeActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light, rgba(139, 90, 43, 0.08));
+  color: var(--color-primary);
+}
+
+.subscribeMode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.saveBadge {
+  background: var(--color-success, #22c55e);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.subscriptionOptions {
+  background: var(--color-background-alt, #f9f7f4);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+}
+
+.intervalLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+.intervalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.intervalButton {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 6px;
+  background: white;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-secondary, #666);
+}
+
+.intervalButton:hover {
+  border-color: var(--color-primary);
+}
+
+.intervalButton.intervalSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.subscriptionBenefits {
+  font-size: 0.8125rem;
+  color: var(--color-success, #22c55e);
+  margin: 0;
+}
+
+.subscribeButton {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark, #6d4629) 100%);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -300,4 +404,17 @@
   .attributesList {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* Reviews Section */
+.reviewsSection {
+  background: var(--color-background-alt, #f9f7f4);
+  padding: 4rem 0;
+  margin-top: 4rem;
+}
+
+.reviewFormWrapper {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color-border, #e0e0e0);
 }

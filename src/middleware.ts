@@ -27,7 +27,7 @@ export default function middleware(request: NextRequest) {
     
     // If authenticated and on login page, redirect to admin dashboard
     if (isAuthenticated && isLoginPage) {
-      const redirect = request.nextUrl.searchParams.get('redirect') || '/admin/refunds';
+      const redirect = request.nextUrl.searchParams.get('redirect') || '/admin';
       return NextResponse.redirect(new URL(redirect, request.url));
     }
     

@@ -427,6 +427,37 @@ export const REVIEW_STATUS = {
   REJECTED: 'rejected',
 } as const;
 
+// Review Requests Table (for email-based review solicitation)
+export const reviewRequests = sqliteTable('review_requests', {
+  id: text('id').primaryKey(),
+  orderId: text('order_id').notNull().references(() => orders.id),
+  orderItemId: text('order_item_id').notNull(),
+  customerId: text('customer_id').notNull().references(() => customers.id),
+  productId: text('product_id').notNull(),
+  
+  // Token for secure access
+  token: text('token').notNull().unique(),
+  
+  // Status
+  emailSentAt: integer('email_sent_at', { mode: 'timestamp' }),
+  reviewedAt: integer('reviewed_at', { mode: 'timestamp' }),
+  reviewId: text('review_id').references(() => reviews.id),
+  
+  // Reward
+  rewardCode: text('reward_code'),
+  rewardClaimedAt: integer('reward_claimed_at', { mode: 'timestamp' }),
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+});
+
+export type ReviewRequest = typeof reviewRequests.$inferSelect;
+export type NewReviewRequest = typeof reviewRequests.$inferInsert;
+
+// Review reward amount in cents (€2.50 discount for each review)
+export const REVIEW_REWARD_AMOUNT = 250;
+
 // ============================================================================
 // Password Reset Tokens Table
 // ============================================================================

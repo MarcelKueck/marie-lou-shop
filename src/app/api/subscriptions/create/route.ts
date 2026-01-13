@@ -68,6 +68,17 @@ export async function POST(request: NextRequest) {
     
     const localeKey = locale as 'de' | 'en';
     
+    // Helper to get full image URL
+    const getImageUrl = (image: string | null | undefined): string[] | undefined => {
+      if (!image) return undefined;
+      // If already absolute URL (Vercel Blob), use as is
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        return [image];
+      }
+      // Otherwise, prepend base URL for local images
+      return [`${baseUrl}${image}`];
+    };
+    
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: stripeCustomerId,
@@ -80,7 +91,7 @@ export async function POST(request: NextRequest) {
               description: localeKey === 'de' 
                 ? `Automatische Lieferung ${validInterval.label.de.toLowerCase()}`
                 : `Automatic delivery ${validInterval.label.en.toLowerCase()}`,
-              images: product.image ? [`${baseUrl}${product.image}`] : undefined,
+              images: getImageUrl(product.image),
               metadata: {
                 productId: product.id,
                 variantId: variant.id,
@@ -96,7 +107,7 @@ export async function POST(request: NextRequest) {
           quantity,
         },
       ],
-      success_url: `${baseUrl}/${locale}/account/subscriptions?success=true`,
+      success_url: `${baseUrl}/${locale}/account?tab=subscriptions&success=true`,
       cancel_url: `${baseUrl}/${locale}/shop/${product.id}`,
       metadata: {
         type: 'subscription',

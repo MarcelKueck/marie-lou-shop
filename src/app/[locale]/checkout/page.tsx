@@ -33,6 +33,17 @@ export default function CheckoutPage() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  
+  // Gift card state
+  const [giftCardCode, setGiftCardCode] = useState('');
+  const [giftCardError, setGiftCardError] = useState<string | null>(null);
+  const [giftCardLoading, setGiftCardLoading] = useState(false);
+  const [appliedGiftCard, setAppliedGiftCard] = useState<{
+    id: string;
+    code: string;
+    balance: number;
+    currency: string;
+  } | null>(null);
 
   const formatPrice = (cents: number) => {
     return new Intl.NumberFormat(locale === 'de' ? 'de-DE' : 'en-US', {
@@ -81,6 +92,49 @@ export default function CheckoutPage() {
     ? Math.round(subtotal * (REFERRAL_DISCOUNT_PERCENT / 100)) 
     : 0;
 
+  // Calculate gift card discount
+  const giftCardDiscount = appliedGiftCard 
+    ? Math.min(appliedGiftCard.balance, subtotal - referralDiscount)
+    : 0;
+
+  // Apply gift card
+  const handleApplyGiftCard = async () => {
+    if (!giftCardCode.trim()) {
+      setGiftCardError(t('giftCard.enterCode'));
+      return;
+    }
+
+    setGiftCardLoading(true);
+    setGiftCardError(null);
+
+    try {
+      const response = await fetch('/api/gift-cards/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: giftCardCode.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!data.valid) {
+        setGiftCardError(data.error || t('giftCard.invalid'));
+        return;
+      }
+
+      setAppliedGiftCard(data.giftCard);
+      setGiftCardCode('');
+    } catch {
+      setGiftCardError(t('giftCard.error'));
+    } finally {
+      setGiftCardLoading(false);
+    }
+  };
+
+  const handleRemoveGiftCard = () => {
+    setAppliedGiftCard(null);
+    setGiftCardError(null);
+  };
+
   const handleCheckout = async () => {
     setIsLoading(true);
     setError(null);
@@ -95,6 +149,8 @@ export default function CheckoutPage() {
           items,
           locale,
           referralCode: referralCode || undefined,
+          giftCardId: appliedGiftCard?.id,
+          giftCardAmount: giftCardDiscount,
         }),
       });
 
@@ -188,13 +244,62 @@ export default function CheckoutPage() {
                     <span>-{formatPrice(referralDiscount)}</span>
                   </div>
                 )}
+                
+                {/* Gift Card Section */}
+                <div className={styles.giftCardSection}>
+                  {appliedGiftCard ? (
+                    <div className={styles.appliedGiftCard}>
+                      <div className={styles.giftCardInfo}>
+                        <span className={styles.giftCardLabel}>🎁 {t('giftCard.applied')}</span>
+                        <span className={styles.giftCardCode}>{appliedGiftCard.code}</span>
+                        <span className={styles.giftCardBalance}>
+                          {t('giftCard.balance')}: {formatPrice(appliedGiftCard.balance)}
+                        </span>
+                      </div>
+                      <div className={styles.giftCardActions}>
+                        <span className={styles.giftCardDiscount}>-{formatPrice(giftCardDiscount)}</span>
+                        <button 
+                          className={styles.removeGiftCard}
+                          onClick={handleRemoveGiftCard}
+                          type="button"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.giftCardInput}>
+                      <div className={styles.giftCardInputRow}>
+                        <input
+                          type="text"
+                          value={giftCardCode}
+                          onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+                          placeholder={t('giftCard.placeholder')}
+                          className={styles.giftCardField}
+                        />
+                        <button
+                          onClick={handleApplyGiftCard}
+                          disabled={giftCardLoading}
+                          className={styles.applyGiftCardBtn}
+                          type="button"
+                        >
+                          {giftCardLoading ? '...' : t('giftCard.apply')}
+                        </button>
+                      </div>
+                      {giftCardError && (
+                        <p className={styles.giftCardError}>{giftCardError}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
                 <div className={styles.totalRow}>
                   <span>{tCart('shipping')}</span>
                   <span className={styles.shippingNote}>{tCart('calculatedAtCheckout')}</span>
                 </div>
                 <div className={styles.grandTotal}>
                   <span>{tCart('total')}</span>
-                  <span>{formatPrice(subtotal - referralDiscount)}</span>
+                  <span>{formatPrice(subtotal - referralDiscount - giftCardDiscount)}</span>
                 </div>
                 {canApplyReferralDiscount && (
                   <div className={styles.referralBanner}>

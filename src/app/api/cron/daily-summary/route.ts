@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyCronRequest, unauthorizedResponse, logCronStart, logCronComplete, logCronError } from '@/lib/cron-auth';
 import { db } from '@/db';
 import { orders, customers } from '@/db/schema';
-import { sql, gte, eq, and } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 import { sendAdminDailySummaryEmail } from '@/lib/email';
 
 const JOB_NAME = 'daily-summary';
@@ -24,26 +24,24 @@ export async function GET(request: NextRequest) {
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
     
+    // Convert to ISO strings for SQLite binding
+    const yesterdayStr = yesterday.toISOString();
+    const todayStr = today.toISOString();
+    
     // Get orders from yesterday
     const yesterdayOrders = await db.select({
       count: sql<number>`count(*)`,
       revenue: sql<number>`coalesce(sum(${orders.total}), 0)`,
     })
     .from(orders)
-    .where(and(
-      gte(orders.createdAt, yesterday),
-      sql`${orders.createdAt} < ${today}`
-    ));
+    .where(sql`${orders.createdAt} >= ${yesterdayStr} AND ${orders.createdAt} < ${todayStr}`);
     
     // Get new customers from yesterday
     const newCustomers = await db.select({
       count: sql<number>`count(*)`,
     })
     .from(customers)
-    .where(and(
-      gte(customers.createdAt, yesterday),
-      sql`${customers.createdAt} < ${today}`
-    ));
+    .where(sql`${customers.createdAt} >= ${yesterdayStr} AND ${customers.createdAt} < ${todayStr}`);
     
     // Get pending orders (paid but not processed)
     const pendingOrders = await db.select({

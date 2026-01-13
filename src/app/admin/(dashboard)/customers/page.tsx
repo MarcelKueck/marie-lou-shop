@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import styles from '../../admin.module.css';
+import styles from '../dashboard.module.css';
 
 interface Customer {
   id: string;
@@ -104,7 +104,7 @@ export default function AdminCustomersPage() {
   if (loading && customers.length === 0) {
     return (
       <div className={styles.container}>
-        <p>Lade Kunden...</p>
+        <p>Loading customers...</p>
       </div>
     );
   }
@@ -113,8 +113,8 @@ export default function AdminCustomersPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1>Kunden</h1>
-          <p>{customers.length} Kunden insgesamt</p>
+          <h1>Customers</h1>
+          <p>{customers.length} customers total</p>
         </div>
       </header>
 
@@ -124,7 +124,7 @@ export default function AdminCustomersPage() {
       <div style={{ marginBottom: 20 }}>
         <input
           type="text"
-          placeholder="Suche nach E-Mail, Name..."
+          placeholder="Search by email, name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={styles.input}
@@ -137,14 +137,14 @@ export default function AdminCustomersPage() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>E-Mail</th>
+              <th>Email</th>
               <th>Name</th>
-              <th>Telefon</th>
-              <th>Bestellungen</th>
-              <th>Umsatz</th>
+              <th>Phone</th>
+              <th>Orders</th>
+              <th>Revenue</th>
               <th>Marketing</th>
-              <th>Registriert</th>
-              <th>Aktionen</th>
+              <th>Registered</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -161,7 +161,7 @@ export default function AdminCustomersPage() {
                         borderRadius: 4, 
                         fontSize: '0.75rem' 
                       }}>
-                        Gesperrt
+                        Suspended
                       </span>
                     )}
                     {customer.referralTrusted && (
@@ -172,7 +172,7 @@ export default function AdminCustomersPage() {
                         borderRadius: 4, 
                         fontSize: '0.75rem' 
                       }}>
-                        Vertraut
+                        Trusted
                       </span>
                     )}
                   </div>
@@ -200,7 +200,7 @@ export default function AdminCustomersPage() {
                     className={`${styles.button} ${styles.buttonSecondary}`}
                     style={{ padding: '4px 12px', fontSize: '0.875rem' }}
                   >
-                    Bearbeiten
+                    Edit
                   </button>
                 </td>
               </tr>
@@ -208,7 +208,7 @@ export default function AdminCustomersPage() {
             {customers.length === 0 && (
               <tr>
                 <td colSpan={8} style={{ textAlign: 'center', padding: 40 }}>
-                  {search ? 'Keine Kunden gefunden' : 'Noch keine Kunden'}
+                  {search ? 'No customers found' : 'No customers yet'}
                 </td>
               </tr>
             )}
@@ -221,13 +221,13 @@ export default function AdminCustomersPage() {
         <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h2>Kunde bearbeiten</h2>
+              <h2>Edit Customer</h2>
               <button onClick={() => setShowModal(false)} className={styles.closeButton}>×</button>
             </div>
 
             <div className={styles.modalBody}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>E-Mail (nicht änderbar)</label>
+                <label className={styles.label}>Email (read-only)</label>
                 <input
                   type="email"
                   value={editingCustomer.email}
@@ -239,7 +239,7 @@ export default function AdminCustomersPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Vorname</label>
+                  <label className={styles.label}>First Name</label>
                   <input
                     type="text"
                     value={editingCustomer.firstName || ''}
@@ -248,7 +248,7 @@ export default function AdminCustomersPage() {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Nachname</label>
+                  <label className={styles.label}>Last Name</label>
                   <input
                     type="text"
                     value={editingCustomer.lastName || ''}
@@ -259,7 +259,7 @@ export default function AdminCustomersPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Telefon</label>
+                <label className={styles.label}>Phone</label>
                 <input
                   type="tel"
                   value={editingCustomer.phone || ''}
@@ -269,7 +269,7 @@ export default function AdminCustomersPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Stripe Kunden-ID</label>
+                <label className={styles.label}>Stripe Customer ID</label>
                 <input
                   type="text"
                   value={editingCustomer.stripeCustomerId || ''}
@@ -280,7 +280,7 @@ export default function AdminCustomersPage() {
               </div>
 
               <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 8 }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: '1rem' }}>Einstellungen</h3>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '1rem' }}>Settings</h3>
                 
                 <div className={styles.formGroup}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
@@ -289,13 +289,13 @@ export default function AdminCustomersPage() {
                       checked={editingCustomer.marketingOptIn}
                       onChange={(e) => setEditingCustomer({ ...editingCustomer, marketingOptIn: e.target.checked })}
                     />
-                    <span>Marketing-Newsletter abonniert</span>
+                    <span>Subscribed to marketing newsletter</span>
                   </label>
                 </div>
               </div>
 
               <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 8 }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: '1rem' }}>Empfehlungsprogramm</h3>
+                <h3 style={{ margin: '0 0 12px 0', fontSize: '1rem' }}>Referral Program</h3>
                 
                 <div className={styles.formGroup}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
@@ -304,7 +304,7 @@ export default function AdminCustomersPage() {
                       checked={editingCustomer.referralTrusted}
                       onChange={(e) => setEditingCustomer({ ...editingCustomer, referralTrusted: e.target.checked })}
                     />
-                    <span>Vertrauenswürdig (Bypass Missbrauchsprüfung)</span>
+                    <span>Trusted (bypass abuse detection)</span>
                   </label>
                 </div>
 
@@ -315,18 +315,18 @@ export default function AdminCustomersPage() {
                       checked={editingCustomer.referralSuspended}
                       onChange={(e) => setEditingCustomer({ ...editingCustomer, referralSuspended: e.target.checked })}
                     />
-                    <span style={{ color: '#dc2626' }}>Gesperrt (keine Empfehlungsprämien)</span>
+                    <span style={{ color: '#dc2626' }}>Suspended (no referral rewards)</span>
                   </label>
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Admin-Notizen</label>
+                  <label className={styles.label}>Admin Notes</label>
                   <textarea
                     value={editingCustomer.referralNotes || ''}
                     onChange={(e) => setEditingCustomer({ ...editingCustomer, referralNotes: e.target.value || null })}
                     className={styles.input}
                     rows={3}
-                    placeholder="Interne Notizen zum Kunden..."
+                    placeholder="Internal notes about this customer..."
                     style={{ resize: 'vertical' }}
                   />
                 </div>
@@ -338,14 +338,14 @@ export default function AdminCustomersPage() {
                 onClick={() => setShowModal(false)}
                 className={`${styles.button} ${styles.buttonSecondary}`}
               >
-                Abbrechen
+                Cancel
               </button>
               <button
                 onClick={handleSave}
                 className={`${styles.button} ${styles.buttonPrimary}`}
                 disabled={saving}
               >
-                {saving ? 'Speichern...' : 'Speichern'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>

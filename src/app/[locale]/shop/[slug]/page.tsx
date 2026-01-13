@@ -3,13 +3,24 @@
 import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useBrand } from '@/hooks/useBrand';
 import { useCart } from '@/hooks/useCart';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
+import { ReviewList } from '@/components/reviews';
 import styles from './product.module.css';
+
+// Subscription intervals (mirrored from lib/subscriptions.ts for client use)
+const SUBSCRIPTION_INTERVALS = [
+  { value: 2, unit: 'week', label: { de: 'Alle 2 Wochen', en: 'Every 2 weeks' } },
+  { value: 4, unit: 'week', label: { de: 'Alle 4 Wochen', en: 'Every 4 weeks' } },
+  { value: 6, unit: 'week', label: { de: 'Alle 6 Wochen', en: 'Every 6 weeks' } },
+  { value: 8, unit: 'week', label: { de: 'Alle 8 Wochen', en: 'Every 8 weeks' } },
+];
+
+const SUBSCRIPTION_DISCOUNT_PERCENT = 10;
 
 interface ProductVariant {
   id: string;
@@ -44,7 +55,9 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { brand } = useBrand();
   const locale = useLocale() as 'de' | 'en';
   const t = useTranslations('productPage');
+  const tSub = useTranslations('subscriptions');
   const tCommon = useTranslations('products');
+  const router = useRouter();
   const { addItem } = useCart();
   
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -53,6 +66,11 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [isAdded, setIsAdded] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Subscription state
+  const [purchaseMode, setPurchaseMode] = useState<'one-time' | 'subscription'>('one-time');
+  const [selectedInterval, setSelectedInterval] = useState(SUBSCRIPTION_INTERVALS[1]); // Default: 4 weeks
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -92,7 +110,9 @@ export default function ProductPage({ params }: ProductPageProps) {
   }
 
   const selectedVariant = product.variants.find(v => v.id === selectedVariantId) || product.variants[0];
-  const price = (product.basePrice + (selectedVariant?.priceModifier || 0)) / 100;
+  const basePrice = (product.basePrice + (selectedVariant?.priceModifier || 0)) / 100;
+  const subscriptionPrice = basePrice * (1 - SUBSCRIPTION_DISCOUNT_PERCENT / 100);
+  const price = purchaseMode === 'subscription' ? subscriptionPrice : basePrice;
   const totalPrice = price * quantity;
 
   const formatPrice = (price: number) => {
@@ -110,6 +130,27 @@ export default function ProductPage({ params }: ProductPageProps) {
     });
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  const handleSubscribe = async () => {
+    setIsSubscribing(true);
+    try {
+      // Check if user is logged in first
+      const authRes = await fetch('/api/auth/me');
+      if (!authRes.ok) {
+        // Redirect to login, then back to subscribe page
+        const subscribeUrl = `/${locale}/subscribe?product=${product.id}&variant=${selectedVariant.id}&quantity=${quantity}&interval=${selectedInterval.value}&unit=${selectedInterval.unit}`;
+        router.push(`/${locale}/account/login?redirect=${encodeURIComponent(subscribeUrl)}`);
+        return;
+      }
+
+      // Redirect to subscription creation page
+      router.push(`/${locale}/subscribe?product=${product.id}&variant=${selectedVariant.id}&quantity=${quantity}&interval=${selectedInterval.value}&unit=${selectedInterval.unit}`);
+    } catch (error) {
+      console.error('Subscription error:', error);
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   const badgeLabels: Record<string, Record<'de' | 'en', string>> = {
@@ -215,14 +256,67 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
               </div>
 
-              {/* Add to Cart */}
+              {/* Purchase Mode Toggle */}
+              <div className={styles.purchaseModeSection}>
+                <div className={styles.purchaseModeToggle}>
+                  <button
+                    className={`${styles.modeButton} ${purchaseMode === 'one-time' ? styles.modeActive : ''}`}
+                    onClick={() => setPurchaseMode('one-time')}
+                  >
+                    {tSub('oneTimePurchase') || (locale === 'de' ? 'Einmalkauf' : 'One-time purchase')}
+                  </button>
+                  <button
+                    className={`${styles.modeButton} ${styles.subscribeMode} ${purchaseMode === 'subscription' ? styles.modeActive : ''}`}
+                    onClick={() => setPurchaseMode('subscription')}
+                  >
+                    <span className={styles.saveBadge}>-{SUBSCRIPTION_DISCOUNT_PERCENT}%</span>
+                    {tSub('subscribeAndSave')}
+                  </button>
+                </div>
+
+                {purchaseMode === 'subscription' && (
+                  <div className={styles.subscriptionOptions}>
+                    <label className={styles.intervalLabel}>{tSub('selectFrequency')}</label>
+                    <div className={styles.intervalGrid}>
+                      {SUBSCRIPTION_INTERVALS.map((interval) => (
+                        <button
+                          key={`${interval.value}-${interval.unit}`}
+                          className={`${styles.intervalButton} ${
+                            selectedInterval.value === interval.value ? styles.intervalSelected : ''
+                          }`}
+                          onClick={() => setSelectedInterval(interval)}
+                        >
+                          {interval.label[locale]}
+                        </button>
+                      ))}
+                    </div>
+                    <p className={styles.subscriptionBenefits}>
+                      ✓ {tSub('subscriptionBenefits')}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Add to Cart / Subscribe */}
               <div className={styles.addToCartSection}>
-                <button
-                  className={`${styles.addToCartButton} ${isAdded ? styles.added : ''}`}
-                  onClick={handleAddToCart}
-                >
-                  {isAdded ? tCommon('added') : `${tCommon('addToCart')} — ${formatPrice(totalPrice)}`}
-                </button>
+                {purchaseMode === 'one-time' ? (
+                  <button
+                    className={`${styles.addToCartButton} ${isAdded ? styles.added : ''}`}
+                    onClick={handleAddToCart}
+                  >
+                    {isAdded ? tCommon('added') : `${tCommon('addToCart')} — ${formatPrice(totalPrice)}`}
+                  </button>
+                ) : (
+                  <button
+                    className={`${styles.addToCartButton} ${styles.subscribeButton}`}
+                    onClick={handleSubscribe}
+                    disabled={isSubscribing}
+                  >
+                    {isSubscribing 
+                      ? (locale === 'de' ? 'Wird geladen...' : 'Loading...') 
+                      : `${tSub('subscribeAndSave')} — ${formatPrice(totalPrice)}`}
+                  </button>
+                )}
               </div>
 
               {/* Product Attributes */}
@@ -290,6 +384,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className={styles.reviewsSection}>
+          <div className={styles.container}>
+            <ReviewList productSlug={product.id} />
           </div>
         </div>
       </main>

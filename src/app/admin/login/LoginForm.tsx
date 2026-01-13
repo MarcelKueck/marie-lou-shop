@@ -33,7 +33,7 @@ export default function LoginForm() {
       }
 
       // Redirect to the original page or dashboard
-      const redirect = searchParams.get('redirect') || '/admin/refunds';
+      const redirect = searchParams.get('redirect') || '/admin';
       router.push(redirect);
       router.refresh();
     } catch {

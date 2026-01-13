@@ -1,0 +1,293 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.activeValue {
+  color: #059669;
+}
+
+.pausedValue {
+  color: #d97706;
+}
+
+.cancelledValue {
+  color: #6b7280;
+}
+
+/* Customer cell */
+.customerCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.customerName {
+  font-weight: 500;
+  color: #111827;
+}
+
+.customerEmail {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Product cell */
+.productCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.productName {
+  font-weight: 500;
+  color: #111827;
+}
+
+.variantName {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Status badges */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.statusActive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.statusPaused {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statusCancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.statusPastDue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Actions */
+.viewLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.viewLink:hover {
+  text-decoration: underline;
+}
+
+/* Detail page styles */
+.detailContainer {
+  max-width: 900px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.backLink:hover {
+  color: #111827;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.headerInfo h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.subscriptionId {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.headerStatus {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.headerStatus.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.headerStatus.paused {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.headerStatus.cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detailCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.detailCard h3 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  color: #6b7280;
+}
+
+.detailValue {
+  font-weight: 500;
+  color: #111827;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.actionButton {
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.pauseButton {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pauseButton:hover {
+  background: #fde68a;
+}
+
+.resumeButton {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.resumeButton:hover {
+  background: #a7f3d0;
+}
+
+.cancelButton {
+  background: white;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.cancelButton:hover {
+  background: #fee2e2;
+}
+
+.stripeLink {
+  color: #6366f1;
+  text-decoration: none;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.stripeLink:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}

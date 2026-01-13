@@ -227,7 +227,16 @@
     "referralDiscount": "Referral Discount (20%)",
     "referralApplied": "Referral discount applied! Your friend will receive a free bag when your order is confirmed.",
     "referralLoginRequired": "Log in or create an account to unlock your 20% referral discount!",
-    "loginOrRegister": "Log in / Create Account"
+    "loginOrRegister": "Log in / Create Account",
+    "giftCard": {
+      "placeholder": "Enter gift card code (e.g., GIFT-XXXX-XXXX)",
+      "apply": "Apply",
+      "applied": "Gift Card Applied",
+      "balance": "Balance",
+      "enterCode": "Please enter a gift card code",
+      "invalid": "This gift card code is not valid",
+      "error": "Failed to validate gift card. Please try again."
+    }
   },
   "checkoutSuccess": {
     "title": "Thank You!",
@@ -340,9 +349,16 @@
     "logout": "Log out",
     "tabs": {
       "orders": "Orders",
+      "subscriptions": "Subscriptions",
+      "reviews": "Reviews",
       "giftCards": "Gift Cards",
       "profile": "Profile",
       "referrals": "Referrals"
+    },
+    "subscriptions": {
+      "title": "Coffee Subscriptions",
+      "description": "Set up a subscription to get your favorite coffee delivered on a regular schedule. Save 10% on every subscription order!",
+      "manageButton": "Manage Subscriptions"
     },
     "profile": {
       "title": "Profile",
@@ -465,6 +481,20 @@
       "statusActive": "Active",
       "statusUsed": "Fully Used",
       "statusDisabled": "Disabled"
+    },
+    "reviews": {
+      "empty": "No review requests yet",
+      "emptyDescription": "After your orders, you'll be able to review products here.",
+      "pendingTitle": "Pending Reviews",
+      "pendingDescription": "Review your purchases and receive a voucher as a thank you!",
+      "completedTitle": "Completed Reviews",
+      "order": "Order",
+      "earnReward": "Earn {amount} voucher",
+      "writeReview": "Write Review",
+      "reviewedOn": "Reviewed on",
+      "yourReward": "Your Voucher",
+      "copy": "Copy",
+      "discount": "discount"
     },
     "addresses": {
       "title": "My Addresses",
@@ -690,6 +720,19 @@
     "everyNMonths": "Every {n} months",
     "subscribeAndSave": "Subscribe & save 10%",
     "subscriptionBenefits": "Regular delivery, cancel anytime",
-    "selectFrequency": "Select delivery frequency"
+    "selectFrequency": "Select delivery frequency",
+    "oneTimePurchase": "One-time purchase",
+    "createSubscription": "Create Subscription",
+    "quantity": "Quantity",
+    "perDelivery": "Per delivery",
+    "shippingAddress": "Shipping Address",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "addressLine1": "Street Address",
+    "addressLine2": "Apartment, suite, etc.",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "country": "Country",
+    "startSubscription": "Start Subscription"
   }
 }

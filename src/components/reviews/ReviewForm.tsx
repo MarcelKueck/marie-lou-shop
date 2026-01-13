@@ -8,15 +8,17 @@ interface ReviewFormProps {
   productSlug: string;
   orderId?: string;
   onSuccess?: () => void;
+  customerName?: string; // Pre-fill from review request
+  reviewToken?: string; // Token for verified review submission
 }
 
-export default function ReviewForm({ productSlug, orderId, onSuccess }: ReviewFormProps) {
+export default function ReviewForm({ productSlug, orderId, onSuccess, customerName: initialName, reviewToken }: ReviewFormProps) {
   const t = useTranslations('reviews');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [customerName, setCustomerName] = useState('');
+  const [customerName, setCustomerName] = useState(initialName || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -48,6 +50,7 @@ export default function ReviewForm({ productSlug, orderId, onSuccess }: ReviewFo
           title: title.trim() || undefined,
           content: content.trim() || undefined,
           customerName: customerName.trim(),
+          reviewToken, // Include token for verified review
         }),
       });
       

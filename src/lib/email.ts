@@ -166,11 +166,22 @@ export async function sendDeliveryConfirmationEmail(data: OrderEmailData): Promi
 }
 
 /**
+ * Review token data for email
+ */
+interface ReviewTokenData {
+  productId: string;
+  productName: string;
+  token: string;
+}
+
+/**
  * Send review request email to customer
  */
 export async function sendReviewRequestEmail(
   order: Order, 
-  locale: 'de' | 'en' = 'de'
+  locale: 'de' | 'en' = 'de',
+  reviewTokens?: ReviewTokenData[],
+  rewardAmount?: number
 ): Promise<{ success: boolean; error?: string }> {
   const brand = getBrandConfig(order.brand);
   
@@ -183,7 +194,7 @@ export async function sendReviewRequestEmail(
       from: brand.fromEmail,
       to: order.email,
       subject,
-      html: generateReviewRequestHtml(order, brand, locale),
+      html: generateReviewRequestHtml(order, brand, locale, reviewTokens, rewardAmount),
     });
     
     if (error) {
@@ -515,7 +526,7 @@ function generateSubscriptionReminderHtml(
     }</p>
     
     <div style="text-align: center;">
-      <a href="${brand.baseUrl}/account/subscriptions" class="button">
+      <a href="${brand.baseUrl}/account?tab=subscriptions" class="button">
         ${isGerman ? 'Abonnement verwalten' : 'Manage Subscription'}
       </a>
     </div>
@@ -813,38 +824,72 @@ function generateDeliveryConfirmationHtml(
 function generateReviewRequestHtml(
   order: Order,
   brand: BrandConfig,
-  locale: 'de' | 'en'
+  locale: 'de' | 'en',
+  reviewTokens?: { productId: string; productName: string; token: string }[],
+  rewardAmount?: number
 ): string {
+  const rewardFormatted = rewardAmount ? `€${(rewardAmount / 100).toFixed(2).replace('.', ',')}` : '€2,50';
+  
   const t = locale === 'de' ? {
     greeting: `Hallo ${order.firstName},`,
     question: 'Wie war dein Kaffee?',
-    description: 'Du hast vor einer Woche bei uns bestellt. Wir hoffen, er hat dir geschmeckt!',
+    description: 'Du hast vor ein paar Tagen bei uns bestellt. Wir hoffen, er hat dir geschmeckt!',
     help: 'Dein Feedback hilft anderen Kaffeeliebhabern und uns, noch besser zu werden.',
+    reward: `Als Dankeschön schenken wir dir einen ${rewardFormatted} Gutschein für jede Bewertung!`,
     leaveReview: 'Bewertung abgeben',
+    reviewProduct: 'Bewerten',
     thanks: 'Vielen Dank für deine Unterstützung!',
     signature: '— Marcel & das Marie Lou Team',
+    reviewYourProducts: 'Deine Produkte bewerten:',
   } : {
     greeting: `Hello ${order.firstName},`,
     question: 'How was your coffee?',
-    description: 'You ordered from us a week ago. We hope you enjoyed it!',
+    description: 'You ordered from us a few days ago. We hope you enjoyed it!',
     help: 'Your feedback helps other coffee lovers and helps us improve.',
+    reward: `As a thank you, we\'ll give you a ${rewardFormatted} voucher for each review!`,
     leaveReview: 'Leave a Review',
+    reviewProduct: 'Review',
     thanks: 'Thank you for your support!',
     signature: '— Marcel & the Marie Lou Team',
+    reviewYourProducts: 'Review your products:',
   };
 
-  const reviewUrl = `${brand.baseUrl}/${locale}/shop?review=true&order=${order.id}`;
+  // Generate product review links if tokens are provided
+  let productLinks = '';
+  if (reviewTokens && reviewTokens.length > 0) {
+    productLinks = `
+      <h2 style="margin-top: 30px;">${t.reviewYourProducts}</h2>
+      <div style="margin: 20px 0;">
+        ${reviewTokens.map(({ productName, token }) => {
+          const reviewUrl = `${brand.baseUrl}/${locale}/review/${token}`;
+          return `
+            <div style="background: #f9f9f9; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500;">${productName}</span>
+              <a href="${reviewUrl}" style="background: ${brand.primaryColor}; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px;">${t.reviewProduct}</a>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else {
+    // Fallback to old behavior if no tokens
+    const reviewUrl = `${brand.baseUrl}/${locale}/shop?review=true&order=${order.id}`;
+    productLinks = `
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${reviewUrl}" class="button">${t.leaveReview}</a>
+      </div>
+    `;
+  }
 
   const content = `
     <h1 style="margin-top: 0;">☕ ${t.question}</h1>
     <p>${t.greeting}</p>
     <p>${t.description}</p>
     <p>${t.help}</p>
-    
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${reviewUrl}" class="button">${t.leaveReview}</a>
-    </div>
-    
+    <p style="background: #fff3cd; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
+      🎁 ${t.reward}
+    </p>
+    ${productLinks}
     <p>${t.thanks}</p>
     <p>${t.signature}</p>
   `;

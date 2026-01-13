@@ -12,6 +12,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <ul className={styles.navList}>
           <li><Link href="/admin">Dashboard</Link></li>
           <li><Link href="/admin/orders">Orders</Link></li>
+          <li><Link href="/admin/subscriptions">Subscriptions</Link></li>
           <li><Link href="/admin/refunds">Refunds</Link></li>
           <li><Link href="/admin/reviews">Reviews</Link></li>
           <li><Link href="/admin/gift-cards">Gift Cards</Link></li>

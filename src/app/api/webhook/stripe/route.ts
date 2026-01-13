@@ -9,6 +9,7 @@ import {
   referralCodes, 
   referrals, 
   referralRewards,
+  subscriptions,
   REFERRAL_STATUS,
   REWARD_STATUS,
 } from '@/db/schema';
@@ -58,6 +59,15 @@ export async function POST(request: NextRequest) {
       case 'charge.refund.updated':
         // Silently acknowledge - we handle refund logic in charge.refunded
         break;
+      // Subscription events - we handle subscription creation in checkout.session.completed
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted':
+      case 'invoice.paid':
+      case 'invoice.payment_failed':
+        // Silently acknowledge - subscription creation is handled via checkout.session.completed
+        console.log(`Subscription event received: ${event.type}`);
+        break;
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -75,6 +85,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Check if this is a gift card purchase
   if (session.metadata?.type === 'gift_card') {
     await handleGiftCardPurchase(session);
+    return;
+  }
+
+  // Check if this is a subscription purchase
+  if (session.metadata?.type === 'subscription') {
+    await handleSubscriptionCheckout(session);
     return;
   }
 
@@ -306,6 +322,21 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Process referral if code was used
   if (referralCodeUsed) {
     await processReferralReward(referralCodeUsed, customer.id, orderId, email, subtotal, now);
+  }
+
+  // Redeem gift card if used
+  const giftCardId = session.metadata?.giftCardId;
+  const giftCardAmount = session.metadata?.giftCardAmount ? parseInt(session.metadata.giftCardAmount, 10) : 0;
+  
+  if (giftCardId && giftCardAmount > 0) {
+    try {
+      const { redeemGiftCard } = await import('@/lib/gift-cards');
+      const result = await redeemGiftCard(giftCardId, giftCardAmount, orderId);
+      console.log(`Gift card ${giftCardId} redeemed: ${giftCardAmount} cents used, ${result.newBalance} cents remaining`);
+    } catch (error) {
+      console.error(`Failed to redeem gift card ${giftCardId}:`, error);
+      // Don't fail the order - the discount was already applied in Stripe
+    }
   }
 
   // Generate invoice automatically
@@ -714,5 +745,119 @@ async function handleGiftCardPurchase(session: Stripe.Checkout.Session) {
   } catch (error) {
     console.error('Error processing gift card purchase:', error);
     throw error;
+  }
+}
+
+async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
+  console.log('Processing subscription checkout:', session.id);
+  
+  const metadata = session.metadata;
+  if (!metadata) {
+    console.error('No metadata in subscription session');
+    return;
+  }
+  
+  const {
+    customerId,
+    productId,
+    variantId,
+    quantity,
+    intervalCount,
+    intervalUnit,
+    shippingAddress: shippingAddressJson,
+  } = metadata;
+  
+  if (!customerId || !productId || !variantId) {
+    console.error('Missing required metadata for subscription:', metadata);
+    return;
+  }
+  
+  // Check if subscription already exists for this session (idempotency)
+  const existingSubscription = await db.query.subscriptions.findFirst({
+    where: eq(subscriptions.stripeSubscriptionId, session.subscription as string),
+  });
+  
+  if (existingSubscription) {
+    console.log(`Subscription already exists for session ${session.id}, skipping`);
+    return;
+  }
+  
+  // Parse shipping address
+  let shippingAddress;
+  try {
+    shippingAddress = JSON.parse(shippingAddressJson || '{}');
+  } catch {
+    console.error('Failed to parse shipping address');
+    shippingAddress = {};
+  }
+  
+  // Get product details
+  const { getProductById } = await import('@/lib/products');
+  const product = await getProductById(productId);
+  
+  if (!product) {
+    console.error(`Product not found: ${productId}`);
+    return;
+  }
+  
+  const variant = product.variants.find(v => v.id === variantId);
+  if (!variant) {
+    console.error(`Variant not found: ${variantId}`);
+    return;
+  }
+  
+  // Calculate price (subscription price with discount)
+  const { calculateSubscriptionPrice } = await import('@/lib/subscriptions');
+  const unitPrice = calculateSubscriptionPrice(product.basePrice + variant.priceModifier);
+  
+  // Calculate next delivery date
+  const now = new Date();
+  const nextDeliveryAt = new Date(now);
+  const intervalCountNum = parseInt(intervalCount || '4', 10);
+  if (intervalUnit === 'month') {
+    nextDeliveryAt.setMonth(nextDeliveryAt.getMonth() + intervalCountNum);
+  } else {
+    nextDeliveryAt.setDate(nextDeliveryAt.getDate() + (intervalCountNum * 7));
+  }
+  
+  // Create subscription record
+  const subscriptionId = crypto.randomUUID();
+  
+  try {
+    await db.insert(subscriptions).values({
+      id: subscriptionId,
+      customerId,
+      stripeSubscriptionId: session.subscription as string || null,
+      stripePriceId: null, // Dynamic price, not a stored price
+      stripeCustomerId: session.customer as string || null,
+      productId,
+      variantId,
+      productName: product.name.en || product.name.de,
+      variantName: variant.name.en || variant.name.de,
+      intervalCount: intervalCountNum,
+      intervalUnit: intervalUnit || 'week',
+      unitPrice,
+      quantity: parseInt(quantity || '1', 10),
+      shippingFirstName: shippingAddress.firstName || '',
+      shippingLastName: shippingAddress.lastName || '',
+      shippingLine1: shippingAddress.line1 || '',
+      shippingLine2: shippingAddress.line2 || null,
+      shippingCity: shippingAddress.city || '',
+      shippingPostalCode: shippingAddress.postalCode || '',
+      shippingCountry: shippingAddress.country || 'DE',
+      status: 'active',
+      nextDeliveryAt,
+      createdAt: now,
+      updatedAt: now,
+    });
+    
+    console.log(`Subscription ${subscriptionId} created for customer ${customerId}`);
+  } catch (insertError: unknown) {
+    const errorMessage = insertError instanceof Error ? insertError.message : String(insertError);
+    if (errorMessage.includes('UNIQUE constraint failed') || errorMessage.includes('unique')) {
+      console.log(`Subscription already exists for Stripe ID ${session.subscription} (caught duplicate)`);
+      return;
+    }
+    throw insertError;
   }
 }

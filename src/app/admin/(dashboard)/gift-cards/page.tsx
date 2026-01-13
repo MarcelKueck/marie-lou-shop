@@ -1,7 +1,7 @@
 import { db } from '@/db';
-import { giftCards, giftCardTransactions } from '@/db/schema';
-import { desc, eq, sql } from 'drizzle-orm';
-import styles from '../../admin.module.css';
+import { giftCards } from '@/db/schema';
+import { desc } from 'drizzle-orm';
+import styles from '../dashboard.module.css';
 import { GiftCardActions } from './GiftCardActions';
 
 export default async function AdminGiftCardsPage() {
@@ -37,11 +37,11 @@ export default async function AdminGiftCardsPage() {
 
   const getStatusBadge = (status: string) => {
     const statusStyles: Record<string, { bg: string; color: string; label: string }> = {
-      pending: { bg: '#fef3c7', color: '#92400e', label: 'Ausstehend' },
-      active: { bg: '#d1fae5', color: '#065f46', label: 'Aktiv' },
-      used: { bg: '#e5e7eb', color: '#374151', label: 'Aufgebraucht' },
-      expired: { bg: '#fee2e2', color: '#991b1b', label: 'Abgelaufen' },
-      disabled: { bg: '#fecaca', color: '#991b1b', label: 'Deaktiviert' },
+      pending: { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
+      active: { bg: '#d1fae5', color: '#065f46', label: 'Active' },
+      used: { bg: '#e5e7eb', color: '#374151', label: 'Used' },
+      expired: { bg: '#fee2e2', color: '#991b1b', label: 'Expired' },
+      disabled: { bg: '#fecaca', color: '#991b1b', label: 'Disabled' },
     };
     const style = statusStyles[status] || statusStyles.pending;
     return (
@@ -59,97 +59,95 @@ export default async function AdminGiftCardsPage() {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Geschenkgutscheine</h1>
-      </div>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1>Gift Cards</h1>
+        <p>Manage gift cards and vouchers</p>
+      </header>
 
       {/* Stats */}
-      <div className={styles.statsGrid} style={{ marginBottom: 30 }}>
+      <div className={styles.stats}>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{stats.total}</div>
-          <div className={styles.statLabel}>Gesamt</div>
+          <span className={styles.statValue}>{stats.total}</span>
+          <span className={styles.statLabel}>Total</span>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{stats.active}</div>
-          <div className={styles.statLabel}>Aktiv</div>
+          <span className={styles.statValue}>{stats.active}</span>
+          <span className={styles.statLabel}>Active</span>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{formatPrice(stats.totalValue)}</div>
-          <div className={styles.statLabel}>Gesamtwert</div>
+          <span className={styles.statValue}>{formatPrice(stats.totalValue)}</span>
+          <span className={styles.statLabel}>Total Value</span>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{formatPrice(stats.outstandingBalance)}</div>
-          <div className={styles.statLabel}>Offenes Guthaben</div>
+          <span className={styles.statValue}>{formatPrice(stats.outstandingBalance)}</span>
+          <span className={styles.statLabel}>Outstanding Balance</span>
         </div>
       </div>
 
       {/* Gift Cards Table */}
-      <div className={styles.card}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Status</th>
-              <th>Wert</th>
-              <th>Guthaben</th>
-              <th>Käufer</th>
-              <th>Empfänger</th>
-              <th>Erstellt</th>
-              <th>Gültig bis</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allGiftCards.length === 0 ? (
+      <section className={styles.section}>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: 40, color: '#666' }}>
-                  Noch keine Gutscheine vorhanden
-                </td>
+                <th>Code</th>
+                <th>Status</th>
+                <th>Value</th>
+                <th>Balance</th>
+                <th>Purchased By</th>
+                <th>Recipient</th>
+                <th>Created</th>
+                <th>Expires</th>
+                <th>Actions</th>
               </tr>
-            ) : (
-              allGiftCards.map((giftCard) => (
-                <tr key={giftCard.id}>
-                  <td>
-                    <code style={{ 
-                      background: '#f3f4f6', 
-                      padding: '4px 8px', 
-                      borderRadius: '4px',
-                      fontFamily: 'monospace' 
-                    }}>
-                      {giftCard.code}
-                    </code>
-                  </td>
-                  <td>{getStatusBadge(giftCard.status)}</td>
-                  <td>{formatPrice(giftCard.initialAmount)}</td>
-                  <td>
-                    <span style={{ 
-                      color: giftCard.currentBalance === 0 ? '#9ca3af' : '#059669',
-                      fontWeight: 600 
-                    }}>
-                      {formatPrice(giftCard.currentBalance)}
-                    </span>
-                  </td>
-                  <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {giftCard.purchasedByEmail}
-                  </td>
-                  <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {giftCard.recipientName || giftCard.recipientEmail || '-'}
-                  </td>
-                  <td>{formatDate(giftCard.createdAt)}</td>
-                  <td>{formatDate(giftCard.expiresAt)}</td>
-                  <td>
-                    <GiftCardActions 
-                      giftCardId={giftCard.id} 
-                      status={giftCard.status}
-                    />
+            </thead>
+            <tbody>
+              {allGiftCards.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className={styles.empty}>
+                    No gift cards yet
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                allGiftCards.map((giftCard) => (
+                  <tr key={giftCard.id}>
+                    <td>
+                      <code className={styles.code}>
+                        {giftCard.code}
+                      </code>
+                    </td>
+                    <td>{getStatusBadge(giftCard.status)}</td>
+                    <td>{formatPrice(giftCard.initialAmount)}</td>
+                    <td>
+                      <span style={{ 
+                        color: giftCard.currentBalance === 0 ? '#9ca3af' : '#059669',
+                        fontWeight: 600 
+                      }}>
+                        {formatPrice(giftCard.currentBalance)}
+                      </span>
+                    </td>
+                    <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {giftCard.purchasedByEmail || '-'}
+                    </td>
+                    <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {giftCard.recipientName || giftCard.recipientEmail || '-'}
+                    </td>
+                    <td>{formatDate(giftCard.createdAt)}</td>
+                    <td>{formatDate(giftCard.expiresAt)}</td>
+                    <td>
+                      <GiftCardActions 
+                        giftCardId={giftCard.id} 
+                        status={giftCard.status}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

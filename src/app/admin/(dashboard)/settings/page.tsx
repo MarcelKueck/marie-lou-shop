@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import styles from '../../admin.module.css';
+import styles from '../dashboard.module.css';
 
 interface Settings {
   // Shipping

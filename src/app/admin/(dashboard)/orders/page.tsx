@@ -1,7 +1,8 @@
 import { db } from '@/db';
-import { orders, customers } from '@/db/schema';
-import { desc, eq } from 'drizzle-orm';
-import styles from '../page.module.css';
+import { orders } from '@/db/schema';
+import { desc } from 'drizzle-orm';
+import Link from 'next/link';
+import styles from '../dashboard.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,7 @@ export default async function AdminOrdersPage() {
               <th>Total</th>
               <th>Status</th>
               <th>Date</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -44,11 +46,16 @@ export default async function AdminOrdersPage() {
                 <td>€{((o.total || 0) / 100).toFixed(2)}</td>
                 <td>{o.status}</td>
                 <td>{o.createdAt ? new Date(o.createdAt).toLocaleString() : '—'}</td>
+                <td>
+                  <Link href={`/admin/orders/${o.orderNumber}`} className={styles.linkButton}>
+                    View
+                  </Link>
+                </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5} className={styles.empty}>No orders yet</td>
+                <td colSpan={6} className={styles.empty}>No orders yet</td>
               </tr>
             )}
           </tbody>

@@ -18,41 +18,41 @@ export default async function AdminReviewsPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1>Bewertungen</h1>
-        <p>{allReviews.length} Bewertungen insgesamt</p>
+        <h1>Reviews</h1>
+        <p>{allReviews.length} reviews total</p>
       </header>
       
       {/* Stats */}
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <span className={styles.statValue} style={{ color: '#f59e0b' }}>{pendingReviews.length}</span>
-          <span className={styles.statLabel}>Ausstehend</span>
+          <span className={styles.statLabel}>Pending</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statValue} style={{ color: '#22c55e' }}>{approvedReviews.length}</span>
-          <span className={styles.statLabel}>Genehmigt</span>
+          <span className={styles.statLabel}>Approved</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statValue} style={{ color: '#ef4444' }}>{rejectedReviews.length}</span>
-          <span className={styles.statLabel}>Abgelehnt</span>
+          <span className={styles.statLabel}>Rejected</span>
         </div>
       </div>
       
       {/* Pending Reviews */}
       {pendingReviews.length > 0 && (
         <section className={styles.section}>
-          <h2 style={{ marginBottom: '1rem', color: '#f59e0b' }}>⏳ Ausstehende Bewertungen ({pendingReviews.length})</h2>
+          <h2 style={{ marginBottom: '1rem', color: '#f59e0b' }}>⏳ Pending Reviews ({pendingReviews.length})</h2>
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Produkt</th>
-                  <th>Bewertung</th>
-                  <th>Kunde</th>
-                  <th>Inhalt</th>
-                  <th>Verifiziert</th>
-                  <th>Datum</th>
-                  <th>Aktionen</th>
+                  <th>Product</th>
+                  <th>Rating</th>
+                  <th>Customer</th>
+                  <th>Content</th>
+                  <th>Verified</th>
+                  <th>Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -66,7 +66,7 @@ export default async function AdminReviewsPage() {
                       {review.content?.substring(0, 100)}{review.content && review.content.length > 100 ? '...' : ''}
                     </td>
                     <td>{review.verifiedPurchase ? '✓' : '-'}</td>
-                    <td>{review.createdAt?.toLocaleDateString('de-DE')}</td>
+                    <td>{review.createdAt?.toLocaleDateString('en-US')}</td>
                     <td>
                       <ReviewActions reviewId={review.id} currentStatus={review.status} />
                     </td>
@@ -80,26 +80,26 @@ export default async function AdminReviewsPage() {
       
       {/* All Reviews Table */}
       <section className={styles.section}>
-        <h2 style={{ marginBottom: '1rem' }}>Alle Bewertungen</h2>
+        <h2 style={{ marginBottom: '1rem' }}>All Reviews</h2>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Produkt</th>
-                <th>Bewertung</th>
-                <th>Kunde</th>
-                <th>Titel</th>
+                <th>Product</th>
+                <th>Rating</th>
+                <th>Customer</th>
+                <th>Title</th>
                 <th>Status</th>
-                <th>Verifiziert</th>
-                <th>Datum</th>
-                <th>Aktionen</th>
+                <th>Verified</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {allReviews.length === 0 ? (
                 <tr>
                   <td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>
-                    Noch keine Bewertungen vorhanden.
+                    No reviews yet.
                   </td>
                 </tr>
               ) : (
@@ -120,11 +120,11 @@ export default async function AdminReviewsPage() {
                         backgroundColor: review.status === 'approved' ? '#dcfce7' : review.status === 'rejected' ? '#fee2e2' : '#fef3c7',
                         color: review.status === 'approved' ? '#166534' : review.status === 'rejected' ? '#991b1b' : '#92400e',
                       }}>
-                        {review.status === 'approved' ? 'Genehmigt' : review.status === 'rejected' ? 'Abgelehnt' : 'Ausstehend'}
+                        {review.status === 'approved' ? 'Approved' : review.status === 'rejected' ? 'Rejected' : 'Pending'}
                       </span>
                     </td>
-                    <td>{review.verifiedPurchase ? '✓ Verifiziert' : '-'}</td>
-                    <td>{review.createdAt?.toLocaleDateString('de-DE')}</td>
+                    <td>{review.verifiedPurchase ? '✓ Verified' : '-'}</td>
+                    <td>{review.createdAt?.toLocaleDateString('en-US')}</td>
                     <td>
                       <ReviewActions reviewId={review.id} currentStatus={review.status} />
                     </td>

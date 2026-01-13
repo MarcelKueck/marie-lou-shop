@@ -66,49 +66,49 @@ export default async function AdminDashboardIndex() {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1>Dashboard</h1>
-        <p>Guten Tag! Hier ist der Überblick für heute.</p>
+        <p>Good day! Here is your overview for today.</p>
       </header>
 
       {/* Stats Cards */}
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <span className={styles.statValue}>{formatPrice(Number(todayStats[0]?.revenue || 0))}</span>
-          <span className={styles.statLabel}>Umsatz heute</span>
-          <span className={styles.statSubtext}>{todayStats[0]?.orders || 0} Bestellungen</span>
+          <span className={styles.statLabel}>Revenue today</span>
+          <span className={styles.statSubtext}>{todayStats[0]?.orders || 0} orders</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statValue}>{formatPrice(Number(monthStats[0]?.revenue || 0))}</span>
-          <span className={styles.statLabel}>Umsatz 30 Tage</span>
-          <span className={styles.statSubtext}>{monthStats[0]?.orders || 0} Bestellungen</span>
+          <span className={styles.statLabel}>Revenue 30 days</span>
+          <span className={styles.statSubtext}>{monthStats[0]?.orders || 0} orders</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statValue}>{totalCustomers[0]?.count || 0}</span>
-          <span className={styles.statLabel}>Kunden gesamt</span>
+          <span className={styles.statLabel}>Total customers</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statValue} style={{ color: Number(pendingReviews[0]?.count || 0) > 0 ? '#f59e0b' : undefined }}>
             {pendingReviews[0]?.count || 0}
           </span>
-          <span className={styles.statLabel}>Ausstehende Bewertungen</span>
+          <span className={styles.statLabel}>Pending reviews</span>
         </div>
       </div>
 
       {/* Action Required */}
       {(pendingOrders.length > 0 || readyToShip.length > 0) && (
         <section className={styles.section}>
-          <h2 style={{ marginBottom: '1rem', color: '#f59e0b' }}>⏳ Aktion erforderlich</h2>
+          <h2 style={{ marginBottom: '1rem', color: '#f59e0b' }}>⏳ Action required</h2>
           
           {pendingOrders.length > 0 && (
             <div className={styles.actionCard}>
-              <h3>📦 {pendingOrders.length} Bestellung(en) warten auf Röstung</h3>
+              <h3>📦 {pendingOrders.length} order(s) waiting to be roasted</h3>
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Bestellung</th>
-                      <th>Kunde</th>
-                      <th>Datum</th>
-                      <th>Summe</th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Date</th>
+                      <th>Total</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -117,11 +117,11 @@ export default async function AdminDashboardIndex() {
                       <tr key={order.id}>
                         <td>{order.orderNumber}</td>
                         <td>{order.firstName} {order.lastName}</td>
-                        <td>{order.createdAt?.toLocaleDateString('de-DE')}</td>
+                        <td>{order.createdAt?.toLocaleDateString('en-US')}</td>
                         <td>{formatPrice(order.total)}</td>
                         <td>
-                          <Link href={`/admin/orders/${order.id}`} className={styles.linkButton}>
-                            Öffnen
+                          <Link href={`/admin/orders/${order.orderNumber}`} className={styles.linkButton}>
+                            Open
                           </Link>
                         </td>
                       </tr>
@@ -134,15 +134,15 @@ export default async function AdminDashboardIndex() {
           
           {readyToShip.length > 0 && (
             <div className={styles.actionCard} style={{ marginTop: '1rem' }}>
-              <h3>🚚 {readyToShip.length} Bestellung(en) bereit zum Versand</h3>
+              <h3>🚚 {readyToShip.length} order(s) ready to ship</h3>
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Bestellung</th>
-                      <th>Kunde</th>
-                      <th>Geröstet am</th>
-                      <th>Summe</th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Roasted on</th>
+                      <th>Total</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -151,11 +151,11 @@ export default async function AdminDashboardIndex() {
                       <tr key={order.id}>
                         <td>{order.orderNumber}</td>
                         <td>{order.firstName} {order.lastName}</td>
-                        <td>{order.roastedAt?.toLocaleDateString('de-DE') || '-'}</td>
+                        <td>{order.roastedAt?.toLocaleDateString('en-US') || '-'}</td>
                         <td>{formatPrice(order.total)}</td>
                         <td>
-                          <Link href={`/admin/orders/${order.id}`} className={styles.linkButton}>
-                            Öffnen
+                          <Link href={`/admin/orders/${order.orderNumber}`} className={styles.linkButton}>
+                            Open
                           </Link>
                         </td>
                       </tr>
@@ -171,20 +171,20 @@ export default async function AdminDashboardIndex() {
       {/* Quick Links */}
       <section className={styles.columns}>
         <Link href="/admin/orders" className={styles.quickLink}>
-          <h3>📋 Bestellungen</h3>
-          <p>Alle Bestellungen anzeigen und verwalten</p>
+          <h3>📋 Orders</h3>
+          <p>View and manage all orders</p>
         </Link>
         <Link href="/admin/reviews" className={styles.quickLink}>
-          <h3>⭐ Bewertungen</h3>
-          <p>Kundenbewertungen moderieren</p>
+          <h3>⭐ Reviews</h3>
+          <p>Moderate customer reviews</p>
         </Link>
         <Link href="/admin/customers" className={styles.quickLink}>
-          <h3>👥 Kunden</h3>
-          <p>Kundenliste und Details</p>
+          <h3>👥 Customers</h3>
+          <p>Customer list and details</p>
         </Link>
         <Link href="/admin/referrals" className={styles.quickLink}>
-          <h3>🎁 Empfehlungen</h3>
-          <p>Empfehlungsprogramm verwalten</p>
+          <h3>🎁 Referrals</h3>
+          <p>Manage referral program</p>
         </Link>
       </section>
     </div>

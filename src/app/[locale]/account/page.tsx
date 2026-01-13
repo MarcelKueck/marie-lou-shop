@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { generateShareLink } from '@/lib/referral';
@@ -51,6 +51,39 @@ interface PurchasedGiftCard {
   activatedAt: string | null;
 }
 
+interface Subscription {
+  id: string;
+  productName: string;
+  variantName: string;
+  quantity: number;
+  unitPrice: number;
+  intervalCount: number;
+  intervalUnit: string;
+  status: string;
+  nextDeliveryAt: string | null;
+  shippingFirstName: string;
+  shippingLastName: string;
+  shippingLine1: string;
+  shippingCity: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
+}
+
+interface ReviewRequest {
+  id: string;
+  productId: string;
+  productName: string;
+  productImage: string | null;
+  orderNumber: string;
+  token: string;
+  status: 'pending' | 'reviewed';
+  rewardCode: string | null;
+  rewardAmount: number;
+  createdAt: string;
+  expiresAt: string;
+  reviewedAt: string | null;
+}
+
 interface UserData {
   customer: {
     id: string;
@@ -75,21 +108,37 @@ interface UserData {
   orders: OrderData[];
 }
 
-type TabType = 'orders' | 'giftCards' | 'profile' | 'referrals';
+type TabType = 'orders' | 'subscriptions' | 'reviews' | 'giftCards' | 'profile' | 'referrals';
 
 export default function AccountPage() {
   const t = useTranslations('account');
+  const tSub = useTranslations('subscriptions');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addItem, openCart } = useCart();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [pendingRewards, setPendingRewards] = useState<PendingReward[]>([]);
   const [purchasedGiftCards, setPurchasedGiftCards] = useState<PurchasedGiftCard[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [reviewRequests, setReviewRequests] = useState<ReviewRequest[]>([]);
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(false);
+  const [subscriptionActionLoading, setSubscriptionActionLoading] = useState<string | null>(null);
+  const [subscriptionError, setSubscriptionError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [copiedGiftCardId, setCopiedGiftCardId] = useState<string | null>(null);
+  const [copiedRewardCode, setCopiedRewardCode] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('orders');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [claimingRewardId, setClaimingRewardId] = useState<string | null>(null);
+
+  // Handle tab query parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['orders', 'subscriptions', 'reviews', 'giftCards', 'profile', 'referrals'].includes(tabParam)) {
+      setActiveTab(tabParam as TabType);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -115,6 +164,20 @@ export default function AccountPage() {
           const giftCardsData = await giftCardsResponse.json();
           setPurchasedGiftCards(giftCardsData.giftCards || []);
         }
+        
+        // Fetch subscriptions
+        const subscriptionsResponse = await fetch('/api/subscriptions');
+        if (subscriptionsResponse.ok) {
+          const subscriptionsData = await subscriptionsResponse.json();
+          setSubscriptions(subscriptionsData.subscriptions || []);
+        }
+        
+        // Fetch review requests
+        const reviewsResponse = await fetch('/api/account/reviews');
+        if (reviewsResponse.ok) {
+          const reviewsData = await reviewsResponse.json();
+          setReviewRequests(reviewsData.reviewRequests || []);
+        }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
         router.push('/account/login');
@@ -125,6 +188,63 @@ export default function AccountPage() {
     
     fetchUserData();
   }, [router]);
+
+  const fetchSubscriptions = async () => {
+    setSubscriptionsLoading(true);
+    try {
+      const response = await fetch('/api/subscriptions');
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptions(data.subscriptions || []);
+      }
+    } catch {
+      setSubscriptionError('Could not load subscriptions');
+    } finally {
+      setSubscriptionsLoading(false);
+    }
+  };
+
+  const handleSubscriptionAction = async (subscriptionId: string, action: string, data?: object) => {
+    setSubscriptionActionLoading(subscriptionId);
+    setSubscriptionError('');
+
+    try {
+      const response = await fetch('/api/subscriptions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriptionId, action, ...data }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Action failed');
+      }
+
+      await fetchSubscriptions();
+    } catch (err) {
+      setSubscriptionError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setSubscriptionActionLoading(null);
+    }
+  };
+
+  const getIntervalLabel = (count: number, unit: string) => {
+    if (unit === 'week') {
+      return count === 1 ? tSub('everyWeek') : tSub('everyNWeeks', { n: count });
+    }
+    return count === 1 ? tSub('everyMonth') : tSub('everyNMonths', { n: count });
+  };
+
+  const getSubscriptionStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { className: string; label: string }> = {
+      active: { className: styles.statusActive, label: tSub('statusActive') },
+      paused: { className: styles.statusPaused, label: tSub('statusPaused') },
+      cancelled: { className: styles.statusCancelled, label: tSub('statusCancelled') },
+      past_due: { className: styles.statusWarning, label: tSub('statusPastDue') },
+    };
+    const config = statusConfig[status] || statusConfig.active;
+    return <span className={config.className}>{config.label}</span>;
+  };
 
   const handleLogout = async () => {
     try {
@@ -273,6 +393,23 @@ export default function AccountPage() {
               {t('tabs.orders')}
             </button>
             <button 
+              className={`${styles.tab} ${activeTab === 'subscriptions' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('subscriptions')}
+            >
+              {t('tabs.subscriptions')}
+            </button>
+            <button 
+              className={`${styles.tab} ${activeTab === 'reviews' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              {t('tabs.reviews')}
+              {reviewRequests.filter(r => r.status === 'pending').length > 0 && (
+                <span className={styles.tabBadge}>
+                  {reviewRequests.filter(r => r.status === 'pending').length}
+                </span>
+              )}
+            </button>
+            <button 
               className={`${styles.tab} ${activeTab === 'giftCards' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('giftCards')}
             >
@@ -357,6 +494,180 @@ export default function AccountPage() {
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* Subscriptions Tab */}
+          {activeTab === 'subscriptions' && (
+            <div className={styles.content}>
+              {subscriptionError && <div className={styles.error}>{subscriptionError}</div>}
+              
+              {subscriptionsLoading ? (
+                <div className={styles.loading}>{tSub('loading')}</div>
+              ) : subscriptions.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon}>🔄</div>
+                  <h3>{tSub('noSubscriptions')}</h3>
+                  <p>{tSub('noSubscriptionsDesc')}</p>
+                  <Link href="/shop" className={styles.shopButton}>
+                    {tSub('browseProducts')}
+                  </Link>
+                </div>
+              ) : (
+                <div className={styles.subscriptionsList}>
+                  {subscriptions.map((sub) => (
+                    <div key={sub.id} className={styles.subscriptionCard}>
+                      <div className={styles.subscriptionHeader}>
+                        <div>
+                          <h3 className={styles.subscriptionProductName}>{sub.productName}</h3>
+                          <p className={styles.subscriptionVariantName}>{sub.variantName} × {sub.quantity}</p>
+                        </div>
+                        {getSubscriptionStatusBadge(sub.status)}
+                      </div>
+
+                      <div className={styles.subscriptionDetails}>
+                        <div className={styles.subscriptionDetailRow}>
+                          <span>{tSub('price')}</span>
+                          <span>{formatPrice(sub.unitPrice * sub.quantity)}</span>
+                        </div>
+                        <div className={styles.subscriptionDetailRow}>
+                          <span>{tSub('frequency')}</span>
+                          <span>{getIntervalLabel(sub.intervalCount, sub.intervalUnit)}</span>
+                        </div>
+                        <div className={styles.subscriptionDetailRow}>
+                          <span>{tSub('nextDelivery')}</span>
+                          <span>{sub.nextDeliveryAt ? new Date(sub.nextDeliveryAt).toLocaleDateString('de-DE') : '-'}</span>
+                        </div>
+                        <div className={styles.subscriptionDetailRow}>
+                          <span>{tSub('shippingTo')}</span>
+                          <span>
+                            {sub.shippingFirstName} {sub.shippingLastName}, {sub.shippingCity}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.subscriptionActions}>
+                        {sub.status === 'active' && (
+                          <>
+                            <button
+                              onClick={() => handleSubscriptionAction(sub.id, 'pause')}
+                              disabled={subscriptionActionLoading === sub.id}
+                              className={styles.secondaryButton}
+                            >
+                              {tSub('pause')}
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(tSub('confirmCancel'))) {
+                                  handleSubscriptionAction(sub.id, 'cancel');
+                                }
+                              }}
+                              disabled={subscriptionActionLoading === sub.id}
+                              className={styles.dangerButton}
+                            >
+                              {tSub('cancel')}
+                            </button>
+                          </>
+                        )}
+                        {sub.status === 'paused' && (
+                          <button
+                            onClick={() => handleSubscriptionAction(sub.id, 'resume')}
+                            disabled={subscriptionActionLoading === sub.id}
+                            className={styles.primaryButton}
+                          >
+                            {tSub('resume')}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Reviews Tab */}
+          {activeTab === 'reviews' && (
+            <div className={styles.content}>
+              {reviewRequests.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon}>⭐</div>
+                  <h3>{t('reviews.empty')}</h3>
+                  <p>{t('reviews.emptyDescription')}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Pending Reviews */}
+                  {reviewRequests.filter(r => r.status === 'pending').length > 0 && (
+                    <div className={styles.reviewSection}>
+                      <h3 className={styles.sectionTitle}>{t('reviews.pendingTitle')}</h3>
+                      <p className={styles.sectionDescription}>{t('reviews.pendingDescription')}</p>
+                      <div className={styles.reviewRequestsList}>
+                        {reviewRequests.filter(r => r.status === 'pending').map((request) => (
+                          <div key={request.id} className={styles.reviewRequestCard}>
+                            <div className={styles.reviewRequestInfo}>
+                              <h4>{request.productName}</h4>
+                              <p className={styles.orderNumber}>{t('reviews.order')} #{request.orderNumber}</p>
+                              <p className={styles.rewardBanner}>
+                                🎁 {t('reviews.earnReward', { amount: `€${(request.rewardAmount / 100).toFixed(2)}` })}
+                              </p>
+                            </div>
+                            <div className={styles.reviewRequestActions}>
+                              <Link 
+                                href={`/review/${request.token}`}
+                                className={styles.primaryButton}
+                              >
+                                {t('reviews.writeReview')}
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Completed Reviews with Rewards */}
+                  {reviewRequests.filter(r => r.status === 'reviewed').length > 0 && (
+                    <div className={styles.reviewSection}>
+                      <h3 className={styles.sectionTitle}>{t('reviews.completedTitle')}</h3>
+                      <div className={styles.reviewRequestsList}>
+                        {reviewRequests.filter(r => r.status === 'reviewed').map((request) => (
+                          <div key={request.id} className={styles.reviewRequestCard}>
+                            <div className={styles.reviewRequestInfo}>
+                              <h4>{request.productName}</h4>
+                              <p className={styles.orderNumber}>{t('reviews.order')} #{request.orderNumber}</p>
+                              <p className={styles.reviewedDate}>
+                                {t('reviews.reviewedOn')} {new Date(request.reviewedAt!).toLocaleDateString('de-DE')}
+                              </p>
+                            </div>
+                            {request.rewardCode && (
+                              <div className={styles.rewardCodeBox}>
+                                <span className={styles.rewardLabel}>{t('reviews.yourReward')}</span>
+                                <div className={styles.codeWrapper}>
+                                  <span className={styles.rewardCode}>{request.rewardCode}</span>
+                                  <button
+                                    className={styles.copyButton}
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(request.rewardCode!);
+                                      setCopiedRewardCode(request.id);
+                                      setTimeout(() => setCopiedRewardCode(null), 2000);
+                                    }}
+                                  >
+                                    {copiedRewardCode === request.id ? '✓' : t('reviews.copy')}
+                                  </button>
+                                </div>
+                                <span className={styles.rewardAmount}>
+                                  €{(request.rewardAmount / 100).toFixed(2)} {t('reviews.discount')}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

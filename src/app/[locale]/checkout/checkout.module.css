@@ -293,3 +293,271 @@
   color: #4CAF50;
   font-weight: 700;
 }
+
+/* Gift Card Styles */
+.giftCardSection {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border, #e5e5e5);
+}
+
+.giftCardInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.giftCardInputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.giftCardField {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.giftCardField:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.giftCardField::placeholder {
+  text-transform: none;
+  font-family: inherit;
+  letter-spacing: normal;
+  color: var(--color-text-secondary, #999);
+}
+
+.applyGiftCardBtn {
+  padding: 0.75rem 1.25rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.applyGiftCardBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.applyGiftCardBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.giftCardError {
+  color: var(--color-error, #dc2626);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.appliedGiftCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-success-light, #dcfce7);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.giftCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.giftCardLabel {
+  font-size: 0.8125rem;
+  color: var(--color-success-dark, #166534);
+  font-weight: 500;
+}
+
+.giftCardCode {
+  font-family: monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.giftCardBalance {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.giftCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.giftCardDiscount {
+  font-weight: 700;
+  color: var(--color-success, #22c55e);
+}
+
+.removeGiftCard {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-text-secondary, #666);
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.removeGiftCard:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Gift Card Section */
+.giftCardSection {
+  padding: 1rem 0;
+  border-top: 1px dashed var(--color-border, #e5e5e5);
+  border-bottom: 1px dashed var(--color-border, #e5e5e5);
+  margin: 0.5rem 0;
+}
+
+.giftCardInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.giftCardInputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.giftCardField {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: white;
+}
+
+.giftCardField:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 0, 0, 0), 0.1);
+}
+
+.giftCardField::placeholder {
+  text-transform: none;
+  font-family: inherit;
+  letter-spacing: normal;
+  color: var(--color-text-secondary, #999);
+}
+
+.applyGiftCardBtn {
+  padding: 0.625rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.applyGiftCardBtn:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.applyGiftCardBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.giftCardError {
+  font-size: 0.8125rem;
+  color: var(--color-error, #dc2626);
+  margin: 0;
+}
+
+.appliedGiftCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-success-light, #dcfce7);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.giftCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.giftCardLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-success-dark, #166534);
+}
+
+.giftCardCode {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  color: var(--color-text);
+}
+
+.giftCardBalance {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.giftCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.giftCardDiscount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-success, #22c55e);
+}
+
+.removeGiftCard {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.removeGiftCard:hover {
+  background: var(--color-error, #dc2626);
+  border-color: var(--color-error, #dc2626);
+  color: white;
+}

@@ -10,7 +10,7 @@ import {
   REFERRAL_MINIMUM_ORDER 
 } from '@/lib/referral';
 import { db } from '@/db';
-import { referralCodes } from '@/db/schema';
+import { referralCodes, giftCards } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getCurrentCustomer } from '@/lib/auth';
 
@@ -27,12 +27,14 @@ interface CheckoutRequest {
   locale: 'en' | 'de';
   countryCode?: string;
   referralCode?: string;
+  giftCardId?: string;
+  giftCardAmount?: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: CheckoutRequest = await request.json();
-    const { items, locale, countryCode, referralCode } = body;
+    const { items, locale, countryCode, referralCode, giftCardId, giftCardAmount } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -170,6 +172,43 @@ export async function POST(request: NextRequest) {
       discounts.push({ coupon: coupon.id });
     }
 
+    // Validate and apply gift card
+    let validGiftCardId: string | undefined;
+    let validGiftCardAmount = 0;
+    
+    if (giftCardId && giftCardAmount && giftCardAmount > 0) {
+      // Verify gift card exists, is active, and has sufficient balance
+      const giftCard = await db.query.giftCards.findFirst({
+        where: and(
+          eq(giftCards.id, giftCardId),
+          eq(giftCards.status, 'active')
+        ),
+      });
+      
+      if (giftCard && giftCard.currentBalance >= giftCardAmount) {
+        // Calculate max applicable amount (can't exceed order total after referral discount)
+        const afterReferral = subtotal - discountAmount;
+        validGiftCardAmount = Math.min(giftCardAmount, giftCard.currentBalance, afterReferral);
+        validGiftCardId = giftCardId;
+        
+        // Add gift card as a fixed amount discount
+        if (validGiftCardAmount > 0) {
+          const giftCardCoupon = await stripe.coupons.create({
+            amount_off: validGiftCardAmount,
+            currency: 'eur',
+            duration: 'once',
+            name: `Gift Card: ${giftCard.code}`,
+            metadata: {
+              giftCardId: giftCardId,
+              giftCardCode: giftCard.code,
+            },
+          });
+          
+          discounts.push({ coupon: giftCardCoupon.id });
+        }
+      }
+    }
+
     // Get shipping options - account for free shipping thresholds
     const zone = countryCode
       ? getShippingZoneByCountry(countryCode) || getDefaultShippingZone()
@@ -228,6 +267,8 @@ export async function POST(request: NextRequest) {
         locale,
         referralCode: validReferralCode || '',
         rewardIds: rewardIds.length > 0 ? rewardIds.join(',') : '',
+        giftCardId: validGiftCardId || '',
+        giftCardAmount: validGiftCardAmount > 0 ? validGiftCardAmount.toString() : '',
       },
     });
 
