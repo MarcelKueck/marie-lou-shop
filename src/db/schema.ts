@@ -160,6 +160,9 @@ export const orders = sqliteTable('orders', {
   // Referral tracking
   referralCodeUsed: text('referral_code_used'),
   referralDiscount: integer('referral_discount').default(0),
+  // B2B promo tracking (employee cross-sell)
+  b2bPromoCode: text('b2b_promo_code'),
+  b2bPromoDiscount: integer('b2b_promo_discount').default(0),
   // Timestamps
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
@@ -628,5 +631,471 @@ export const SUBSCRIPTION_STATUS = {
   PAUSED: 'paused',
   CANCELLED: 'cancelled',
   PAST_DUE: 'past_due',
+} as const;
+
+// ============================================================================
+// B2B Program Tables
+// ============================================================================
+
+// B2B Companies - the core company record
+export const b2bCompanies = sqliteTable('b2b_companies', {
+  id: text('id').primaryKey(),
+  
+  // Company information
+  companyName: text('company_name').notNull(),
+  vatId: text('vat_id'), // e.g., DE123456789
+  industry: text('industry'), // 'tech', 'agency', 'professional', 'other'
+  
+  // Contact person
+  contactFirstName: text('contact_first_name').notNull(),
+  contactLastName: text('contact_last_name').notNull(),
+  contactEmail: text('contact_email').notNull().unique(),
+  contactPhone: text('contact_phone'),
+  
+  // Authentication (separate from D2C customers)
+  passwordHash: text('password_hash'),
+  
+  // Tier and pricing
+  tier: text('tier').notNull().default('flex'), // 'flex' | 'smart_starter' | 'smart_growth' | 'smart_scale' | 'smart_enterprise'
+  employeeCount: integer('employee_count'),
+  monthlyRatePerEmployee: integer('monthly_rate_per_employee'), // in cents (Smart tier only)
+  
+  // Volume discount tier for Flex (calculated based on order history)
+  flexDiscountTier: text('flex_discount_tier').default('none'), // 'none' | '5kg' | '10kg' | '25kg' | '50kg'
+  
+  // Status workflow
+  status: text('status').notNull().default('inquiry'), // 'inquiry' | 'pending' | 'active' | 'paused' | 'cancelled'
+  
+  // Promo code for employee cross-sell (e.g., MLOU-ACME)
+  promoCode: text('promo_code').unique(),
+  promoDiscountPercent: integer('promo_discount_percent').default(10), // Default 10% off
+  
+  // Stripe integration (Smart tier)
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  
+  // Payment terms (Flex tier)
+  paymentTermsDays: integer('payment_terms_days').default(0), // 0 = due on order, 14, 30
+  
+  // Addresses
+  billingLine1: text('billing_line1'),
+  billingLine2: text('billing_line2'),
+  billingCity: text('billing_city'),
+  billingPostalCode: text('billing_postal_code'),
+  billingCountry: text('billing_country').default('DE'),
+  
+  shippingLine1: text('shipping_line1'),
+  shippingLine2: text('shipping_line2'),
+  shippingCity: text('shipping_city'),
+  shippingPostalCode: text('shipping_postal_code'),
+  shippingCountry: text('shipping_country').default('DE'),
+  
+  // Preferences
+  preferredProducts: text('preferred_products'), // JSON array of product IDs
+  preferredBrand: text('preferred_brand').default('coffee'), // 'coffee' | 'tea' | 'both'
+  
+  // Additional info from inquiry
+  currentCoffeeSolution: text('current_coffee_solution'),
+  inquiryMessage: text('inquiry_message'),
+  
+  // Admin notes
+  internalNotes: text('internal_notes'),
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  approvedAt: integer('approved_at', { mode: 'timestamp' }),
+  activatedAt: integer('activated_at', { mode: 'timestamp' }),
+  pausedAt: integer('paused_at', { mode: 'timestamp' }),
+  cancelledAt: integer('cancelled_at', { mode: 'timestamp' }),
+});
+
+// B2B Sessions (separate from D2C customer sessions)
+export const b2bSessions = sqliteTable('b2b_sessions', {
+  id: text('id').primaryKey(), // The session token
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+// B2B Orders - links Flex orders to companies, also tracks Smart on-demand orders
+export const b2bOrders = sqliteTable('b2b_orders', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  orderId: text('order_id').references(() => orders.id), // Links to main orders table
+  
+  // Order type
+  orderType: text('order_type').notNull().default('flex'), // 'flex' | 'smart_ondemand'
+  
+  // PO number (for business orders)
+  poNumber: text('po_number'),
+  
+  // Payment tracking (for Flex invoiced orders)
+  paymentDueDate: integer('payment_due_date', { mode: 'timestamp' }),
+  paymentStatus: text('payment_status').notNull().default('pending'), // 'pending' | 'paid' | 'overdue'
+  paidAt: integer('paid_at', { mode: 'timestamp' }),
+  
+  // Volume discount applied
+  volumeDiscountPercent: integer('volume_discount_percent').default(0),
+  volumeDiscountAmount: integer('volume_discount_amount').default(0), // in cents
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  reminderSentAt: integer('reminder_sent_at', { mode: 'timestamp' }),
+  reminder2SentAt: integer('reminder2_sent_at', { mode: 'timestamp' }),
+  reminder3SentAt: integer('reminder3_sent_at', { mode: 'timestamp' }),
+});
+
+// B2B Promo Usage - tracks employee conversions from QR codes
+export const b2bPromoUsage = sqliteTable('b2b_promo_usage', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  promoCode: text('promo_code').notNull(),
+  
+  // The D2C order that used this promo code
+  orderId: text('order_id').references(() => orders.id),
+  customerId: text('customer_id').references(() => customers.id),
+  customerEmail: text('customer_email').notNull(),
+  
+  // Discount applied
+  discountPercent: integer('discount_percent').notNull(),
+  discountAmount: integer('discount_amount').notNull(), // in cents
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+// SmartBoxes - the IoT containers for Smart tier
+export const smartBoxes = sqliteTable('smart_boxes', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  
+  // Device identification
+  deviceId: text('device_id').notNull().unique(), // Hardware serial number
+  macAddress: text('mac_address'),
+  firmwareVersion: text('firmware_version'),
+  
+  // Box type and configuration
+  size: text('size').notNull().default('medium'), // 'small' | 'medium' | 'large'
+  capacityKg: real('capacity_kg').notNull(), // e.g., 1.4, 1.9, 3.3
+  productType: text('product_type').notNull().default('coffee'), // 'coffee' | 'tea'
+  
+  // Current product in box
+  currentProductId: text('current_product_id'),
+  currentProductName: text('current_product_name'),
+  
+  // Thresholds
+  reorderThresholdPercent: integer('reorder_threshold_percent').default(20),
+  lowBatteryThresholdPercent: integer('low_battery_threshold_percent').default(20),
+  
+  // Current state (updated by readings)
+  currentWeightGrams: integer('current_weight_grams'),
+  currentFillPercent: integer('current_fill_percent'),
+  currentBatteryPercent: integer('current_battery_percent'),
+  lastReadingAt: integer('last_reading_at', { mode: 'timestamp' }),
+  
+  // Status
+  status: text('status').notNull().default('pending'), // 'pending' | 'active' | 'offline' | 'retired'
+  
+  // Location in office (optional)
+  locationDescription: text('location_description'), // e.g., "Main kitchen"
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  activatedAt: integer('activated_at', { mode: 'timestamp' }),
+  lastOnlineAt: integer('last_online_at', { mode: 'timestamp' }),
+});
+
+// Box Readings - time series data from SmartBoxes
+export const boxReadings = sqliteTable('box_readings', {
+  id: text('id').primaryKey(),
+  boxId: text('box_id').notNull().references(() => smartBoxes.id),
+  
+  // Measurement data
+  weightGrams: integer('weight_grams').notNull(),
+  batteryPercent: integer('battery_percent'),
+  signalStrength: integer('signal_strength'), // RSSI in dBm
+  
+  // Calculated fields
+  fillPercent: integer('fill_percent'),
+  estimatedConsumptionGrams: integer('estimated_consumption_grams'), // Since last reading
+  
+  // Device metadata
+  firmwareVersion: text('firmware_version'),
+  temperature: real('temperature'), // Celsius, if sensor available
+  
+  // Timestamp
+  recordedAt: integer('recorded_at', { mode: 'timestamp' }).notNull(),
+  receivedAt: integer('received_at', { mode: 'timestamp' }).notNull(),
+});
+
+// B2B Shipments - for Smart tier auto-triggered deliveries
+export const b2bShipments = sqliteTable('b2b_shipments', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  boxId: text('box_id').references(() => smartBoxes.id), // Which box triggered this
+  
+  // Trigger info
+  triggerType: text('trigger_type').notNull(), // 'auto_low_stock' | 'scheduled' | 'manual'
+  triggeredAt: integer('triggered_at', { mode: 'timestamp' }).notNull(),
+  triggerFillPercent: integer('trigger_fill_percent'), // Fill % when triggered
+  
+  // Shipment contents
+  items: text('items').notNull(), // JSON array of {productId, productName, quantity, weightGrams}
+  totalWeightGrams: integer('total_weight_grams').notNull(),
+  
+  // Shipping info
+  trackingNumber: text('tracking_number'),
+  trackingUrl: text('tracking_url'),
+  carrier: text('carrier').default('DHL'), // 'DHL' | 'DPD' | 'other'
+  
+  // Status
+  status: text('status').notNull().default('pending'), // 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  shippedAt: integer('shipped_at', { mode: 'timestamp' }),
+  deliveredAt: integer('delivered_at', { mode: 'timestamp' }),
+  cancelledAt: integer('cancelled_at', { mode: 'timestamp' }),
+  
+  // Notes
+  internalNotes: text('internal_notes'),
+});
+
+// B2B Invoices - monthly billing for Smart tier
+export const b2bInvoices = sqliteTable('b2b_invoices', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  
+  // Invoice details
+  invoiceNumber: text('invoice_number').notNull().unique(),
+  billingPeriodStart: integer('billing_period_start', { mode: 'timestamp' }).notNull(),
+  billingPeriodEnd: integer('billing_period_end', { mode: 'timestamp' }).notNull(),
+  
+  // Charges breakdown
+  employeeCount: integer('employee_count').notNull(),
+  ratePerEmployee: integer('rate_per_employee').notNull(), // in cents
+  baseAmount: integer('base_amount').notNull(), // employeeCount * rate
+  extraShipmentsAmount: integer('extra_shipments_amount').default(0), // Additional on-demand orders
+  
+  // Totals
+  subtotal: integer('subtotal').notNull(),
+  taxRate: real('tax_rate').notNull().default(0.19), // 19% VAT
+  taxAmount: integer('tax_amount').notNull(),
+  total: integer('total').notNull(),
+  currency: text('currency').notNull().default('EUR'),
+  
+  // External invoice (rechnungs-api)
+  externalInvoiceId: text('external_invoice_id'),
+  
+  // Stripe
+  stripeInvoiceId: text('stripe_invoice_id'),
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+  
+  // Status
+  status: text('status').notNull().default('draft'), // 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  sentAt: integer('sent_at', { mode: 'timestamp' }),
+  dueAt: integer('due_at', { mode: 'timestamp' }),
+  paidAt: integer('paid_at', { mode: 'timestamp' }),
+});
+
+// B2B Sustainability Stats - cumulative metrics per company
+export const b2bSustainabilityStats = sqliteTable('b2b_sustainability_stats', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id).unique(),
+  
+  // Cumulative consumption
+  totalCoffeeKg: real('total_coffee_kg').default(0),
+  totalTeaKg: real('total_tea_kg').default(0),
+  totalCupsServed: integer('total_cups_served').default(0), // Estimated
+  
+  // Sustainability impact (calculated)
+  farmerPremiumPaidCents: integer('farmer_premium_paid_cents').default(0), // Our premium above market price
+  
+  // Packaging
+  recyclablePackagingCount: integer('recyclable_packaging_count').default(0),
+  
+  // Timestamps
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+// B2B Waitlist Leads - for pre-launch validation
+export const b2bWaitlistLeads = sqliteTable('b2b_waitlist_leads', {
+  id: text('id').primaryKey(),
+  
+  // Company info
+  companyName: text('company_name').notNull(),
+  contactName: text('contact_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  
+  // Qualification data
+  teamSize: text('team_size').notNull(), // '5-10', '10-20', '20-35', '35-50', '50+'
+  currentSolution: text('current_solution').notNull(), // 'none', 'supermarket', 'local_roaster', 'big_supplier', 'other'
+  interestLevel: text('interest_level').notNull(), // 'flex', 'smart', 'unsure'
+  preferredStart: text('preferred_start'), // 'asap', '1month', '3months', 'exploring'
+  message: text('message'),
+  
+  // Admin tracking
+  status: text('status').notNull().default('new'), // 'new' | 'contacted' | 'converted' | 'not_interested'
+  notes: text('notes'),
+  
+  // Conversion tracking
+  convertedToCompanyId: text('converted_to_company_id').references(() => b2bCompanies.id),
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  contactedAt: integer('contacted_at', { mode: 'timestamp' }),
+  convertedAt: integer('converted_at', { mode: 'timestamp' }),
+});
+
+// B2B Communication Log - track all interactions with companies
+export const b2bCommunicationLog = sqliteTable('b2b_communication_log', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  
+  // Communication details
+  type: text('type').notNull(), // 'email' | 'call' | 'meeting' | 'note'
+  subject: text('subject'),
+  content: text('content'),
+  
+  // For emails
+  emailTemplate: text('email_template'),
+  emailStatus: text('email_status'), // 'sent' | 'delivered' | 'opened' | 'bounced'
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  createdBy: text('created_by'), // Admin who created the entry
+});
+
+// ============================================================================
+// B2B Type Exports
+// ============================================================================
+
+export type B2BCompany = typeof b2bCompanies.$inferSelect;
+export type NewB2BCompany = typeof b2bCompanies.$inferInsert;
+
+export type B2BSession = typeof b2bSessions.$inferSelect;
+export type NewB2BSession = typeof b2bSessions.$inferInsert;
+
+export type B2BOrder = typeof b2bOrders.$inferSelect;
+export type NewB2BOrder = typeof b2bOrders.$inferInsert;
+
+export type B2BPromoUsage = typeof b2bPromoUsage.$inferSelect;
+export type NewB2BPromoUsage = typeof b2bPromoUsage.$inferInsert;
+
+export type SmartBox = typeof smartBoxes.$inferSelect;
+export type NewSmartBox = typeof smartBoxes.$inferInsert;
+
+export type BoxReading = typeof boxReadings.$inferSelect;
+export type NewBoxReading = typeof boxReadings.$inferInsert;
+
+export type B2BShipment = typeof b2bShipments.$inferSelect;
+export type NewB2BShipment = typeof b2bShipments.$inferInsert;
+
+export type B2BInvoice = typeof b2bInvoices.$inferSelect;
+export type NewB2BInvoice = typeof b2bInvoices.$inferInsert;
+
+export type B2BSustainabilityStats = typeof b2bSustainabilityStats.$inferSelect;
+export type NewB2BSustainabilityStats = typeof b2bSustainabilityStats.$inferInsert;
+
+export type B2BWaitlistLead = typeof b2bWaitlistLeads.$inferSelect;
+export type NewB2BWaitlistLead = typeof b2bWaitlistLeads.$inferInsert;
+
+export type B2BCommunicationLog = typeof b2bCommunicationLog.$inferSelect;
+export type NewB2BCommunicationLog = typeof b2bCommunicationLog.$inferInsert;
+
+// ============================================================================
+// B2B Status Constants
+// ============================================================================
+
+export const B2B_COMPANY_STATUS = {
+  INQUIRY: 'inquiry',
+  PENDING: 'pending',
+  ACTIVE: 'active',
+  PAUSED: 'paused',
+  CANCELLED: 'cancelled',
+} as const;
+
+export const B2B_TIER = {
+  FLEX: 'flex',
+  SMART_STARTER: 'smart_starter',
+  SMART_GROWTH: 'smart_growth',
+  SMART_SCALE: 'smart_scale',
+  SMART_ENTERPRISE: 'smart_enterprise',
+} as const;
+
+export const B2B_ORDER_PAYMENT_STATUS = {
+  PENDING: 'pending',
+  PAID: 'paid',
+  OVERDUE: 'overdue',
+} as const;
+
+export const B2B_SHIPMENT_STATUS = {
+  PENDING: 'pending',
+  PREPARING: 'preparing',
+  SHIPPED: 'shipped',
+  DELIVERED: 'delivered',
+  CANCELLED: 'cancelled',
+} as const;
+
+export const B2B_INVOICE_STATUS = {
+  DRAFT: 'draft',
+  SENT: 'sent',
+  PAID: 'paid',
+  OVERDUE: 'overdue',
+  CANCELLED: 'cancelled',
+} as const;
+
+export const SMART_BOX_STATUS = {
+  PENDING: 'pending',
+  ACTIVE: 'active',
+  OFFLINE: 'offline',
+  RETIRED: 'retired',
+} as const;
+
+export const B2B_WAITLIST_STATUS = {
+  NEW: 'new',
+  CONTACTED: 'contacted',
+  CONVERTED: 'converted',
+  NOT_INTERESTED: 'not_interested',
+} as const;
+
+// ============================================================================
+// B2B Pricing Constants
+// ============================================================================
+
+// Smart tier monthly rates per employee (in cents)
+export const B2B_SMART_RATES = {
+  smart_starter: 1500, // €15/employee/month (5-15 employees)
+  smart_growth: 1200, // €12/employee/month (16-50 employees)
+  smart_scale: 1000, // €10/employee/month (51-200 employees)
+  smart_enterprise: 0, // Custom pricing
+} as const;
+
+// Flex volume discount tiers
+export const B2B_FLEX_DISCOUNTS = {
+  none: { minKg: 0, discount: 0, paymentDays: 0 },
+  '5kg': { minKg: 5, discount: 5, paymentDays: 14 },
+  '10kg': { minKg: 10, discount: 10, paymentDays: 14 },
+  '25kg': { minKg: 25, discount: 15, paymentDays: 30 },
+  '50kg': { minKg: 50, discount: 20, paymentDays: 30 },
+} as const;
+
+// SmartBox sizes
+export const SMART_BOX_SIZES = {
+  small: { capacityKg: 1.4, suitableEmployees: '5-12' },
+  medium: { capacityKg: 1.9, suitableEmployees: '10-18' },
+  large: { capacityKg: 3.3, suitableEmployees: '18-30' },
+} as const;
+
+// Consumption estimates
+export const B2B_CONSUMPTION = {
+  gramsPerCup: 10,
+  cupsPerEmployeePerDay: 2.5,
+  workDaysPerWeek: 5,
 } as const;
 

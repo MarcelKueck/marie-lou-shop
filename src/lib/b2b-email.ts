@@ -1,0 +1,706 @@
+import { Resend } from 'resend';
+import { B2BCompany, SmartBox } from '@/db/schema';
+
+// Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Email configuration
+const B2B_EMAIL_FROM = process.env.B2B_EMAIL_FROM || 'Marie Lou B2B <b2b@marieloucoffee.com>';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'marcel@marielou.de';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+// B2B Brand colors
+const B2B_PRIMARY = '#1a365d'; // Professional dark blue
+const B2B_ACCENT = '#4299e1'; // Lighter blue accent
+
+// ============================================================================
+// B2B Email Templates - Base Layout
+// ============================================================================
+
+function b2bEmailLayout(content: string, title: string): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f7fafc;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f7fafc;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: ${B2B_PRIMARY}; padding: 24px 32px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td>
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 700;">Marie Lou</span>
+                    <span style="color: ${B2B_ACCENT}; font-size: 20px; font-weight: 700;"> B2B</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 32px;">
+              ${content}
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f7fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 12px; color: #718096; text-align: center;">
+                © ${new Date().getFullYear()} Marie Lou Coffee & Tea GmbH<br>
+                Musterstraße 123, 10115 Berlin, Germany
+              </p>
+              <p style="margin: 8px 0 0; font-size: 12px; color: #718096; text-align: center;">
+                Questions? Contact us at <a href="mailto:b2b@marieloucoffee.com" style="color: ${B2B_ACCENT};">b2b@marieloucoffee.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+// ============================================================================
+// B2B Inquiry Confirmation
+// ============================================================================
+
+export interface B2BInquiryEmailData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  tier: 'flex' | 'smart';
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BInquiryConfirmationEmail(data: B2BInquiryEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, tier, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? 'Ihre B2B-Anfrage wurde erhalten'
+    : 'Your B2B inquiry has been received';
+  
+  const tierName = tier === 'smart' ? 'B2B Smart' : 'B2B Flex';
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Vielen Dank für Ihre Anfrage!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      wir haben Ihre B2B-Anfrage für <strong>${companyName}</strong> erhalten und werden diese innerhalb von 1-2 Werktagen prüfen.
+    </p>
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Angefragtes Programm:</strong> ${tierName}
+      </p>
+    </div>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Nach der Genehmigung erhalten Sie eine E-Mail mit Ihren Zugangsdaten für das B2B-Portal.
+    </p>
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Thank you for your inquiry!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We have received your B2B inquiry for <strong>${companyName}</strong> and will review it within 1-2 business days.
+    </p>
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Requested Program:</strong> ${tierName}
+      </p>
+    </div>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Once approved, you will receive an email with your login credentials for the B2B portal.
+    </p>
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B inquiry confirmation email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B inquiry confirmation email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B inquiry confirmation email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// B2B Welcome Email (after approval)
+// ============================================================================
+
+export interface B2BWelcomeEmailData {
+  company: B2BCompany;
+  tempPassword: string;
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BWelcomeEmail(data: B2BWelcomeEmailData): Promise<{ success: boolean; error?: string }> {
+  const { company, tempPassword, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `Willkommen bei Marie Lou B2B, ${company.companyName}!`
+    : `Welcome to Marie Lou B2B, ${company.companyName}!`;
+  
+  const tierName = company.tier.startsWith('smart') ? 'B2B Smart' : 'B2B Flex';
+  const portalUrl = `${BASE_URL}/${locale}/b2b/login`;
+  const contactName = `${company.contactFirstName} ${company.contactLastName}`;
+  const discountPercent = company.promoDiscountPercent || 0;
+  const paymentTerms = company.paymentTermsDays || 0;
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Ihr B2B-Account ist bereit!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Herzlichen Glückwunsch! Ihre B2B-Anfrage für <strong>${company.companyName}</strong> wurde genehmigt.
+    </p>
+    
+    <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: ${B2B_PRIMARY};">Ihre Zugangsdaten</h2>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>E-Mail:</strong> ${company.contactEmail}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Temporäres Passwort:</strong> <code style="background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${tempPassword}</code>
+      </p>
+      <p style="margin: 16px 0 0; font-size: 12px; color: #718096;">
+        Bitte ändern Sie Ihr Passwort nach dem ersten Login.
+      </p>
+    </div>
+    
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Ihr Programm:</strong> ${tierName}<br>
+        <strong>Rabatt:</strong> ${discountPercent}%<br>
+        <strong>Zahlungsziel:</strong> ${paymentTerms} Tage
+      </p>
+    </div>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${portalUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Zum B2B Portal
+      </a>
+    </div>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Your B2B account is ready!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Congratulations! Your B2B application for <strong>${company.companyName}</strong> has been approved.
+    </p>
+    
+    <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: ${B2B_PRIMARY};">Your Login Credentials</h2>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Email:</strong> ${company.contactEmail}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Temporary Password:</strong> <code style="background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${tempPassword}</code>
+      </p>
+      <p style="margin: 16px 0 0; font-size: 12px; color: #718096;">
+        Please change your password after your first login.
+      </p>
+    </div>
+    
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Your Program:</strong> ${tierName}<br>
+        <strong>Discount:</strong> ${discountPercent}%<br>
+        <strong>Payment Terms:</strong> Net ${paymentTerms} days
+      </p>
+    </div>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${portalUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Go to B2B Portal
+      </a>
+    </div>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: company.contactEmail,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B welcome email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B welcome email sent to ${company.contactEmail}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B welcome email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// B2B Order Confirmation
+// ============================================================================
+
+export interface B2BOrderEmailItem {
+  productName: string;
+  quantity: number;
+  totalCents: number;
+}
+
+export interface B2BOrderEmailData {
+  orderNumber: string;
+  createdAt: Date;
+  subtotalCents: number;
+  discountCents: number;
+  shippingCents: number;
+  totalCents: number;
+  paymentDueDate?: Date | null;
+  items: B2BOrderEmailItem[];
+  company: B2BCompany;
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BOrderConfirmationEmail(data: B2BOrderEmailData): Promise<{ success: boolean; error?: string }> {
+  const { orderNumber, createdAt, subtotalCents, discountCents, shippingCents, totalCents, paymentDueDate, items, company, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `Bestellbestätigung #${orderNumber}`
+    : `Order Confirmation #${orderNumber}`;
+  
+  const formatPrice = (cents: number) => `€${(cents / 100).toFixed(2)}`;
+  const formatDate = (date: Date) => date.toLocaleDateString(locale === 'de' ? 'de-DE' : 'en-US', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  
+  const contactName = `${company.contactFirstName} ${company.contactLastName}`;
+  const discountPercent = company.promoDiscountPercent || 0;
+  
+  const itemsHtml = items.map(item => `
+    <tr>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+        <strong>${item.productName}</strong>
+      </td>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; text-align: center;">
+        ${item.quantity}
+      </td>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">
+        ${formatPrice(item.totalCents)}
+      </td>
+    </tr>
+  `).join('');
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Bestellung bestätigt!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      vielen Dank für Ihre Bestellung. Hier sind die Details:
+    </p>
+    
+    <div style="background-color: #f7fafc; padding: 16px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0; font-size: 14px; color: #4a5568;">
+        <strong>Bestellnummer:</strong> ${orderNumber}<br>
+        <strong>Datum:</strong> ${formatDate(createdAt)}
+      </p>
+    </div>
+    
+    <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+      <thead>
+        <tr style="border-bottom: 2px solid ${B2B_PRIMARY};">
+          <th style="text-align: left; padding: 12px 0; color: ${B2B_PRIMARY};">Produkt</th>
+          <th style="text-align: center; padding: 12px 0; color: ${B2B_PRIMARY};">Menge</th>
+          <th style="text-align: right; padding: 12px 0; color: ${B2B_PRIMARY};">Preis</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+    
+    <div style="background-color: #f7fafc; padding: 16px; border-radius: 8px;">
+      <table style="width: 100%;">
+        <tr>
+          <td style="color: #4a5568;">Zwischensumme</td>
+          <td style="text-align: right; color: #4a5568;">${formatPrice(subtotalCents)}</td>
+        </tr>
+        <tr>
+          <td style="color: #059669;">B2B-Rabatt (${discountPercent}%)</td>
+          <td style="text-align: right; color: #059669;">-${formatPrice(discountCents)}</td>
+        </tr>
+        <tr>
+          <td style="color: #4a5568;">Versand</td>
+          <td style="text-align: right; color: #4a5568;">${formatPrice(shippingCents)}</td>
+        </tr>
+        <tr style="border-top: 2px solid ${B2B_PRIMARY};">
+          <td style="padding-top: 12px; font-weight: 700; color: ${B2B_PRIMARY};">Gesamtbetrag</td>
+          <td style="padding-top: 12px; text-align: right; font-weight: 700; font-size: 18px; color: ${B2B_PRIMARY};">${formatPrice(totalCents)}</td>
+        </tr>
+      </table>
+    </div>
+    
+    ${paymentDueDate ? `
+    <div style="background-color: #fefcbf; border-left: 4px solid #d69e2e; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #744210;">
+        <strong>Zahlungsziel:</strong> ${formatDate(paymentDueDate)}<br>
+        Bitte überweisen Sie den Betrag unter Angabe der Bestellnummer.
+      </p>
+    </div>
+    ` : ''}
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Order Confirmed!
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Thank you for your order. Here are the details:
+    </p>
+    
+    <div style="background-color: #f7fafc; padding: 16px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0; font-size: 14px; color: #4a5568;">
+        <strong>Order Number:</strong> ${orderNumber}<br>
+        <strong>Date:</strong> ${formatDate(createdAt)}
+      </p>
+    </div>
+    
+    <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+      <thead>
+        <tr style="border-bottom: 2px solid ${B2B_PRIMARY};">
+          <th style="text-align: left; padding: 12px 0; color: ${B2B_PRIMARY};">Product</th>
+          <th style="text-align: center; padding: 12px 0; color: ${B2B_PRIMARY};">Quantity</th>
+          <th style="text-align: right; padding: 12px 0; color: ${B2B_PRIMARY};">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+    
+    <div style="background-color: #f7fafc; padding: 16px; border-radius: 8px;">
+      <table style="width: 100%;">
+        <tr>
+          <td style="color: #4a5568;">Subtotal</td>
+          <td style="text-align: right; color: #4a5568;">${formatPrice(subtotalCents)}</td>
+        </tr>
+        <tr>
+          <td style="color: #059669;">B2B Discount (${discountPercent}%)</td>
+          <td style="text-align: right; color: #059669;">-${formatPrice(discountCents)}</td>
+        </tr>
+        <tr>
+          <td style="color: #4a5568;">Shipping</td>
+          <td style="text-align: right; color: #4a5568;">${formatPrice(shippingCents)}</td>
+        </tr>
+        <tr style="border-top: 2px solid ${B2B_PRIMARY};">
+          <td style="padding-top: 12px; font-weight: 700; color: ${B2B_PRIMARY};">Total</td>
+          <td style="padding-top: 12px; text-align: right; font-weight: 700; font-size: 18px; color: ${B2B_PRIMARY};">${formatPrice(totalCents)}</td>
+        </tr>
+      </table>
+    </div>
+    
+    ${paymentDueDate ? `
+    <div style="background-color: #fefcbf; border-left: 4px solid #d69e2e; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #744210;">
+        <strong>Payment Due:</strong> ${formatDate(paymentDueDate)}<br>
+        Please include the order number in your payment reference.
+      </p>
+    </div>
+    ` : ''}
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: company.contactEmail,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B order confirmation email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B order confirmation email sent to ${company.contactEmail}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B order confirmation email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// SmartBox Low Stock Alert
+// ============================================================================
+
+export interface SmartBoxAlertEmailData {
+  box: SmartBox;
+  company: B2BCompany;
+  autoReorderTriggered?: boolean;
+  locale?: 'de' | 'en';
+}
+
+export async function sendSmartBoxLowStockAlertEmail(data: SmartBoxAlertEmailData): Promise<{ success: boolean; error?: string }> {
+  const { box, company, autoReorderTriggered = false, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `⚠️ SmartBox Füllstand niedrig: ${box.locationDescription || box.deviceId}`
+    : `⚠️ SmartBox Low Stock Alert: ${box.locationDescription || box.deviceId}`;
+  
+  const portalUrl = `${BASE_URL}/${locale}/b2b/portal/smartbox`;
+  const contactName = `${company.contactFirstName} ${company.contactLastName}`;
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: #c53030;">
+      ⚠️ SmartBox Füllstand niedrig
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Ihr SmartBox meldet einen niedrigen Füllstand und benötigt bald eine Nachfüllung.
+    </p>
+    
+    <div style="background-color: #fff5f5; border: 1px solid #feb2b2; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #c53030;">Geräteinformationen</h2>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Gerät:</strong> ${box.deviceId}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Standort:</strong> ${box.locationDescription || 'Nicht angegeben'}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Produkt:</strong> ${box.currentProductName || 'Nicht konfiguriert'}
+      </p>
+      <p style="margin: 0; font-size: 24px; font-weight: 700; color: #c53030;">
+        Aktueller Füllstand: ${box.currentFillPercent}%
+      </p>
+    </div>
+    
+    ${autoReorderTriggered ? `
+    <div style="background-color: #c6f6d5; border-left: 4px solid #38a169; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #276749;">
+        <strong>Automatische Nachbestellung wurde ausgelöst.</strong><br>
+        Eine Bestellung wurde automatisch erstellt.
+      </p>
+    </div>
+    ` : `
+    <div style="background-color: #fefcbf; border-left: 4px solid #d69e2e; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #744210;">
+        Bitte prüfen Sie Ihren Bestand und bestellen Sie bei Bedarf nach.
+      </p>
+    </div>
+    `}
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${portalUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        SmartBox verwalten
+      </a>
+    </div>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: #c53030;">
+      ⚠️ SmartBox Low Stock Alert
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Your SmartBox is reporting a low fill level and will need restocking soon.
+    </p>
+    
+    <div style="background-color: #fff5f5; border: 1px solid #feb2b2; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #c53030;">Device Information</h2>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Device:</strong> ${box.deviceId}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Location:</strong> ${box.locationDescription || 'Not specified'}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Product:</strong> ${box.currentProductName || 'Not configured'}
+      </p>
+      <p style="margin: 0; font-size: 24px; font-weight: 700; color: #c53030;">
+        Current Fill Level: ${box.currentFillPercent}%
+      </p>
+    </div>
+    
+    ${autoReorderTriggered ? `
+    <div style="background-color: #c6f6d5; border-left: 4px solid #38a169; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #276749;">
+        <strong>Auto-reorder has been triggered.</strong><br>
+        An order has been automatically placed.
+      </p>
+    </div>
+    ` : `
+    <div style="background-color: #fefcbf; border-left: 4px solid #d69e2e; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0; font-size: 14px; color: #744210;">
+        Please check your stock and reorder if needed.
+      </p>
+    </div>
+    `}
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${portalUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Manage SmartBox
+      </a>
+    </div>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: company.contactEmail,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send SmartBox low stock alert email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`SmartBox low stock alert email sent to ${company.contactEmail}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending SmartBox low stock alert email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// Admin Notification - New B2B Inquiry
+// ============================================================================
+
+export async function sendAdminB2BInquiryNotification(data: B2BInquiryEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, tier } = data;
+  
+  const subject = `🏢 New B2B Inquiry: ${companyName}`;
+  const tierName = tier === 'smart' ? 'B2B Smart' : 'B2B Flex';
+  const adminUrl = `${BASE_URL}/admin/b2b/companies`;
+  
+  const content = `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      New B2B Inquiry
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      A new B2B inquiry has been submitted and requires review.
+    </p>
+    
+    <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: ${B2B_PRIMARY};">Company Details</h2>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Company:</strong> ${companyName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Contact:</strong> ${contactName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Email:</strong> ${email}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: #4a5568;">
+        <strong>Requested Tier:</strong> ${tierName}
+      </p>
+    </div>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${adminUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Review in Admin Panel
+      </a>
+    </div>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: ADMIN_EMAIL,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send admin B2B inquiry notification:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log('Admin B2B inquiry notification sent');
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending admin B2B inquiry notification:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}

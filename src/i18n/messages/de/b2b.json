@@ -1,0 +1,497 @@
+{
+  "nav": {
+    "overview": "B2B Programm",
+    "pricing": "Preise",
+    "smartbox": "SmartBox",
+    "login": "Anmelden",
+    "getStarted": "Jetzt starten"
+  },
+  "footer": {
+    "tagline": "Premium Büro-Kaffee-Lösungen mit intelligentem Bestandsmanagement und nachhaltigem Bezug.",
+    "program": "Programm",
+    "overview": "Übersicht",
+    "pricing": "Preisrechner",
+    "smartbox": "SmartBox Warteliste",
+    "getStarted": "Demo anfragen",
+    "resources": "Ressourcen",
+    "ourStory": "Unsere Geschichte",
+    "shopCoffee": "Kaffee kaufen",
+    "faq": "FAQ",
+    "contact": "Kontakt",
+    "legal": "Rechtliches",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "copyright": "Alle Rechte vorbehalten.",
+    "backToShop": "Zum Online-Shop"
+  },
+  "landing": {
+    "badge": "Für Unternehmen",
+    "titleLine1": "Nie wieder ohne",
+    "titleEmphasis": "guten Kaffee",
+    "subtitle": "Smarter Büro-Kaffee-Service mit automatischer Nachbestellung, transparenter Preisgestaltung und Direct-Trade-Qualität.",
+    "heroCta": "Mit Smart starten",
+    "secondaryCta": "Oder mit Flex beginnen",
+    "smartBadge": "Beliebteste Wahl",
+    "flexBadge": "Einstiegsvariante"
+  },
+  "tiers": {
+    "title": "Wählen Sie Ihren Plan",
+    "subtitle": "Zwei Wege, Marie Lou bei der Arbeit zu genießen",
+    "smart": {
+      "name": "B2B Smart",
+      "tagline": "Die Komplettlösung",
+      "description": "Sorglos Büro-Kaffee mit smartem Bestandsmanagement und automatischer Nachbestellung.",
+      "features": [
+        "SmartBox überwacht Ihren Kaffeestand",
+        "Automatische Lieferung bevor er leer ist",
+        "Monatliche Flatrate pro Mitarbeiter",
+        "Nachhaltigkeits-Dashboard",
+        "Mitarbeiter-Promo-Codes für D2C",
+        "Nie-mehr-leer-Garantie"
+      ],
+      "pricing": "Ab €10/Mitarbeiter/Monat",
+      "cta": "Smart Demo anfragen"
+    },
+    "flex": {
+      "name": "B2B Flex",
+      "tagline": "Einfache Geschäftsbestellung",
+      "description": "Professionelle Rechnungsstellung und Mengenrabatte für Unternehmen, die noch nicht bereit für das volle Programm sind.",
+      "features": [
+        "Geschäftsrechnung mit USt",
+        "Mengenrabatte bis 20%",
+        "Zahlungsziel verfügbar",
+        "Mitarbeiter-Promo-Codes",
+        "Jederzeit auf Smart upgraden"
+      ],
+      "pricing": "Standardpreise mit Rabatten",
+      "cta": "Mit Flex starten"
+    }
+  },
+  "features": {
+    "title": "Warum Unternehmen Marie Lou wählen",
+    "smartBox": {
+      "title": "SmartBox-Technologie",
+      "description": "Unser sensorausgestatteter Behälter überwacht den Kaffeestand und löst automatisch Lieferungen aus, wenn er zur Neige geht. Keine Notfall-Einkäufe mehr."
+    },
+    "sustainability": {
+      "title": "Transparente Nachhaltigkeit",
+      "description": "Sehen Sie genau, woher Ihr Kaffee kommt und was die Bauern verdienen. Ihr Nachhaltigkeits-Dashboard verfolgt den positiven Einfluss Ihres Unternehmens."
+    },
+    "quality": {
+      "title": "Direct-Trade-Qualität",
+      "description": "Wir beziehen direkt von Bauern, die wir persönlich besucht haben, zahlen 3-4x Marktpreise und rösten auf Bestellung. Ihre Mitarbeiter schmecken den Unterschied."
+    },
+    "convenience": {
+      "title": "Null Aufwand",
+      "description": "Kein Bestandsmanagement, keine Bestellungen, kein Ausgehen während wichtiger Meetings. Wir kümmern uns um alles automatisch."
+    }
+  },
+  "howItWorks": {
+    "title": "So funktioniert Smart",
+    "step1": {
+      "title": "SmartBox erhalten",
+      "description": "Wir liefern Ihnen einen schönen, sensorausgestatteten Kaffeebehälter, der perfekt in jede Büroküche passt."
+    },
+    "step2": {
+      "title": "Befüllen & Vergessen",
+      "description": "Wenn Lieferungen ankommen, befüllen Sie einfach Ihre SmartBox. Der Sensor verfolgt den Verbrauch automatisch."
+    },
+    "step3": {
+      "title": "Auto-Nachbestellung",
+      "description": "Wenn der Füllstand unter 20% fällt, liefern wir automatisch nach. Sie werden nie mehr ohne sein."
+    },
+    "step4": {
+      "title": "Einfluss verfolgen",
+      "description": "Greifen Sie auf Ihr Dashboard zu, um Verbrauch, Nachhaltigkeitsmetriken und Mitarbeiter-Engagement zu sehen."
+    }
+  },
+  "pricing": {
+    "title": "Einfache, transparente Preise",
+    "subtitle": "Keine versteckten Gebühren, keine Überraschungen",
+    "smart": {
+      "starter": {
+        "name": "Smart Starter",
+        "employees": "5-15 Mitarbeiter",
+        "price": "€15",
+        "unit": "/Mitarbeiter/Monat",
+        "includes": "SmartBox S inklusive"
+      },
+      "growth": {
+        "name": "Smart Growth",
+        "employees": "16-50 Mitarbeiter",
+        "price": "€12",
+        "unit": "/Mitarbeiter/Monat",
+        "includes": "SmartBox M inklusive"
+      },
+      "scale": {
+        "name": "Smart Scale",
+        "employees": "51-200 Mitarbeiter",
+        "price": "€10",
+        "unit": "/Mitarbeiter/Monat",
+        "includes": "Mehrere SmartBoxen"
+      },
+      "enterprise": {
+        "name": "Smart Enterprise",
+        "employees": "200+ Mitarbeiter",
+        "price": "Individuell",
+        "unit": "Preisgestaltung",
+        "includes": "Komplettes Service-Paket"
+      }
+    },
+    "flex": {
+      "title": "Flex Mengenrabatte",
+      "tiers": [
+        { "kg": "5-10kg", "discount": "5% Rabatt" },
+        { "kg": "10-25kg", "discount": "10% Rabatt" },
+        { "kg": "25-50kg", "discount": "15% Rabatt" },
+        { "kg": "50kg+", "discount": "20% Rabatt" }
+      ],
+      "note": "Zahlungsziel für Bestellungen über 5kg verfügbar"
+    },
+    "cta": "Preis berechnen"
+  },
+  "calculator": {
+    "title": "Verbrauchsrechner",
+    "subtitle": "Finden Sie heraus, welcher Plan zu Ihrem Büro passt",
+    "employees": "Anzahl Mitarbeiter",
+    "cupsPerDay": "Tassen pro Mitarbeiter pro Tag",
+    "workDays": "Arbeitstage pro Woche",
+    "brand": "Gewünschte Produkte",
+    "brandOptions": {
+      "coffee": "Nur Kaffee",
+      "tea": "Nur Tee",
+      "both": "Kaffee und Tee"
+    },
+    "results": {
+      "monthlyConsumption": "Monatlicher Verbrauch",
+      "weeklyConsumption": "Wöchentlicher Verbrauch",
+      "recommendedTier": "Empfohlener Plan",
+      "flexCost": "Flex monatliche Kosten",
+      "smartCost": "Smart monatliche Kosten",
+      "savings": "Mögliche Ersparnis mit Smart",
+      "perDay": "Kosten pro Arbeitstag"
+    },
+    "cta": "Jetzt starten"
+  },
+  "crossSell": {
+    "title": "Verwandeln Sie Mitarbeiter in Kunden",
+    "description": "Jede SmartBox enthält einen QR-Code, der auf die Promo-Seite Ihres Unternehmens verlinkt. Mitarbeiter scannen, erhalten 10% auf ihre erste Heimbestellung, und Sie können Conversions verfolgen.",
+    "badge": "Integrierte Kundengewinnung"
+  },
+  "testimonials": {
+    "title": "Was Unternehmen sagen",
+    "quote1": {
+      "text": "Früher ging uns jede zweite Woche der Kaffee aus. Mit SmartBox kommt er einfach, wenn wir ihn brauchen. Unser Team liebt die Qualität.",
+      "author": "Lisa M.",
+      "company": "TechStart GmbH",
+      "employees": "25 Mitarbeiter"
+    },
+    "quote2": {
+      "text": "Das Nachhaltigkeits-Dashboard ist ein Hit bei unserem CSR-Team. Wir können unser Engagement mit echten Zahlen belegen.",
+      "author": "Thomas K.",
+      "company": "GreenDesign Agency",
+      "employees": "40 Mitarbeiter"
+    }
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "items": [
+      {
+        "question": "Was ist die Mindestlaufzeit für Smart?",
+        "answer": "Smart erfordert eine Mindestlaufzeit von 6 Monaten. Die SmartBox bleibt Marie Lou Eigentum, ist aber während Ihres Abonnements kostenlos nutzbar."
+      },
+      {
+        "question": "Kann man zwischen Flex und Smart wechseln?",
+        "answer": "Absolut! Viele Unternehmen starten mit Flex, um unseren Kaffee zu probieren, und upgraden dann auf Smart für das volle Erlebnis. Wir rechnen Ihre Flex-Historie an."
+      },
+      {
+        "question": "Wie funktioniert die SmartBox?",
+        "answer": "Die SmartBox hat einen eingebauten Gewichtssensor, der den Kaffeestand verfolgt. Wenn er unter 20% fällt, liefern wir automatisch nach. Sie befüllen einfach den Behälter, wenn Pakete ankommen."
+      },
+      {
+        "question": "Was ist, wenn wir mehr Kaffee für ein Event brauchen?",
+        "answer": "Smart-Kunden können jederzeit zusätzliche Bestellungen über das Portal aufgeben. Diese werden als Extras auf Ihrer Monatsrechnung abgerechnet."
+      },
+      {
+        "question": "Bieten Sie sowohl Kaffee als auch Tee an?",
+        "answer": "Ja! Beide Varianten unterstützen Marie Lou Coffee und Marie Lou Tea. Für Smart können Sie separate SmartBoxen für jedes Produkt haben."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Bereit, Ihren Büro-Kaffee zu transformieren?",
+    "subtitle": "Schließen Sie sich Unternehmen in ganz München an, die nie mehr ohne guten Kaffee sind.",
+    "smart": "Mit Smart starten",
+    "flex": "Erst Flex probieren",
+    "contact": "Fragen? Kontaktieren Sie uns"
+  },
+  "inquiry": {
+    "title": "Starten Sie mit Marie Lou B2B",
+    "subtitle": "Erzählen Sie uns von Ihrem Büro und wir empfehlen den perfekten Plan.",
+    "fields": {
+      "companyName": "Firmenname",
+      "contactFirstName": "Vorname",
+      "contactLastName": "Nachname",
+      "contactEmail": "E-Mail",
+      "contactPhone": "Telefon (optional)",
+      "employeeCount": "Anzahl Mitarbeiter",
+      "preferredTier": "Interesse an",
+      "preferredBrand": "Produkte",
+      "currentSolution": "Aktuelle Kaffeelösung",
+      "message": "Zusätzliche Informationen (optional)"
+    },
+    "tierOptions": {
+      "smart": "Smart (automatische Nachbestellung)",
+      "flex": "Flex (einfache Bestellung)"
+    },
+    "brandOptions": {
+      "coffee": "Kaffee",
+      "tea": "Tee",
+      "both": "Beides"
+    },
+    "solutionOptions": {
+      "none": "Kein Kaffee-Service",
+      "supermarket": "Supermarkt-Kaffee",
+      "local_roaster": "Lokale Rösterei",
+      "big_supplier": "Großanbieter (Lavazza, Nespresso, etc.)",
+      "other": "Andere"
+    },
+    "submit": "Anfrage absenden",
+    "success": "Danke für Ihre Anfrage! Wir melden uns innerhalb von 24 Stunden.",
+    "error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt."
+  },
+  "portal": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "shop": "Shop",
+      "orders": "Bestellungen",
+      "smartbox": "SmartBox",
+      "sustainability": "Nachhaltigkeit",
+      "account": "Konto",
+      "upgrade": "Auf Smart upgraden"
+    },
+    "dashboard": {
+      "title": "Willkommen zurück",
+      "recentOrders": "Letzte Bestellungen",
+      "quickReorder": "Schnell nachbestellen",
+      "noOrders": "Noch keine Bestellungen",
+      "smartBox": {
+        "title": "SmartBox Status",
+        "fillLevel": "Füllstand",
+        "lastReading": "Letzte Messung",
+        "nextShipment": "Nächste Lieferung",
+        "healthy": "In Ordnung",
+        "lowStock": "Niedriger Bestand",
+        "offline": "Offline"
+      }
+    },
+    "orders": {
+      "title": "Bestellverlauf",
+      "orderNumber": "Bestellung #",
+      "date": "Datum",
+      "status": "Status",
+      "total": "Gesamt",
+      "invoice": "Rechnung",
+      "reorder": "Nachbestellen",
+      "empty": "Noch keine Bestellungen"
+    },
+    "sustainability": {
+      "title": "Ihr Einfluss",
+      "totalCoffee": "Kaffee gesamt",
+      "totalTea": "Tee gesamt",
+      "cupsServed": "Servierte Tassen",
+      "farmerPremium": "Bauern-Prämie gezahlt",
+      "certificate": "Zertifikat herunterladen"
+    }
+  },
+  "login": {
+    "title": "B2B Portal Login",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "error": "Ungültige E-Mail oder Passwort",
+    "noAccount": "Noch kein Konto?",
+    "inquiry": "Anfrage stellen"
+  },
+  "welcome": {
+    "employeeBenefit": "Mitarbeitervorteil",
+    "title": "Willkommen, {company} Team!",
+    "subtitle": "Ihr Unternehmen hat Marie Lou fürs Büro gewählt — genießen Sie die gleiche Qualität auch zu Hause.",
+    "discount": "Rabatt auf Ihre erste Bestellung",
+    "benefitDescription": "Als Mitarbeiter erhalten Sie einen exklusiven Rabatt auf alle Marie Lou Produkte für private Bestellungen.",
+    "yourCode": "Ihr Promo-Code",
+    "promoHint": "Dieser Code wird automatisch beim Checkout angewendet",
+    "startShopping": "Jetzt einkaufen",
+    "browseCatalog": "Gesamtes Sortiment",
+    "freeShipping": "Kostenloser Versand",
+    "sustainable": "Nachhaltig",
+    "premium": "Premium-Qualität",
+    "howItWorks": "So funktioniert's",
+    "step1": "Stöbern Sie durch unsere Auswahl an Kaffee und Tee",
+    "step2": "Fügen Sie Artikel zum Warenkorb hinzu und gehen Sie zur Kasse",
+    "step3": "Ihr Rabatt wird automatisch angewendet!",
+    "invalidCode": "Ungültiger Promo-Code",
+    "visitShop": "Zum Shop"
+  },
+  "waitlist": {
+    "meta": {
+      "title": "SmartBox Warteliste - B2B Kaffeelösung",
+      "description": "Tragen Sie sich in die Warteliste für unser revolutionäres SmartBox Auto-Nachfüllsystem ein. Nie wieder ohne Kaffee."
+    },
+    "hero": {
+      "badge": "Verfügbar Q2 2026",
+      "title": "Nie wieder ohne Kaffee",
+      "subtitle": "SmartBox ist ein intelligenter Kaffeebehälter, der Ihren Vorrat überwacht und automatisch nachbestellt, wenn er zur Neige geht. Perfekt für Büros mit 5-200+ Mitarbeitern.",
+      "stats": {
+        "companies": "Interessierte Unternehmen",
+        "savings": "Durchschn. Kosteneinsparung",
+        "waste": "Kaffeeverschwendung"
+      }
+    },
+    "problem": {
+      "title": "Das Bürokaffee-Problem",
+      "time": {
+        "title": "Zeitverschwendung",
+        "desc": "Jemand muss Vorräte prüfen, Bestellungen aufgeben und Lieferungen verwalten. Das ist Zeit weg von der eigentlichen Arbeit."
+      },
+      "waste": {
+        "title": "Kaffeeverschwendung",
+        "desc": "Überbestellung führt zu altem Kaffee. Unterbestellung führt zu Notfall-Einkäufen im Supermarkt."
+      },
+      "frustration": {
+        "title": "Team-Frust",
+        "desc": "Ohne Kaffee dazustehen ist ein Stimmungskiller. Es sind die kleinen Dinge, die den großen Unterschied machen."
+      }
+    },
+    "solution": {
+      "title": "Die SmartBox-Lösung",
+      "subtitle": "Einrichten und vergessen. SmartBox kümmert sich um alles automatisch.",
+      "step1": {
+        "title": "SmartBox aufstellen",
+        "desc": "Wir liefern und installieren einen schönen Behälter für Ihren Kaffee."
+      },
+      "step2": {
+        "title": "Überwachung des Vorrats",
+        "desc": "Eingebaute Sensoren verfolgen in Echtzeit, wie viel Kaffee noch vorhanden ist."
+      },
+      "step3": {
+        "title": "Auto-Nachbestellung",
+        "desc": "Wenn der Vorrat zur Neige geht, versenden wir automatisch frischen Kaffee."
+      }
+    },
+    "benefits": {
+      "title": "Warum Teams SmartBox lieben",
+      "neverRunOut": {
+        "title": "Nie ohne Kaffee",
+        "desc": "Automatische Überwachung bedeutet, dass Kaffee ankommt, bevor er ausgeht."
+      },
+      "predictable": {
+        "title": "Planbares Budget",
+        "desc": "Feste monatliche Kosten pro Mitarbeiter. Keine Überraschungen."
+      },
+      "sustainable": {
+        "title": "Nachhaltig",
+        "desc": "Optimierte Lieferungen reduzieren den CO2-Fußabdruck um 40%."
+      },
+      "quality": {
+        "title": "Premium-Qualität",
+        "desc": "Frisch gerösteter, direkt gehandelter Kaffee aus unserer eigenen Rösterei."
+      }
+    },
+    "pricing": {
+      "title": "Einfache, transparente Preise",
+      "subtitle": "Wählen Sie das Modell, das zu Ihrem Team passt",
+      "flex": {
+        "desc": "Bestellen Sie nach Bedarf. Ideal für den Einstieg.",
+        "feature1": "Mengenrabatte bis zu 20%",
+        "feature2": "Kein Abo erforderlich",
+        "feature3": "Zahlungsziele verfügbar",
+        "note": "Perfekt für Teams, die gerade anfangen"
+      },
+      "smart": {
+        "badge": "Beliebteste Wahl",
+        "desc": "Automatische Nachfüllung mit SmartBox IoT-Behälter.",
+        "feature1": "SmartBox-Behälter inklusive",
+        "feature2": "Auto-Nachbestellung bei niedrigem Stand",
+        "feature3": "Nachhaltigkeits-Dashboard",
+        "feature4": "Mitarbeiter-Vorteile-Programm",
+        "from": "Ab",
+        "perEmployee": "/Mitarbeiter/Monat"
+      }
+    },
+    "form": {
+      "title": "Auf die Warteliste setzen",
+      "subtitle": "Seien Sie unter den Ersten, die SmartBox bei der Markteinführung erleben.",
+      "earlyBird": {
+        "title": "Frühbucher-Vorteile",
+        "benefit1": "20% Rabatt auf die ersten 3 Monate",
+        "benefit2": "Prioritätszugang bei Markteinführung",
+        "benefit3": "Direkter Draht zu unseren Gründern"
+      },
+      "fields": {
+        "companyName": "Firmenname",
+        "contactName": "Ihr Name",
+        "email": "Geschäftliche E-Mail",
+        "phone": "Telefon (optional)",
+        "teamSize": "Teamgröße",
+        "currentSolution": "Aktuelle Kaffeelösung",
+        "interestLevel": "Welches Modell interessiert Sie?",
+        "preferredStart": "Wann möchten Sie starten?",
+        "message": "Möchten Sie uns noch etwas mitteilen?",
+        "messagePlaceholder": "Erzählen Sie uns von Ihren Kaffeebedürfnissen, Fragen oder Anforderungen...",
+        "select": "Auswählen...",
+        "solutions": {
+          "none": "Aktuell kein Bürokaffee",
+          "supermarket": "Supermarktkaffee",
+          "localRoaster": "Lieferung von lokalem Röster",
+          "bigSupplier": "Großer Anbieter (z.B. WMF, Lavazza)",
+          "other": "Andere"
+        },
+        "interests": {
+          "flex": "B2B Flex (bestellbasiert)",
+          "smart": "B2B Smart (automatische Nachfüllung)",
+          "unsure": "Noch unsicher, erzählen Sie mir mehr"
+        },
+        "starts": {
+          "asap": "So schnell wie möglich",
+          "1month": "Innerhalb 1 Monat",
+          "3months": "Innerhalb 3 Monate",
+          "exploring": "Erkunde nur"
+        }
+      },
+      "submit": "Auf die Warteliste",
+      "submitting": "Wird gesendet...",
+      "privacy": "Wir verwenden Ihre Daten nur, um Sie über SmartBox zu kontaktieren. Kein Spam, niemals.",
+      "success": {
+        "title": "Sie sind auf der Liste!",
+        "message": "Vielen Dank für Ihr Interesse an SmartBox. Wir werden uns bald mit weiteren Informationen und Ihren Frühbucher-Vorteilen melden."
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "q1": {
+        "question": "Wann wird SmartBox verfügbar sein?",
+        "answer": "Wir planen die Markteinführung für Q2 2026. Wartelisten-Mitglieder erhalten Prioritätszugang und Frühbucher-Preise."
+      },
+      "q2": {
+        "question": "Für welche Teamgrößen ist SmartBox geeignet?",
+        "answer": "SmartBox ist für Teams von 5-200+ Personen konzipiert. Wir haben verschiedene Behältergrößen passend zu Ihrem Verbrauch."
+      },
+      "q3": {
+        "question": "Können wir vor der Verpflichtung testen?",
+        "answer": "Ja! Sie können mit B2B Flex starten, um unseren Kaffee zu probieren, und dann zu SmartBox upgraden, wenn Sie bereit sind."
+      },
+      "q4": {
+        "question": "Welchen Kaffee/Tee bieten Sie an?",
+        "answer": "Wir bieten unseren eigenen Marie Lou Kaffee und Marie Lou Tee an - frisch geröstet, direkt gehandelt, nachhaltig bezogen."
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihren Bürokaffee zu revolutionieren?",
+      "subtitle": "Schließen Sie sich 50+ Unternehmen an, die bereits auf unserer Warteliste stehen.",
+      "button": "Auf die Warteliste"
+    }
+  }
+}

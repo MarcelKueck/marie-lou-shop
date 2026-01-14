@@ -58,7 +58,7 @@ export default function Footer() {
               </a>
             </li>
             <li><Link href="/contact">{t('contactUs')}</Link></li>
-            <li><Link href="/wholesale">{t('wholesale')}</Link></li>
+            <li><Link href="/b2b">{t('forBusinesses')}</Link></li>
             <li><Link href="/press">{t('press')}</Link></li>
           </ul>
         </div>

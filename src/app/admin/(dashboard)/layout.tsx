@@ -23,6 +23,15 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
           <li><Link href="/admin/analytics">Analytics</Link></li>
           <li><Link href="/admin/settings">Settings</Link></li>
         </ul>
+        <div className={styles.navSection}>
+          <span className={styles.navSectionTitle}>B2B</span>
+          <ul className={styles.navList}>
+            <li><Link href="/admin/b2b/companies">Companies</Link></li>
+            <li><Link href="/admin/b2b/orders">B2B Orders</Link></li>
+            <li><Link href="/admin/b2b/smartbox">SmartBoxes</Link></li>
+            <li><Link href="/admin/b2b/waitlist">Waitlist</Link></li>
+          </ul>
+        </div>
         <div className={styles.sidebarFooter}>
           <LogoutButton />
         </div>

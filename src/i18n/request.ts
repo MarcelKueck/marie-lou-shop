@@ -9,8 +9,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = routing.defaultLocale;
   }
 
+  // Load common messages
+  const commonMessages = (await import(`./messages/${locale}/common.json`)).default;
+  
+  // Load B2B messages
+  const b2bMessages = (await import(`./messages/${locale}/b2b.json`)).default;
+
   return {
     locale: locale as string,
-    messages: (await import(`./messages/${locale}/common.json`)).default,
+    messages: {
+      ...commonMessages,
+      b2b: b2bMessages,
+    },
   };
 });

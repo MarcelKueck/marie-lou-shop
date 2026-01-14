@@ -1,0 +1,13 @@
+/* B2B Layout Styles */
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-cream);
+}
+
+.main {
+  flex: 1;
+  padding-top: 80px; /* Account for fixed navigation */
+}

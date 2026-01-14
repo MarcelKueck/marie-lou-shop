@@ -1,0 +1,497 @@
+{
+  "nav": {
+    "overview": "B2B Program",
+    "pricing": "Pricing",
+    "smartbox": "SmartBox",
+    "login": "Login",
+    "getStarted": "Get Started"
+  },
+  "footer": {
+    "tagline": "Premium office coffee solutions with smart inventory management and sustainable sourcing.",
+    "program": "Program",
+    "overview": "Overview",
+    "pricing": "Pricing Calculator",
+    "smartbox": "SmartBox Waitlist",
+    "getStarted": "Request Demo",
+    "resources": "Resources",
+    "ourStory": "Our Story",
+    "shopCoffee": "Shop Coffee",
+    "faq": "FAQ",
+    "contact": "Contact Us",
+    "legal": "Legal",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "copyright": "All rights reserved.",
+    "backToShop": "Visit our online shop"
+  },
+  "landing": {
+    "badge": "For Businesses",
+    "titleLine1": "Never Run Out of",
+    "titleEmphasis": "Great Coffee Again",
+    "subtitle": "Smart office coffee service with automatic reordering, transparent pricing, and direct-trade quality.",
+    "heroCta": "Get Started with Smart",
+    "secondaryCta": "Or start with Flex",
+    "smartBadge": "Most Popular",
+    "flexBadge": "Entry Tier"
+  },
+  "tiers": {
+    "title": "Choose Your Plan",
+    "subtitle": "Two ways to enjoy Marie Lou at work",
+    "smart": {
+      "name": "B2B Smart",
+      "tagline": "The complete solution",
+      "description": "Hassle-free office coffee with smart inventory management and automatic reordering.",
+      "features": [
+        "SmartBox monitors your coffee levels",
+        "Automatic shipments before you run out",
+        "Per-employee monthly flatrate",
+        "Sustainability dashboard",
+        "Employee promo codes for D2C",
+        "Never run out guarantee"
+      ],
+      "pricing": "From €10/employee/month",
+      "cta": "Request Smart Demo"
+    },
+    "flex": {
+      "name": "B2B Flex",
+      "tagline": "Simple business ordering",
+      "description": "Professional invoicing and volume discounts for companies not ready for the full program.",
+      "features": [
+        "Business invoicing with VAT",
+        "Volume discounts up to 20%",
+        "Net payment terms available",
+        "Employee promo codes",
+        "Upgrade to Smart anytime"
+      ],
+      "pricing": "Standard pricing with discounts",
+      "cta": "Start with Flex"
+    }
+  },
+  "features": {
+    "title": "Why Companies Choose Marie Lou",
+    "smartBox": {
+      "title": "SmartBox Technology",
+      "description": "Our sensor-equipped container monitors coffee levels and automatically triggers shipments when you're running low. No more emergency runs or empty coffee stations."
+    },
+    "sustainability": {
+      "title": "Transparent Sustainability",
+      "description": "See exactly where your coffee comes from and how much farmers earn. Your sustainability dashboard tracks your company's positive impact."
+    },
+    "quality": {
+      "title": "Direct Trade Quality",
+      "description": "We source directly from farmers we've visited, pay 3-4x market rates, and roast to order. Your employees taste the difference."
+    },
+    "convenience": {
+      "title": "Zero Hassle",
+      "description": "No more tracking inventory, placing orders, or running out during important meetings. We handle everything automatically."
+    }
+  },
+  "howItWorks": {
+    "title": "How Smart Works",
+    "step1": {
+      "title": "Get Your SmartBox",
+      "description": "We ship you a beautiful, sensor-equipped coffee container that fits perfectly in any office kitchen."
+    },
+    "step2": {
+      "title": "Fill & Forget",
+      "description": "When shipments arrive, simply refill your SmartBox. The sensor tracks consumption automatically."
+    },
+    "step3": {
+      "title": "Auto-Reorder",
+      "description": "When levels drop below 20%, we automatically ship more. You'll never run out."
+    },
+    "step4": {
+      "title": "Track Impact",
+      "description": "Access your dashboard to see consumption, sustainability metrics, and employee engagement."
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "No hidden fees, no surprises",
+    "smart": {
+      "starter": {
+        "name": "Smart Starter",
+        "employees": "5-15 employees",
+        "price": "€15",
+        "unit": "/employee/month",
+        "includes": "SmartBox S included"
+      },
+      "growth": {
+        "name": "Smart Growth",
+        "employees": "16-50 employees",
+        "price": "€12",
+        "unit": "/employee/month",
+        "includes": "SmartBox M included"
+      },
+      "scale": {
+        "name": "Smart Scale",
+        "employees": "51-200 employees",
+        "price": "€10",
+        "unit": "/employee/month",
+        "includes": "Multiple SmartBoxes"
+      },
+      "enterprise": {
+        "name": "Smart Enterprise",
+        "employees": "200+ employees",
+        "price": "Custom",
+        "unit": "pricing",
+        "includes": "Full service package"
+      }
+    },
+    "flex": {
+      "title": "Flex Volume Discounts",
+      "tiers": [
+        { "kg": "5-10kg", "discount": "5% off" },
+        { "kg": "10-25kg", "discount": "10% off" },
+        { "kg": "25-50kg", "discount": "15% off" },
+        { "kg": "50kg+", "discount": "20% off" }
+      ],
+      "note": "Net payment terms available for orders over 5kg"
+    },
+    "cta": "Calculate Your Price"
+  },
+  "calculator": {
+    "title": "Consumption Calculator",
+    "subtitle": "See which plan is right for your office",
+    "employees": "Number of employees",
+    "cupsPerDay": "Average cups per employee per day",
+    "workDays": "Work days per week",
+    "brand": "Preferred products",
+    "brandOptions": {
+      "coffee": "Coffee only",
+      "tea": "Tea only",
+      "both": "Coffee and tea"
+    },
+    "results": {
+      "monthlyConsumption": "Monthly consumption",
+      "weeklyConsumption": "Weekly consumption",
+      "recommendedTier": "Recommended plan",
+      "flexCost": "Flex monthly cost",
+      "smartCost": "Smart monthly cost",
+      "savings": "Potential savings with Smart",
+      "perDay": "Per workday cost"
+    },
+    "cta": "Get Started"
+  },
+  "crossSell": {
+    "title": "Turn Employees into Customers",
+    "description": "Every SmartBox includes a QR code linking to your company's promo page. Employees scan, get 10% off their first home order, and you can track conversions.",
+    "badge": "Built-in Acquisition"
+  },
+  "testimonials": {
+    "title": "What Companies Say",
+    "quote1": {
+      "text": "We used to run out of coffee every other week. With SmartBox, it just appears when we need it. Our team loves the quality.",
+      "author": "Lisa M.",
+      "company": "TechStart GmbH",
+      "employees": "25 employees"
+    },
+    "quote2": {
+      "text": "The sustainability dashboard is a hit with our CSR team. We can actually show our commitment with real numbers.",
+      "author": "Thomas K.",
+      "company": "GreenDesign Agency",
+      "employees": "40 employees"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "What's the minimum commitment for Smart tier?",
+        "answer": "Smart tier requires a 6-month minimum commitment. The SmartBox remains Marie Lou property but is free to use during your subscription."
+      },
+      {
+        "question": "Can we switch between Flex and Smart?",
+        "answer": "Absolutely! Many companies start with Flex to try our coffee, then upgrade to Smart for the full experience. We'll credit your Flex history."
+      },
+      {
+        "question": "How does the SmartBox work?",
+        "answer": "The SmartBox has a built-in weight sensor that tracks coffee levels. When you drop below 20%, we automatically ship more. You just refill the container when packages arrive."
+      },
+      {
+        "question": "What if we need more coffee for a special event?",
+        "answer": "Smart customers can place additional orders anytime through the portal. These are billed as extras on your monthly invoice."
+      },
+      {
+        "question": "Do you offer both coffee and tea?",
+        "answer": "Yes! Both tiers support Marie Lou Coffee and Marie Lou Tea. For Smart tier, you can have separate SmartBoxes for each."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Transform Your Office Coffee?",
+    "subtitle": "Join companies across Munich who never run out of great coffee.",
+    "smart": "Start with Smart",
+    "flex": "Try Flex First",
+    "contact": "Have questions? Contact us"
+  },
+  "inquiry": {
+    "title": "Get Started with Marie Lou B2B",
+    "subtitle": "Tell us about your office and we'll recommend the perfect plan.",
+    "fields": {
+      "companyName": "Company Name",
+      "contactFirstName": "First Name",
+      "contactLastName": "Last Name",
+      "contactEmail": "Email",
+      "contactPhone": "Phone (optional)",
+      "employeeCount": "Number of Employees",
+      "preferredTier": "Interested In",
+      "preferredBrand": "Products",
+      "currentSolution": "Current Coffee Solution",
+      "message": "Additional Information (optional)"
+    },
+    "tierOptions": {
+      "smart": "Smart (automatic reordering)",
+      "flex": "Flex (simple ordering)"
+    },
+    "brandOptions": {
+      "coffee": "Coffee",
+      "tea": "Tea",
+      "both": "Both coffee and tea"
+    },
+    "solutionOptions": {
+      "none": "No coffee service",
+      "supermarket": "Supermarket coffee",
+      "local_roaster": "Local roaster",
+      "big_supplier": "Big supplier (Lavazza, Nespresso, etc.)",
+      "other": "Other"
+    },
+    "submit": "Submit Inquiry",
+    "success": "Thanks for your inquiry! We'll be in touch within 24 hours.",
+    "error": "Something went wrong. Please try again or contact us directly."
+  },
+  "portal": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "shop": "Shop",
+      "orders": "Orders",
+      "smartbox": "SmartBox",
+      "sustainability": "Sustainability",
+      "account": "Account",
+      "upgrade": "Upgrade to Smart"
+    },
+    "dashboard": {
+      "title": "Welcome back",
+      "recentOrders": "Recent Orders",
+      "quickReorder": "Quick Reorder",
+      "noOrders": "No orders yet",
+      "smartBox": {
+        "title": "SmartBox Status",
+        "fillLevel": "Fill Level",
+        "lastReading": "Last Reading",
+        "nextShipment": "Next Shipment",
+        "healthy": "Healthy",
+        "lowStock": "Low Stock",
+        "offline": "Offline"
+      }
+    },
+    "orders": {
+      "title": "Order History",
+      "orderNumber": "Order #",
+      "date": "Date",
+      "status": "Status",
+      "total": "Total",
+      "invoice": "Invoice",
+      "reorder": "Reorder",
+      "empty": "No orders yet"
+    },
+    "sustainability": {
+      "title": "Your Impact",
+      "totalCoffee": "Total Coffee",
+      "totalTea": "Total Tea",
+      "cupsServed": "Cups Served",
+      "farmerPremium": "Farmer Premium Paid",
+      "certificate": "Download Certificate"
+    }
+  },
+  "login": {
+    "title": "B2B Portal Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "forgotPassword": "Forgot password?",
+    "error": "Invalid email or password",
+    "noAccount": "Don't have an account?",
+    "inquiry": "Submit an inquiry"
+  },
+  "welcome": {
+    "employeeBenefit": "Employee Benefit",
+    "title": "Welcome, {company} Team!",
+    "subtitle": "Your company chose Marie Lou for the office — now enjoy the same quality at home.",
+    "discount": "off your first order",
+    "benefitDescription": "As an employee, you get an exclusive discount on all Marie Lou products for personal orders.",
+    "yourCode": "Your Promo Code",
+    "promoHint": "This code will be auto-applied at checkout",
+    "startShopping": "Start Shopping",
+    "browseCatalog": "Browse Full Catalog",
+    "freeShipping": "Free Shipping",
+    "sustainable": "Sustainable",
+    "premium": "Premium Quality",
+    "howItWorks": "How It Works",
+    "step1": "Browse our selection of coffees and teas",
+    "step2": "Add items to your cart and proceed to checkout",
+    "step3": "Your discount is applied automatically!",
+    "invalidCode": "Invalid Promo Code",
+    "visitShop": "Visit Our Shop"
+  },
+  "waitlist": {
+    "meta": {
+      "title": "SmartBox Waitlist - B2B Coffee Solution",
+      "description": "Join the waitlist for our revolutionary SmartBox auto-replenishment system. Never run out of coffee again."
+    },
+    "hero": {
+      "badge": "Coming Q2 2026",
+      "title": "Never Run Out of Coffee Again",
+      "subtitle": "SmartBox is an intelligent coffee container that monitors your supply and auto-reorders when running low. Perfect for offices of 5-200+ people.",
+      "stats": {
+        "companies": "Companies interested",
+        "savings": "Avg. cost savings",
+        "waste": "Coffee waste"
+      }
+    },
+    "problem": {
+      "title": "The Office Coffee Problem",
+      "time": {
+        "title": "Time Wasted",
+        "desc": "Someone has to check supplies, place orders, and manage deliveries. That's time away from real work."
+      },
+      "waste": {
+        "title": "Coffee Waste",
+        "desc": "Over-ordering leads to stale coffee. Under-ordering leads to emergency runs to the supermarket."
+      },
+      "frustration": {
+        "title": "Team Frustration",
+        "desc": "Running out of coffee is a morale killer. It's the small things that make a big difference."
+      }
+    },
+    "solution": {
+      "title": "The SmartBox Solution",
+      "subtitle": "Set it and forget it. SmartBox handles everything automatically.",
+      "step1": {
+        "title": "Place the SmartBox",
+        "desc": "We deliver and set up a beautiful container that stores your coffee."
+      },
+      "step2": {
+        "title": "It Monitors Supply",
+        "desc": "Built-in sensors track how much coffee remains in real-time."
+      },
+      "step3": {
+        "title": "Auto-Reorder",
+        "desc": "When supply runs low, we automatically ship fresh coffee to you."
+      }
+    },
+    "benefits": {
+      "title": "Why Teams Love SmartBox",
+      "neverRunOut": {
+        "title": "Never Run Out",
+        "desc": "Automatic monitoring means coffee arrives before you run out."
+      },
+      "predictable": {
+        "title": "Predictable Budget",
+        "desc": "Fixed monthly cost per employee. No surprise expenses."
+      },
+      "sustainable": {
+        "title": "Sustainable",
+        "desc": "Optimized deliveries reduce carbon footprint by 40%."
+      },
+      "quality": {
+        "title": "Premium Quality",
+        "desc": "Freshly roasted, direct-trade coffee from our own roastery."
+      }
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the plan that works for your team",
+      "flex": {
+        "desc": "Order when you need. Great for getting started.",
+        "feature1": "Volume discounts up to 20%",
+        "feature2": "No subscription required",
+        "feature3": "Net payment terms available",
+        "note": "Perfect for teams just getting started"
+      },
+      "smart": {
+        "badge": "Most Popular",
+        "desc": "Automatic replenishment with SmartBox IoT container.",
+        "feature1": "SmartBox container included",
+        "feature2": "Auto-reorder when low",
+        "feature3": "Sustainability dashboard",
+        "feature4": "Employee perks program",
+        "from": "From",
+        "perEmployee": "/employee/month"
+      }
+    },
+    "form": {
+      "title": "Join the Waitlist",
+      "subtitle": "Be among the first to experience SmartBox when we launch.",
+      "earlyBird": {
+        "title": "Early Bird Benefits",
+        "benefit1": "20% off your first 3 months",
+        "benefit2": "Priority access when we launch",
+        "benefit3": "Direct line to our founders"
+      },
+      "fields": {
+        "companyName": "Company Name",
+        "contactName": "Your Name",
+        "email": "Work Email",
+        "phone": "Phone (optional)",
+        "teamSize": "Team Size",
+        "currentSolution": "Current Coffee Solution",
+        "interestLevel": "Which plan interests you?",
+        "preferredStart": "When would you like to start?",
+        "message": "Anything else you'd like us to know?",
+        "messagePlaceholder": "Tell us about your coffee needs, questions, or requirements...",
+        "select": "Select...",
+        "solutions": {
+          "none": "No office coffee currently",
+          "supermarket": "Supermarket coffee",
+          "localRoaster": "Local roaster delivery",
+          "bigSupplier": "Big supplier (e.g., WMF, Lavazza)",
+          "other": "Other"
+        },
+        "interests": {
+          "flex": "B2B Flex (order-based)",
+          "smart": "B2B Smart (auto-replenishment)",
+          "unsure": "Not sure yet, tell me more"
+        },
+        "starts": {
+          "asap": "As soon as possible",
+          "1month": "Within 1 month",
+          "3months": "Within 3 months",
+          "exploring": "Just exploring"
+        }
+      },
+      "submit": "Join the Waitlist",
+      "submitting": "Submitting...",
+      "privacy": "We'll only use your info to contact you about SmartBox. No spam, ever.",
+      "success": {
+        "title": "You're on the list!",
+        "message": "Thank you for your interest in SmartBox. We'll be in touch soon with more information and your early bird benefits."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "question": "When will SmartBox be available?",
+        "answer": "We're planning to launch in Q2 2026. Waitlist members will get priority access and early bird pricing."
+      },
+      "q2": {
+        "question": "What team sizes does SmartBox work for?",
+        "answer": "SmartBox is designed for teams of 5-200+ people. We have different container sizes to match your consumption."
+      },
+      "q3": {
+        "question": "Can we try before committing?",
+        "answer": "Yes! You can start with B2B Flex to try our coffee, then upgrade to SmartBox when ready."
+      },
+      "q4": {
+        "question": "What coffee/tea do you offer?",
+        "answer": "We offer our own Marie Lou Coffee and Marie Lou Tea - freshly roasted, direct-trade, sustainably sourced."
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Office Coffee?",
+      "subtitle": "Join 50+ companies already on our waitlist.",
+      "button": "Join the Waitlist"
+    }
+  }
+}
