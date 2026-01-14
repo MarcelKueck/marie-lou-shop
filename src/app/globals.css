@@ -170,8 +170,9 @@ a:hover {
 }
 
 .btn-primary:hover {
-  background: var(--color-primary-medium);
-  border-color: var(--color-primary-medium);
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: var(--color-warm-white);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }

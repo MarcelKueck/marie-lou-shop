@@ -1,28 +1,54 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useBrand } from '@/hooks/useBrand';
 import styles from './Newsletter.module.css';
 
 export function Newsletter() {
   const t = useTranslations('newsletter');
+  const locale = useLocale();
+  const { brand } = useBrand();
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'already' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setStatus('loading');
+    setErrorMessage('');
     
-    // TODO: Implement newsletter signup API
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setStatus('success');
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          brand: brand.id,
+          locale,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      if (data.alreadySubscribed) {
+        setStatus('already');
+      } else {
+        setStatus('success');
+      }
       setEmail('');
-    } catch {
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
       setStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
     }
   };
 
@@ -56,8 +82,11 @@ export function Newsletter() {
           {status === 'success' && (
             <p className={styles.success}>{t('success')}</p>
           )}
+          {status === 'already' && (
+            <p className={styles.success}>{t('alreadySubscribed')}</p>
+          )}
           {status === 'error' && (
-            <p className={styles.error}>{t('error')}</p>
+            <p className={styles.error}>{errorMessage || t('error')}</p>
           )}
           
           <p className={styles.privacy}>{t('privacy')}</p>

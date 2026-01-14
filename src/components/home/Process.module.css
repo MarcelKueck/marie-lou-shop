@@ -2,12 +2,29 @@
   background: var(--color-primary);
   color: white;
   padding: 8rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background pattern */
+.process::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .badge {
@@ -16,17 +33,21 @@
   color: rgba(255, 255, 255, 0.9);
   padding: 0.5rem 1.25rem;
   border-radius: 50px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .title {
   font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 500;
-  margin-bottom: 4rem;
+  color: white;
+  margin-bottom: 5rem;
   line-height: 1.3;
   max-width: 600px;
   margin-left: auto;
@@ -36,37 +57,67 @@
 .steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 3rem;
+  gap: 2rem;
   text-align: left;
+  position: relative;
 }
 
 .step {
   position: relative;
-  padding-top: 1rem;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s ease;
 }
 
-.step::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.3);
+.step:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconWrapper svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
 }
 
 .stepNumber {
   font-family: var(--font-display);
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.15);
   letter-spacing: 2px;
+}
+
+.connector {
+  display: none;
 }
 
 .step h3 {
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 500;
+  color: white;
   margin-bottom: 0.75rem;
 }
 
@@ -82,9 +133,31 @@
     padding: 5rem 2rem;
   }
 
+  .title {
+    margin-bottom: 3.5rem;
+  }
+
   .steps {
     grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
+    gap: 1.5rem;
+  }
+
+  .step {
+    padding: 1.5rem;
+  }
+
+  .iconWrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .iconWrapper svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .stepNumber {
+    font-size: 1.5rem;
   }
 }
 
@@ -95,10 +168,14 @@
 
   .steps {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .title {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .step {
+    padding: 1.25rem;
   }
 }

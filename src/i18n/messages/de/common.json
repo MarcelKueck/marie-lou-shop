@@ -95,7 +95,8 @@
     "placeholder": "Deine E-Mail-Adresse",
     "button": "Abonnieren",
     "subscribe": "Abonnieren",
-    "success": "Danke fürs Abonnieren!",
+    "success": "Danke fürs Abonnieren! Schau in dein Postfach.",
+    "alreadySubscribed": "Du bist bereits angemeldet!",
     "error": "Etwas ist schief gelaufen. Bitte versuche es erneut.",
     "privacy": "Wir respektieren deine Privatsphäre. Jederzeit abmeldbar."
   },

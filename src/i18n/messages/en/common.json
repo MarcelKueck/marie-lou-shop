@@ -95,7 +95,8 @@
     "placeholder": "Enter your email",
     "button": "Subscribe",
     "subscribe": "Subscribe",
-    "success": "Thanks for subscribing!",
+    "success": "Thanks for subscribing! Check your inbox.",
+    "alreadySubscribed": "You're already subscribed!",
     "error": "Something went wrong. Please try again.",
     "privacy": "We respect your privacy. Unsubscribe anytime."
   },
