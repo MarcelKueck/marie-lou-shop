@@ -482,6 +482,322 @@
   color: var(--color-text-muted);
 }
 
+/* Upgrade Page */
+.successMessage {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background: var(--color-success);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin: 0 auto 1.5rem;
+}
+
+.successMessage h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.successMessage p {
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Slider */
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: var(--color-warm-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.slider {
+  width: 100%;
+  max-width: 400px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.sliderValue {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.largeNumber {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.sliderLabel {
+  font-size: 1.25rem;
+  color: var(--color-muted);
+}
+
+/* Tier Grid */
+.tierGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.tierCard {
+  background: var(--color-warm-white);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tierCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.tierCardSelected {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.tierCardRecommended {
+  border-color: var(--color-success);
+}
+
+.recommendedBadge,
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+}
+
+.recommendedBadge {
+  background: var(--color-success);
+  color: white;
+}
+
+.popularBadge {
+  background: var(--color-primary);
+  color: white;
+  right: 1rem;
+  left: auto;
+  transform: none;
+}
+
+.tierName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.tierEmployees {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.tierPricing {
+  margin-bottom: 0.5rem;
+}
+
+.tierPrice {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.tierPriceUnit {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.tierMonthly {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin: 1rem 0;
+}
+
+.tierFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.tierFeatures li {
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.tierFeatures li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+}
+
+.tierSelectButton {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tierSelectButton:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tierSelectButtonActive {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Comparison Table */
+.comparisonTable {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.comparisonTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.comparisonTable th {
+  background: var(--color-cream);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.comparisonTable td.highlight {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+/* How It Works */
+.howItWorks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.step {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stepNumber {
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.step h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.step p {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+/* Upgrade Action */
+.upgradeAction {
+  text-align: center;
+  padding: 2rem;
+  background: var(--color-warm-white);
+  border-radius: var(--radius-md);
+  margin-top: 2rem;
+}
+
+.upgradeAction .buttonPrimary {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+}
+
+.upgradeNote {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .dashboardGrid {
@@ -546,5 +862,17 @@
   
   .pageTitle {
     font-size: 1.5rem;
+  }
+  
+  .tierGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .howItWorks {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .largeNumber {
+    font-size: 2rem;
   }
 }

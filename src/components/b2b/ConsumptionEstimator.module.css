@@ -1,0 +1,298 @@
+/* Consumption Estimator Component */
+
+.estimator {
+  background: var(--color-warm-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.controls {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Slider Row */
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.numberInput {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Button Group */
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.optionButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.optionButton:hover {
+  border-color: var(--color-primary);
+}
+
+.optionButtonActive {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.optionIcon {
+  font-size: 1.25rem;
+}
+
+.optionLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.optionButtonActive .optionLabel {
+  color: var(--color-primary);
+}
+
+/* Tier Toggle */
+.tierToggle {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.tierButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tierButton:hover {
+  border-color: var(--color-primary);
+}
+
+.tierButtonActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.tierDesc {
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Loading */
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+/* Results */
+.results {
+  padding: 1.5rem;
+  background: var(--color-cream);
+  border-top: 1px solid var(--color-border);
+}
+
+.resultHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.resultTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.monthlyPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.perMonth {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+/* Stats Grid */
+.resultStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stat {
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+/* Discount Badge */
+.discount,
+.savings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(72, 187, 120, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: #276749;
+}
+
+.discountBadge,
+.savingsBadge {
+  background: #48bb78;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* SmartBox Info */
+.smartBoxInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(66, 153, 225, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: #2b6cb0;
+}
+
+.smartBoxIcon {
+  font-size: 1.25rem;
+}
+
+/* Recommendation */
+.recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(237, 137, 54, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: #975a16;
+  line-height: 1.4;
+}
+
+.recIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resultStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .buttonGroup {
+    flex-wrap: wrap;
+  }
+  
+  .optionButton {
+    flex: 1 1 calc(33% - 0.5rem);
+    min-width: 80px;
+  }
+  
+  .resultHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

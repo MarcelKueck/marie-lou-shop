@@ -1,0 +1,214 @@
+/* Tier Comparison Component */
+
+.comparison {
+  background: var(--color-warm-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  background: var(--color-cream);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.headerCell {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+}
+
+.headerCell:first-child {
+  text-align: left;
+}
+
+.headerCell.highlighted {
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.tierName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.tierDesc {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.recommendedBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+/* Body */
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.featureCell {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  background: var(--color-cream);
+}
+
+.featureName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.valueCell {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.valueCell.highlighted {
+  background: rgba(var(--color-primary-rgb), 0.03);
+}
+
+.value {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+.value.better {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: var(--color-success);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  margin-right: 0.5rem;
+}
+
+/* CTA Row */
+.ctaRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  border-top: 2px solid var(--color-border);
+  background: var(--color-cream);
+}
+
+.ctaCell {
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctaCell.highlighted {
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.ctaButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ctaButton:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.ctaButtonPrimary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.ctaButtonPrimary:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header,
+  .row,
+  .ctaRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .headerCell:first-child,
+  .featureCell,
+  .ctaCell:first-child {
+    display: none;
+  }
+  
+  .headerCell,
+  .valueCell,
+  .ctaCell {
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .row {
+    position: relative;
+  }
+  
+  .row::before {
+    content: attr(data-feature);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 1rem;
+    background: var(--color-cream);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+  
+  .valueCell {
+    padding-top: 2rem;
+  }
+  
+  .recommendedBadge {
+    position: static;
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
+}

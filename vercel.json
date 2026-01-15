@@ -23,6 +23,22 @@
     {
       "path": "/api/cron/cleanup-sessions",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/b2b/process-smart-billing",
+      "schedule": "0 6 1 * *"
+    },
+    {
+      "path": "/api/cron/b2b/check-smartbox-alerts",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/b2b/send-payment-reminders",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/b2b/shipment-reminders",
+      "schedule": "0 7 * * 1"
     }
   ],
   "headers": [

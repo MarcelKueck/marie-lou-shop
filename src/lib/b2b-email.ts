@@ -704,3 +704,530 @@ export async function sendAdminB2BInquiryNotification(data: B2BInquiryEmailData)
     return { success: false, error: errorMessage };
   }
 }
+
+// ============================================================================
+// B2B Payment Reminder Email
+// ============================================================================
+
+export interface B2BPaymentReminderEmailData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  orderNumber: string;
+  amount: number;
+  dueDate: Date;
+  reminderLevel: number; // 1 = 7 days, 2 = 14 days, 3 = 21 days overdue
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BPaymentReminderEmail(data: B2BPaymentReminderEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, orderNumber, amount, dueDate, reminderLevel, locale = 'de' } = data;
+  
+  const urgencyMap = {
+    1: { de: 'Erinnerung', en: 'Reminder' },
+    2: { de: 'Zweite Mahnung', en: 'Second Notice' },
+    3: { de: 'Letzte Mahnung', en: 'Final Notice' },
+  };
+  
+  const urgency = urgencyMap[reminderLevel as keyof typeof urgencyMap] || urgencyMap[1];
+  
+  const subject = locale === 'de'
+    ? `${urgency.de}: Zahlung ausstehend für Bestellung ${orderNumber}`
+    : `${urgency.en}: Payment Due for Order ${orderNumber}`;
+  
+  const daysOverdue = Math.floor((Date.now() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${reminderLevel >= 3 ? '#c53030' : B2B_PRIMARY};">
+      ${urgency.de}: Offene Rechnung
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      wir möchten Sie daran erinnern, dass die Zahlung für folgende Bestellung noch aussteht:
+    </p>
+    
+    <div style="background-color: ${reminderLevel >= 3 ? '#fff5f5' : '#f7fafc'}; border: 1px solid ${reminderLevel >= 3 ? '#fc8181' : '#e2e8f0'}; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Bestellnummer:</strong> ${orderNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Unternehmen:</strong> ${companyName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Betrag:</strong> €${amount.toFixed(2)}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Fälligkeitsdatum:</strong> ${dueDate.toLocaleDateString('de-DE')}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: ${reminderLevel >= 2 ? '#c53030' : '#4a5568'}; font-weight: ${reminderLevel >= 2 ? '600' : '400'};">
+        <strong>Überfällig seit:</strong> ${daysOverdue} Tagen
+      </p>
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Bitte begleichen Sie den offenen Betrag so bald wie möglich. Bei Fragen stehen wir Ihnen gerne zur Verfügung.
+    </p>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${reminderLevel >= 3 ? '#c53030' : B2B_PRIMARY};">
+      ${urgency.en}: Outstanding Invoice
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We would like to remind you that payment for the following order is still pending:
+    </p>
+    
+    <div style="background-color: ${reminderLevel >= 3 ? '#fff5f5' : '#f7fafc'}; border: 1px solid ${reminderLevel >= 3 ? '#fc8181' : '#e2e8f0'}; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Order Number:</strong> ${orderNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Company:</strong> ${companyName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Amount:</strong> €${amount.toFixed(2)}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Due Date:</strong> ${dueDate.toLocaleDateString('en-US')}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: ${reminderLevel >= 2 ? '#c53030' : '#4a5568'}; font-weight: ${reminderLevel >= 2 ? '600' : '400'};">
+        <strong>Overdue by:</strong> ${daysOverdue} days
+      </p>
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Please settle the outstanding amount as soon as possible. If you have any questions, please don't hesitate to contact us.
+    </p>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B payment reminder email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B payment reminder email sent to ${email} (level ${reminderLevel})`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B payment reminder email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// B2B Shipment Reminder Email
+// ============================================================================
+
+export interface B2BShipmentReminderEmailData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  scheduledDate: Date;
+  daysUntil: number;
+  estimatedQuantity: string;
+  lastOrderDate: Date | null;
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BShipmentReminderEmail(data: B2BShipmentReminderEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, scheduledDate, daysUntil, estimatedQuantity, lastOrderDate, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `Ihre nächste Lieferung in ${daysUntil} Tagen`
+    : `Your next shipment in ${daysUntil} days`;
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Ihre nächste Lieferung steht bevor
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      wir möchten Sie daran erinnern, dass Ihre nächste geplante Lieferung für <strong>${companyName}</strong> in ${daysUntil} Tagen ansteht.
+    </p>
+    
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #2b6cb0;">
+        <strong>Geplantes Lieferdatum:</strong> ${scheduledDate.toLocaleDateString('de-DE')}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #2b6cb0;">
+        <strong>Geschätzte Menge:</strong> ${estimatedQuantity}
+      </p>
+      ${lastOrderDate ? `
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Letzte Bestellung:</strong> ${lastOrderDate.toLocaleDateString('de-DE')}
+      </p>
+      ` : ''}
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Möchten Sie Änderungen an Ihrer Bestellung vornehmen? Besuchen Sie Ihr B2B-Portal oder kontaktieren Sie uns.
+    </p>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${BASE_URL}/${locale}/b2b/portal" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Zum B2B-Portal
+      </a>
+    </div>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Your next shipment is coming up
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We would like to remind you that the next scheduled shipment for <strong>${companyName}</strong> is coming up in ${daysUntil} days.
+    </p>
+    
+    <div style="background-color: #ebf8ff; border-left: 4px solid ${B2B_ACCENT}; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #2b6cb0;">
+        <strong>Scheduled Delivery Date:</strong> ${scheduledDate.toLocaleDateString('en-US')}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #2b6cb0;">
+        <strong>Estimated Quantity:</strong> ${estimatedQuantity}
+      </p>
+      ${lastOrderDate ? `
+      <p style="margin: 0; font-size: 14px; color: #2b6cb0;">
+        <strong>Last Order:</strong> ${lastOrderDate.toLocaleDateString('en-US')}
+      </p>
+      ` : ''}
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Would you like to make any changes to your order? Visit your B2B portal or contact us.
+    </p>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${BASE_URL}/${locale}/b2b/portal" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Go to B2B Portal
+      </a>
+    </div>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B shipment reminder email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B shipment reminder email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B shipment reminder email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// B2B Shipment Dispatched Email
+// ============================================================================
+
+export interface B2BShipmentDispatchedEmailData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  orderNumber: string;
+  trackingNumber?: string;
+  carrier?: string;
+  estimatedDelivery?: Date;
+  items: Array<{ name: string; quantity: number }>;
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BShipmentDispatchedEmail(data: B2BShipmentDispatchedEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, orderNumber, trackingNumber, carrier, estimatedDelivery, items, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `Ihre Bestellung ${orderNumber} wurde versendet`
+    : `Your order ${orderNumber} has been shipped`;
+  
+  const itemsList = items.map(item => `
+    <tr>
+      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #4a5568;">${item.name}</td>
+      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #4a5568; text-align: right;">${item.quantity}x</td>
+    </tr>
+  `).join('');
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Ihre Bestellung ist unterwegs! 🚚
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Gute Nachrichten! Ihre Bestellung für <strong>${companyName}</strong> wurde versandt.
+    </p>
+    
+    <div style="background-color: #f0fff4; border-left: 4px solid #48bb78; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Bestellnummer:</strong> ${orderNumber}
+      </p>
+      ${carrier ? `
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Versanddienstleister:</strong> ${carrier}
+      </p>
+      ` : ''}
+      ${trackingNumber ? `
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Sendungsnummer:</strong> ${trackingNumber}
+      </p>
+      ` : ''}
+      ${estimatedDelivery ? `
+      <p style="margin: 0; font-size: 14px; color: #276749;">
+        <strong>Voraussichtliche Lieferung:</strong> ${estimatedDelivery.toLocaleDateString('de-DE')}
+      </p>
+      ` : ''}
+    </div>
+    
+    <h2 style="margin: 24px 0 16px; font-size: 18px; font-weight: 600; color: ${B2B_PRIMARY};">Bestellübersicht</h2>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      ${itemsList}
+    </table>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Your order is on its way! 🚚
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Great news! Your order for <strong>${companyName}</strong> has been shipped.
+    </p>
+    
+    <div style="background-color: #f0fff4; border-left: 4px solid #48bb78; padding: 16px; margin: 24px 0; border-radius: 0 4px 4px 0;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Order Number:</strong> ${orderNumber}
+      </p>
+      ${carrier ? `
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Carrier:</strong> ${carrier}
+      </p>
+      ` : ''}
+      ${trackingNumber ? `
+      <p style="margin: 0 0 8px; font-size: 14px; color: #276749;">
+        <strong>Tracking Number:</strong> ${trackingNumber}
+      </p>
+      ` : ''}
+      ${estimatedDelivery ? `
+      <p style="margin: 0; font-size: 14px; color: #276749;">
+        <strong>Estimated Delivery:</strong> ${estimatedDelivery.toLocaleDateString('en-US')}
+      </p>
+      ` : ''}
+    </div>
+    
+    <h2 style="margin: 24px 0 16px; font-size: 18px; font-weight: 600; color: ${B2B_PRIMARY};">Order Summary</h2>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      ${itemsList}
+    </table>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B shipment dispatched email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B shipment dispatched email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B shipment dispatched email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+// ============================================================================
+// B2B Invoice Email
+// ============================================================================
+
+export interface B2BInvoiceEmailData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  invoiceNumber: string;
+  orderNumber: string;
+  amount: number;
+  dueDate: Date;
+  invoicePdfUrl?: string;
+  locale?: 'de' | 'en';
+}
+
+export async function sendB2BInvoiceEmail(data: B2BInvoiceEmailData): Promise<{ success: boolean; error?: string }> {
+  const { companyName, contactName, email, invoiceNumber, orderNumber, amount, dueDate, invoicePdfUrl, locale = 'de' } = data;
+  
+  const subject = locale === 'de'
+    ? `Rechnung ${invoiceNumber} für Bestellung ${orderNumber}`
+    : `Invoice ${invoiceNumber} for Order ${orderNumber}`;
+  
+  const content = locale === 'de' ? `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Ihre Rechnung
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hallo ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      anbei finden Sie die Rechnung für Ihre Bestellung bei Marie Lou B2B.
+    </p>
+    
+    <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Rechnungsnummer:</strong> ${invoiceNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Bestellnummer:</strong> ${orderNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Unternehmen:</strong> ${companyName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Gesamtbetrag:</strong> €${amount.toFixed(2)}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: #4a5568;">
+        <strong>Fällig bis:</strong> ${dueDate.toLocaleDateString('de-DE')}
+      </p>
+    </div>
+    
+    ${invoicePdfUrl ? `
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${invoicePdfUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Rechnung herunterladen
+      </a>
+    </div>
+    ` : ''}
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Bitte überweisen Sie den Betrag innerhalb der angegebenen Zahlungsfrist auf unser Konto.
+    </p>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Mit freundlichen Grüßen,<br>
+      <strong>Ihr Marie Lou B2B Team</strong>
+    </p>
+  ` : `
+    <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: ${B2B_PRIMARY};">
+      Your Invoice
+    </h1>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Hello ${contactName},
+    </p>
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Please find attached the invoice for your order with Marie Lou B2B.
+    </p>
+    
+    <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Invoice Number:</strong> ${invoiceNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Order Number:</strong> ${orderNumber}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Company:</strong> ${companyName}
+      </p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #4a5568;">
+        <strong>Total Amount:</strong> €${amount.toFixed(2)}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: #4a5568;">
+        <strong>Due By:</strong> ${dueDate.toLocaleDateString('en-US')}
+      </p>
+    </div>
+    
+    ${invoicePdfUrl ? `
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${invoicePdfUrl}" style="display: inline-block; background-color: ${B2B_PRIMARY}; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+        Download Invoice
+      </a>
+    </div>
+    ` : ''}
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Please transfer the amount within the specified payment period to our account.
+    </p>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send B2B invoice email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`B2B invoice email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending B2B invoice email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}

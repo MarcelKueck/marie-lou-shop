@@ -1,0 +1,277 @@
+/* SmartBox Status Component */
+
+.loading,
+.error,
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.emptyHint {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Compact Grid */
+.compactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.compactCard {
+  background: var(--color-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.compactHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.statusIcon {
+  font-size: 0.6rem;
+}
+
+.compactName {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compactFill {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.compactFillBar {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.compactFill.full .compactFillBar { background: var(--color-success); }
+.compactFill.medium .compactFillBar { background: #48bb78; }
+.compactFill.low .compactFillBar { background: #ed8936; }
+.compactFill.critical .compactFillBar { background: var(--color-error); }
+
+.compactPercent {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+/* Full Box Grid */
+.boxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.boxCard {
+  background: var(--color-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.boxCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.boxCard.offline {
+  opacity: 0.7;
+  border-color: var(--color-error);
+}
+
+.boxCard.pending {
+  border-style: dashed;
+}
+
+/* Header */
+.boxHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.boxInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.boxName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.boxLocation {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.sizeBadge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-cream);
+  color: var(--color-muted);
+}
+
+.sizeBadge.small { background: #e2e8f0; }
+.sizeBadge.medium { background: #c6f6d5; color: #276749; }
+.sizeBadge.large { background: #bee3f8; color: #2b6cb0; }
+
+/* Product Info */
+.productInfo {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.productLabel {
+  color: var(--color-muted);
+}
+
+.productName {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Fill Level */
+.fillContainer {
+  margin-bottom: 1rem;
+}
+
+.fillLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.fillPercent {
+  font-weight: 600;
+}
+
+.fillPercent.full { color: var(--color-success); }
+.fillPercent.medium { color: #38a169; }
+.fillPercent.low { color: #dd6b20; }
+.fillPercent.critical { color: var(--color-error); }
+
+.fillTrack {
+  height: 12px;
+  background: var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.fillBar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.fillBar.full { background: linear-gradient(90deg, #48bb78, #38a169); }
+.fillBar.medium { background: linear-gradient(90deg, #68d391, #48bb78); }
+.fillBar.low { background: linear-gradient(90deg, #f6ad55, #ed8936); }
+.fillBar.critical { background: linear-gradient(90deg, #fc8181, #f56565); }
+
+.fillWarning {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+/* Meta Info */
+.boxMeta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.metaLabel {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.metaValue {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+/* Refill Button */
+.refillButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refillButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .boxGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .compactGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

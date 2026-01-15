@@ -787,22 +787,6 @@ export default function AccountPage() {
                   </div>
                 </div>
               </section>
-
-              {userData.referral && (
-                <section className={styles.section}>
-                  <h2 className={styles.sectionTitle}>{t('referral.quickStats')}</h2>
-                  <div className={styles.statsGrid}>
-                    <div className={styles.statCard}>
-                      <span className={styles.statValue}>{userData.stats.completedReferrals}</span>
-                      <span className={styles.statLabel}>{t('referral.successfulReferrals')}</span>
-                    </div>
-                    <div className={styles.statCard}>
-                      <span className={styles.statValue}>{userData.stats.totalRewardsEarned}</span>
-                      <span className={styles.statLabel}>{t('referral.freeBagsEarned')}</span>
-                    </div>
-                  </div>
-                </section>
-              )}
             </div>
           )}
 
