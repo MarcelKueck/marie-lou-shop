@@ -39,6 +39,22 @@
     {
       "path": "/api/cron/b2b/shipment-reminders",
       "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/cron/b2b/check-offline-boxes",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/b2b/check-restock-reminders",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/b2b/update-consumption-stats",
+      "schedule": "0 2 * * 0"
+    },
+    {
+      "path": "/api/cron/b2b/check-learning-mode",
+      "schedule": "0 3 * * *"
     }
   ],
   "headers": [

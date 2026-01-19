@@ -1,16 +1,26 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { smartBoxes, boxReadings, b2bCompanies } from '@/db/schema';
+import { smartBoxes, b2bCompanies } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { v4 as uuidv4 } from 'uuid';
+import { 
+  processBoxReading, 
+  checkReorderNeeded, 
+  createAlert,
+  isInLearningMode
+} from '@/lib/smartbox-algorithm';
 
 /**
- * SmartBox Reading API
+ * SmartBox Reading API (V2 - Bag Storage Monitor)
  * Receives weight/fill level readings from SmartBox devices
  * POST /api/devices/reading
+ * 
+ * V2 Concept: SmartBox monitors sealed bags, not loose beans!
+ * - Standard bag sizes: 250g, 500g, 750g, 1000g
+ * - One bag ≈ one day's consumption
+ * - Reorder at 20% fill level (configurable)
  */
 
-interface SmartBoxReading {
+interface SmartBoxReadingRequest {
   deviceId: string; // Hardware device ID
   apiKey: string; // Device API key for authentication
   weight: number; // Current weight in grams
@@ -24,7 +34,7 @@ interface SmartBoxReading {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as SmartBoxReading;
+    const body = await request.json() as SmartBoxReadingRequest;
     
     // Validate required fields
     if (!body.deviceId || !body.apiKey || body.weight === undefined) {
@@ -51,16 +61,12 @@ export async function POST(request: Request) {
     const box = smartBox[0];
     
     // Check if device is active
-    if (box.status !== 'active') {
+    if (box.status !== 'active' && box.status !== 'pending') {
       return NextResponse.json(
         { error: 'Device is not active' },
         { status: 403 }
       );
     }
-    
-    // Calculate fill percentage if not provided
-    const maxWeightGrams = box.capacityKg * 1000;
-    const fillPercent = body.fillPercent ?? Math.max(0, Math.min(100, (body.weight / maxWeightGrams) * 100));
     
     // Get company info for auto-reorder logic
     const company = await db
@@ -69,69 +75,60 @@ export async function POST(request: Request) {
       .where(eq(b2bCompanies.id, box.companyId))
       .limit(1);
     
-    const now = new Date();
-    const readingId = uuidv4();
-    
-    // Insert the reading
-    await db.insert(boxReadings).values({
-      id: readingId,
+    // Process the reading using V2 algorithm (handles saving, alerts, etc.)
+    const alerts = await processBoxReading({
       boxId: box.id,
       weightGrams: body.weight,
-      fillPercent: Math.round(fillPercent),
-      batteryPercent: body.batteryLevel,
-      temperature: body.temperature,
+      batteryPercent: body.batteryLevel ?? 100,
       signalStrength: body.signalStrength,
+      temperature: body.temperature,
       firmwareVersion: body.firmwareVersion,
-      recordedAt: body.timestamp ? new Date(body.timestamp) : now,
-      receivedAt: now,
     });
     
-    // Update SmartBox current status
-    await db
-      .update(smartBoxes)
-      .set({
-        currentWeightGrams: body.weight,
-        currentFillPercent: Math.round(fillPercent),
-        currentBatteryPercent: body.batteryLevel,
-        lastReadingAt: now,
-        lastOnlineAt: now,
-        firmwareVersion: body.firmwareVersion || box.firmwareVersion,
-      })
-      .where(eq(smartBoxes.id, box.id));
+    // Create alerts in the database
+    for (const alert of alerts) {
+      await createAlert(box.companyId, alert, box.id);
+    }
     
-    // Determine alert level
-    const reorderThreshold = box.reorderThresholdPercent || 20;
-    const criticalThreshold = 10; // Always critical at 10%
-    
-    let alertLevel: 'normal' | 'low' | 'critical' = 'normal';
-    let shouldTriggerReorder = false;
+    // Check if reorder should be triggered
+    const reorderDecision = await checkReorderNeeded(box.id);
     
     // Smart tier companies with active status get auto-reorder
     const isSmartTier = company[0]?.tier?.startsWith('smart') ?? false;
     const isActive = company[0]?.status === 'active';
+    const shouldTriggerReorder = reorderDecision.shouldReorder && isSmartTier && isActive;
     
-    if (fillPercent <= criticalThreshold) {
-      alertLevel = 'critical';
-      shouldTriggerReorder = isSmartTier && isActive;
-    } else if (fillPercent <= reorderThreshold) {
-      alertLevel = 'low';
-      shouldTriggerReorder = isSmartTier && isActive;
-    }
+    // Check learning mode status
+    const inLearningMode = await isInLearningMode(box.id);
+    
+    // Calculate fill percentage
+    const maxWeightGrams = box.capacityKg * 1000;
+    const fillPercent = Math.max(0, Math.min(100, (body.weight / maxWeightGrams) * 100));
     
     // Return response with status and any actions
     return NextResponse.json({
       success: true,
-      readingId,
       status: {
         fillPercent: Math.round(fillPercent),
-        alertLevel,
+        alertLevel: reorderDecision.urgency === 'critical' ? 'critical' 
+          : reorderDecision.urgency === 'urgent' ? 'low' 
+          : 'normal',
         batteryOk: (body.batteryLevel ?? 100) > (box.lowBatteryThresholdPercent || 20),
         connectionStrength: getConnectionStrength(body.signalStrength),
+        inLearningMode,
+        estimatedDaysRemaining: reorderDecision.estimatedDaysRemaining,
       },
+      alerts: alerts.map(a => ({
+        type: a.type,
+        severity: a.severity,
+        message: a.message,
+      })),
       actions: {
-        reorderTriggered: shouldTriggerReorder && alertLevel !== 'normal',
+        reorderTriggered: shouldTriggerReorder,
+        reorderReason: reorderDecision.reason,
+        suggestedBags: reorderDecision.suggestedBags,
       },
-      timestamp: now.toISOString(),
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('SmartBox reading error:', error);

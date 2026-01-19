@@ -766,6 +766,9 @@ export const b2bPromoUsage = sqliteTable('b2b_promo_usage', {
 });
 
 // SmartBoxes - the IoT containers for Smart tier
+// V2: SmartBox monitors SEALED BAGS, not loose beans!
+// Standard bag sizes: 250g, 500g, 750g, 1000g
+// One bag ≈ one day's consumption for an office
 export const smartBoxes = sqliteTable('smart_boxes', {
   id: text('id').primaryKey(),
   companyId: text('company_id').notNull().references(() => b2bCompanies.id),
@@ -780,9 +783,14 @@ export const smartBoxes = sqliteTable('smart_boxes', {
   capacityKg: real('capacity_kg').notNull(), // e.g., 1.4, 1.9, 3.3
   productType: text('product_type').notNull().default('coffee'), // 'coffee' | 'tea'
   
+  // V2: Bag-based configuration (SmartBox stores sealed bags!)
+  standardBagSize: integer('standard_bag_size').notNull().default(500), // grams: 250 | 500 | 750 | 1000
+  bagsPerOrder: integer('bags_per_order').notNull().default(5), // bags sent per shipment
+  
   // Current product in box
   currentProductId: text('current_product_id'),
   currentProductName: text('current_product_name'),
+  nextProductId: text('next_product_id'), // V2: Scheduled product change for next order
   
   // Thresholds
   reorderThresholdPercent: integer('reorder_threshold_percent').default(20),
@@ -793,6 +801,14 @@ export const smartBoxes = sqliteTable('smart_boxes', {
   currentFillPercent: integer('current_fill_percent'),
   currentBatteryPercent: integer('current_battery_percent'),
   lastReadingAt: integer('last_reading_at', { mode: 'timestamp' }),
+  
+  // V2: Learning mode - first 2 weeks to establish consumption patterns
+  learningMode: integer('learning_mode', { mode: 'boolean' }).notNull().default(true),
+  learningModeEndsAt: integer('learning_mode_ends_at', { mode: 'timestamp' }),
+  
+  // V2: Consumption analytics
+  avgDailyConsumption: integer('avg_daily_consumption'), // grams per day (≈ bags per day * bagSize)
+  avgWeeklyConsumption: integer('avg_weekly_consumption'), // grams per week
   
   // Status
   status: text('status').notNull().default('pending'), // 'pending' | 'active' | 'offline' | 'retired'
@@ -839,6 +855,7 @@ export const b2bShipments = sqliteTable('b2b_shipments', {
   triggerType: text('trigger_type').notNull(), // 'auto_low_stock' | 'scheduled' | 'manual'
   triggeredAt: integer('triggered_at', { mode: 'timestamp' }).notNull(),
   triggerFillPercent: integer('trigger_fill_percent'), // Fill % when triggered
+  triggerReason: text('trigger_reason'), // V2: Human-readable reason for trigger
   
   // Shipment contents
   items: text('items').notNull(), // JSON array of {productId, productName, quantity, weightGrams}
@@ -851,6 +868,10 @@ export const b2bShipments = sqliteTable('b2b_shipments', {
   
   // Status
   status: text('status').notNull().default('pending'), // 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'
+  
+  // V2: Restock tracking - has the customer confirmed bags are in the SmartBox?
+  restockedAt: integer('restocked_at', { mode: 'timestamp' }), // When customer confirmed restock
+  restockRemindersSent: integer('restock_reminders_sent').notNull().default(0), // Count of reminders sent
   
   // Timestamps
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
@@ -920,6 +941,50 @@ export const b2bSustainabilityStats = sqliteTable('b2b_sustainability_stats', {
   
   // Timestamps
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+// V2: B2B Holiday Periods - pause automatic reordering during holidays
+export const b2bHolidayPeriods = sqliteTable('b2b_holiday_periods', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  boxId: text('box_id').references(() => smartBoxes.id), // null = all boxes for company
+  
+  // Holiday period
+  startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
+  endDate: integer('end_date', { mode: 'timestamp' }).notNull(),
+  
+  // Details
+  reason: text('reason'), // 'christmas', 'summer_holiday', 'office_closed', 'other'
+  notes: text('notes'),
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  createdBy: text('created_by'), // User who created it
+});
+
+// V2: B2B Alerts - system alerts for SmartBox issues
+export const b2bAlerts = sqliteTable('b2b_alerts', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').notNull().references(() => b2bCompanies.id),
+  boxId: text('box_id').references(() => smartBoxes.id), // null = company-level alert
+  
+  // Alert details
+  type: text('type').notNull(), // 'low_stock' | 'offline' | 'low_battery' | 'anomaly' | 'restock_reminder' | 'consumption_change'
+  severity: text('severity').notNull().default('info'), // 'info' | 'warning' | 'critical'
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  
+  // Alert data (JSON with context-specific data)
+  data: text('data'), // JSON: {fillPercent, expectedDays, oldConsumption, newConsumption, etc}
+  
+  // Resolution
+  resolved: integer('resolved', { mode: 'boolean' }).notNull().default(false),
+  resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+  resolvedBy: text('resolved_by'), // User who resolved it
+  resolutionNotes: text('resolution_notes'),
+  
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
 // B2B Waitlist Leads - for pre-launch validation
@@ -1001,6 +1066,12 @@ export type NewB2BInvoice = typeof b2bInvoices.$inferInsert;
 
 export type B2BSustainabilityStats = typeof b2bSustainabilityStats.$inferSelect;
 export type NewB2BSustainabilityStats = typeof b2bSustainabilityStats.$inferInsert;
+
+export type B2BHolidayPeriod = typeof b2bHolidayPeriods.$inferSelect;
+export type NewB2BHolidayPeriod = typeof b2bHolidayPeriods.$inferInsert;
+
+export type B2BAlert = typeof b2bAlerts.$inferSelect;
+export type NewB2BAlert = typeof b2bAlerts.$inferInsert;
 
 export type B2BWaitlistLead = typeof b2bWaitlistLeads.$inferSelect;
 export type NewB2BWaitlistLead = typeof b2bWaitlistLeads.$inferInsert;

@@ -1231,3 +1231,344 @@ export async function sendB2BInvoiceEmail(data: B2BInvoiceEmailData): Promise<{ 
     return { success: false, error: errorMessage };
   }
 }
+
+// ============================================================================
+// V2 SmartBox Emails
+// ============================================================================
+
+interface SmartBoxOfflineEmailData {
+  to: string;
+  companyName: string;
+  boxName: string;
+  lastOnline?: Date | null;
+  portalUrl: string;
+}
+
+export async function sendSmartBoxOfflineEmail(data: SmartBoxOfflineEmailData): Promise<{ success: boolean; error?: string }> {
+  const { to: email, companyName, boxName, lastOnline, portalUrl } = data;
+  const subject = `⚠️ SmartBox Offline - ${boxName}`;
+  
+  const lastOnlineStr = lastOnline 
+    ? new Date(lastOnline).toLocaleDateString('de-DE', { 
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    : 'Unknown';
+  
+  const content = `
+    <h2 style="margin: 0 0 24px; font-size: 24px; color: #1a1a1a; font-weight: 600;">
+      SmartBox Offline Alert
+    </h2>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Dear ${companyName} team,
+    </p>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We haven't received any readings from your SmartBox for over 48 hours:
+    </p>
+    
+    <div style="background: #FEF3C7; border-radius: 8px; padding: 20px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 16px; color: #92400E;">
+        <strong>SmartBox:</strong> ${boxName}<br>
+        <strong>Last Online:</strong> ${lastOnlineStr}
+      </p>
+    </div>
+    
+       
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      <strong>Possible causes:</strong>
+    </p>
+    <ul style="margin: 0 0 16px; padding-left: 24px; color: #4a5568; line-height: 1.8;">
+      <li>Power supply disconnected</li>
+      <li>WiFi connection issues</li>
+      <li>Device needs restart</li>
+      <li>Low battery</li>
+    </ul>
+    
+    <p style="margin: 0 0 24px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Please check your SmartBox and ensure it's powered on and connected to WiFi.
+    </p>
+    
+    <a href="${portalUrl}" style="display: inline-block; background: #1a5f4a; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+      View SmartBox Status
+    </a>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send SmartBox offline email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`SmartBox offline email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending SmartBox offline email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+interface RestockReminderEmailData {
+  to: string;
+  companyName: string;
+  boxName: string;
+  productName: string;
+  deliveredDate: Date;
+  reminderNumber: number;
+  portalUrl: string;
+}
+
+export async function sendRestockReminderEmail(data: RestockReminderEmailData): Promise<{ success: boolean; error?: string }> {
+  const { to: email, companyName, boxName, productName, deliveredDate, reminderNumber, portalUrl } = data;
+  const subject = reminderNumber === 1 
+    ? `📦 Reminder: Place your coffee bags in the SmartBox` 
+    : `📦 Second Reminder: Don't forget to restock your SmartBox`;
+  
+  const deliveredStr = deliveredDate.toLocaleDateString('de-DE', { 
+    day: '2-digit', 
+    month: 'long', 
+    year: 'numeric'
+  });
+  
+  const content = `
+    <h2 style="margin: 0 0 24px; font-size: 24px; color: #1a1a1a; font-weight: 600;">
+      Restock Reminder
+    </h2>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Dear ${companyName} team,
+    </p>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Your coffee delivery from ${deliveredStr} is waiting to be placed in your SmartBox!
+    </p>
+    
+    <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 20px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 16px; color: #166534;">
+        <strong>Product:</strong> ${productName}<br>
+        <strong>SmartBox:</strong> ${boxName}
+      </p>
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      <strong>Why this matters:</strong> Once you place the sealed bags in your SmartBox, our system can accurately track your consumption and ensure timely reorders - so you never run out of great coffee!
+    </p>
+    
+    <p style="margin: 0 0 24px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Once restocked, please confirm in your portal so we can update our records.
+    </p>
+    
+    <a href="${portalUrl}" style="display: inline-block; background: #1a5f4a; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+      Confirm Restock
+    </a>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send restock reminder email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`Restock reminder email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending restock reminder email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+interface ConsumptionChangeEmailData {
+  to: string;
+  companyName: string;
+  boxName: string;
+  oldConsumption: number; // grams per day
+  newConsumption: number; // grams per day
+  percentChange: number;
+  recommendation?: string;
+  portalUrl: string;
+}
+
+export async function sendConsumptionChangeEmail(data: ConsumptionChangeEmailData): Promise<{ success: boolean; error?: string }> {
+  const { to: email, companyName, boxName, oldConsumption, newConsumption, percentChange, recommendation, portalUrl } = data;
+  
+  const changeDirection = percentChange > 0 ? 'increased' : 'decreased';
+  const absChange = Math.abs(Math.round(percentChange));
+  const subject = `📊 Consumption ${changeDirection} by ${absChange}% - ${boxName}`;
+  
+  const content = `
+    <h2 style="margin: 0 0 24px; font-size: 24px; color: #1a1a1a; font-weight: 600;">
+      Consumption Pattern Change Detected
+    </h2>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Dear ${companyName} team,
+    </p>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We've noticed a significant change in coffee consumption at your SmartBox "${boxName}":
+    </p>
+    
+    <div style="background: ${percentChange > 0 ? '#DBEAFE' : '#FEF3C7'}; border-radius: 8px; padding: 20px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 16px; color: ${percentChange > 0 ? '#1E40AF' : '#92400E'};">
+        <strong>Previous:</strong> ~${Math.round(oldConsumption)}g/day<br>
+        <strong>Current:</strong> ~${Math.round(newConsumption)}g/day<br>
+        <strong>Change:</strong> ${percentChange > 0 ? '+' : ''}${absChange}%
+      </p>
+    </div>
+    
+    ${recommendation ? `
+    <div style="background: #F0FDF4; border-left: 4px solid #22C55E; padding: 16px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 16px; color: #166534;">
+        <strong>💡 Recommendation:</strong> ${recommendation}
+      </p>
+    </div>
+    ` : ''}
+    
+    <p style="margin: 0 0 24px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      We've automatically adjusted our predictions to ensure you continue receiving deliveries at the optimal time. You can review and adjust your order settings in the portal.
+    </p>
+    
+    <a href="${portalUrl}" style="display: inline-block; background: #1a5f4a; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+      View Consumption Stats
+    </a>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send consumption change email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`Consumption change email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending consumption change email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
+
+interface LearningModeCompleteEmailData {
+  to: string;
+  companyName: string;
+  boxName: string;
+  avgDailyConsumption: number; // grams
+  avgWeeklyConsumption: number; // grams
+  estimatedBagsPerWeek: number;
+  recommendedBagsPerOrder: number;
+  portalUrl: string;
+}
+
+export async function sendLearningModeCompleteEmail(data: LearningModeCompleteEmailData): Promise<{ success: boolean; error?: string }> {
+  const { to: email, companyName, boxName, avgDailyConsumption, avgWeeklyConsumption, estimatedBagsPerWeek, recommendedBagsPerOrder, portalUrl } = data;
+  const subject = `✅ SmartBox Learning Complete - ${boxName}`;
+  
+  const content = `
+    <h2 style="margin: 0 0 24px; font-size: 24px; color: #1a1a1a; font-weight: 600;">
+      Learning Mode Complete! 🎉
+    </h2>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Dear ${companyName} team,
+    </p>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Great news! Your SmartBox "${boxName}" has completed its 2-week learning period. We now have a clear picture of your coffee consumption patterns:
+    </p>
+    
+    <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 20px; margin: 24px 0;">
+      <h3 style="margin: 0 0 12px; font-size: 18px; color: #166534;">Your Consumption Profile</h3>
+      <p style="margin: 0; font-size: 16px; color: #166534; line-height: 1.8;">
+        <strong>Daily Average:</strong> ~${Math.round(avgDailyConsumption)}g/day<br>
+        <strong>Weekly Average:</strong> ~${Math.round(avgWeeklyConsumption)}g/week<br>
+        <strong>Estimated Bags/Week:</strong> ~${estimatedBagsPerWeek.toFixed(1)} bags<br>
+        <strong>Recommended Order Size:</strong> ${recommendedBagsPerOrder} bags
+      </p>
+    </div>
+    
+    <p style="margin: 0 0 16px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      <strong>What happens now:</strong>
+    </p>
+    <ul style="margin: 0 0 16px; padding-left: 24px; color: #4a5568; line-height: 1.8;">
+      <li>Auto-reordering is now active based on real consumption data</li>
+      <li>We'll notify you if consumption patterns change significantly</li>
+      <li>You'll always have fresh coffee without manual ordering</li>
+    </ul>
+    
+    <p style="margin: 0 0 24px; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      You can adjust your order preferences anytime in your portal.
+    </p>
+    
+    <a href="${portalUrl}" style="display: inline-block; background: #1a5f4a; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+      View SmartBox Dashboard
+    </a>
+    
+    <p style="margin: 24px 0 0; font-size: 16px; color: #4a5568; line-height: 1.6;">
+      Best regards,<br>
+      <strong>Your Marie Lou B2B Team</strong>
+    </p>
+  `;
+  
+  try {
+    const { error } = await resend.emails.send({
+      from: B2B_EMAIL_FROM,
+      to: email,
+      subject,
+      html: b2bEmailLayout(content, subject),
+    });
+    
+    if (error) {
+      console.error('Failed to send learning mode complete email:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log(`Learning mode complete email sent to ${email}`);
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Error sending learning mode complete email:', errorMessage);
+    return { success: false, error: errorMessage };
+  }
+}
